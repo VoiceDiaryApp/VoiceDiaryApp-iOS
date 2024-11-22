@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+issue_templates:
+  - name: Default Issue Template
+    description: VoiceDiary FE 기본 이슈 템플릿
+    file: default-issue-template.md
