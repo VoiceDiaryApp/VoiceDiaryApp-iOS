@@ -18,7 +18,9 @@ let project = Project(
             ),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
-            dependencies: []
+            dependencies: [
+                .external(name: "SnapKit")
+            ]
         )
     ]
 )
