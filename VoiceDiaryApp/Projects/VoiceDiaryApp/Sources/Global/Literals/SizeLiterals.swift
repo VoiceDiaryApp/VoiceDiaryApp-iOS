@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+   
 struct SizeLiterals {
     
     struct Screen {
@@ -14,15 +14,12 @@ struct SizeLiterals {
         static let screenHeight: CGFloat = UIScreen.main.bounds.height
         static let deviceRatio: CGFloat = screenWidth / screenHeight
     }
-}
-
-extension SizeLiterals {
     
-    func calSupporWidth(width: CGFloat) -> CGFloat {
+    static func calSupporWidth(width: CGFloat) -> CGFloat {
         return width * Screen.screenWidth / 375
     }
     
-    func calSupporHeight(height: CGFloat) -> CGFloat {
+    static func calSupporHeight(height: CGFloat) -> CGFloat {
         return height * Screen.screenHeight / 812
     }
 }
