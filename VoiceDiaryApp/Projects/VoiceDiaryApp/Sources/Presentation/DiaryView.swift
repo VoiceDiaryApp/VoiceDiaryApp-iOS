@@ -110,7 +110,7 @@ class DiaryView: UIView {
         if let name = imageName, let image = UIImage(named: name) {
             emotionImageView.image = image
         } else {
-            emotionImageView.image = UIImage(named: "defaultEmotion")
+            emotionImageView.image = UIImage(named: "")
         }
     }
 
