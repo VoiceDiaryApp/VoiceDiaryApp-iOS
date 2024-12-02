@@ -2,6 +2,8 @@
 //  DiaryViewModel.swift
 //  VoiceDiaryApp
 //
+//  Created by 신호연 on 11/29/24.
+//
 
 import Foundation
 import Combine

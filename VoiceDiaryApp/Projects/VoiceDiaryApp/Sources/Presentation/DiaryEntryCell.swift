@@ -9,8 +9,9 @@ import UIKit
 import SnapKit
 
 class DiaryEntryCell: UICollectionViewCell {
-    private let label = UILabel()
-
+    private let dayLabel = UILabel()
+    private let emojiImageView = UIImageView()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -21,16 +22,23 @@ class DiaryEntryCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        contentView.addSubview(label)
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 12)
+        contentView.addSubview(dayLabel)
+        dayLabel.textAlignment = .center
+        dayLabel.font = .systemFont(ofSize: 12)
 
-        label.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        contentView.addSubview(emojiImageView)
+        emojiImageView.contentMode = .scaleAspectFit
+        
+        dayLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-5)
+        }
+
+        emojiImageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(5)
+            make.height.width.equalTo(24)
         }
     }
 
-    func configure(with entry: DiaryEntry) {
-        label.text = DateFormatter.localizedString(from: entry.date, dateStyle: .short, timeStyle: .none)
-    }
 }

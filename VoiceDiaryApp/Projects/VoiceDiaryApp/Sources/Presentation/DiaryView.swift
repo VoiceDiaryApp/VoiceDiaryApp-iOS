@@ -11,7 +11,11 @@ import SnapKit
 class DiaryView: UIView {
 
     // MARK: - UI Components
-    let navigationBar = CustomNavigationBar()
+    let navigationBar: CustomNavigationBar = {
+        let navBar = CustomNavigationBar()
+        navBar.setTitle("캘린더")
+        return navBar
+    }()
 
     private let yearLabel: UILabel = {
         let label = UILabel()
@@ -29,16 +33,6 @@ class DiaryView: UIView {
         return label
     }()
 
-    private(set) var calendarView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 50, height: 50)
-        layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 10
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        return collectionView
-    }()
-
     private(set) var emotionImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -48,9 +42,11 @@ class DiaryView: UIView {
     private(set) var diaryTextView: UITextView = {
         let textView = UITextView()
         textView.isEditable = false
+        textView.isScrollEnabled = true
         textView.backgroundColor = .clear
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.textColor = .darkGray
+        textView.textAlignment = .natural
         return textView
     }()
 
@@ -58,8 +54,7 @@ class DiaryView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        setDateLabels(year: Calendar.current.component(.year, from: Date()),
-                      month: Calendar.current.component(.month, from: Date()))
+        configureDateLabels()
     }
 
     required init?(coder: NSCoder) {
@@ -78,7 +73,6 @@ class DiaryView: UIView {
         addSubview(navigationBar)
         addSubview(yearLabel)
         addSubview(monthLabel)
-        addSubview(calendarView)
         addSubview(emotionImageView)
         addSubview(diaryTextView)
     }
@@ -103,33 +97,24 @@ class DiaryView: UIView {
             make.centerX.equalToSuperview()
         }
 
-        // 캘린더 뷰 레이아웃
-        calendarView.snp.makeConstraints { make in
-            make.top.equalTo(monthLabel.snp.bottom).offset(25)
-            make.centerX.equalToSuperview()
-            make.width.equalTo(309)
-            make.bottom.lessThanOrEqualTo(emotionImageView.snp.top).offset(-20)
-        }
-
-        // 감정 이미지 뷰 레이아웃
-        emotionImageView.snp.makeConstraints { make in
-            make.top.greaterThanOrEqualTo(calendarView.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
-            make.height.width.equalTo(100)
-        }
-
-        // 다이어리 텍스트 뷰 레이아웃
-        diaryTextView.snp.makeConstraints { make in
-            make.top.equalTo(emotionImageView.snp.bottom).offset(20)
-            make.left.equalToSuperview().offset(20)
-            make.right.equalToSuperview().offset(-20)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-20)
-        }
     }
 
     // MARK: - Public Methods
-    func setDateLabels(year: Int, month: Int) {
+    func configureDateLabels(year: Int = Calendar.current.component(.year, from: Date()),
+                             month: Int = Calendar.current.component(.month, from: Date())) {
         yearLabel.text = "\(year)년"
         monthLabel.text = "\(month)월"
+    }
+
+    func updateEmotionImageView(with imageName: String?) {
+        if let name = imageName, let image = UIImage(named: name) {
+            emotionImageView.image = image
+        } else {
+            emotionImageView.image = UIImage(named: "defaultEmotion")
+        }
+    }
+
+    func updateDiaryTextView(with text: String?) {
+        diaryTextView.text = text ?? "선택된 다이어리가 없습니다."
     }
 }
