@@ -27,6 +27,7 @@ class DiaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        bindViewModel()
     }
 
     private func setupUI() {
@@ -35,7 +36,14 @@ class DiaryViewController: UIViewController {
         diaryView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        diaryView.navigationBar.setTitle("캘린더")
     }
 
+    private func bindViewModel() {
+        viewModel.diaryEntriesPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] entries in
+                self?.diaryView.calendarView.updateDiaryEntries(entries)
+            }
+            .store(in: &cancellables)
+    }
 }
