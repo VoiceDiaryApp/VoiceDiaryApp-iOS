@@ -31,7 +31,7 @@ class CustomNavigationBar: UIView {
 
     private let rightIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "")
+        imageView.image = UIImage(named: "rightIcon")
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
