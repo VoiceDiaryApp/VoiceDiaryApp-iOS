@@ -8,7 +8,13 @@
 import UIKit
 import SnapKit
 
+protocol CalendarViewDelegate: AnyObject {
+    func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date)
+}
+
 class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
+    weak var delegate: CalendarViewDelegate? // Delegate 선언
 
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private var diaryEntries: [DiaryEntry] = []
@@ -41,6 +47,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         super.init(frame: frame)
         setupUI()
         setupDaysOfWeek()
+        addSwipeGestures() // 스와이프 제스처 추가
     }
 
     required init?(coder: NSCoder) {
@@ -72,6 +79,40 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
             label.font = UIFont(name: "Roboto-Regular", size: 13)
             label.textAlignment = .center
             daysStackView.addArrangedSubview(label)
+        }
+    }
+
+    private func addSwipeGestures() {
+        let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
+        leftSwipe.direction = .left
+        addGestureRecognizer(leftSwipe)
+
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
+        rightSwipe.direction = .right
+        addGestureRecognizer(rightSwipe)
+    }
+
+    @objc private func handleSwipeGesture(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .left {
+            moveToNextMonth()
+        } else if gesture.direction == .right {
+            moveToPreviousMonth()
+        }
+    }
+
+    private func moveToNextMonth() {
+        if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
+            currentDate = nextMonth
+            delegate?.calendarViewDidUpdateDate(self, to: currentDate) // Delegate 호출
+            updateMonth(date: currentDate)
+        }
+    }
+
+    private func moveToPreviousMonth() {
+        if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
+            currentDate = previousMonth
+            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
+            updateMonth(date: currentDate)
         }
     }
 
@@ -121,7 +162,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let totalHorizontalPadding: CGFloat = 66
         let availableWidth = bounds.width - totalHorizontalPadding
-        let cellWidth = floor(availableWidth / 7)\
+        let cellWidth = floor(availableWidth / 7)
 
         return CGSize(width: cellWidth, height: cellWidth + 32)
     }
