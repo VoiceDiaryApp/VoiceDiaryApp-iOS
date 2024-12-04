@@ -35,7 +35,7 @@ class DiaryViewModel: DiaryViewModelProtocol {
         
         return range.compactMap { day -> DiaryEntry in
             let date = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)!
-            return DiaryEntry(date: date, emotion: .neutral, content: "")
+            return DiaryEntry(date: date, emotion: nil, content: "")
         }
     }
 
