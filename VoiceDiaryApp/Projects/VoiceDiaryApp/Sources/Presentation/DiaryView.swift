@@ -32,12 +32,32 @@ class DiaryView: UIView {
         return label
     }()
 
+    private let leftArrowButton: UIButton = {
+        let button = UIButton()
+        let image = UIImage(named: "arrow")?.withRenderingMode(.alwaysTemplate)
+        button.setImage(image, for: .normal)
+        button.tintColor = UIColor(named: "CalendarTextBlack")
+        button.transform = CGAffineTransform(rotationAngle: .pi)
+        return button
+    }()
+
+    private let rightArrowButton: UIButton = {
+        let button = UIButton()
+        let image = UIImage(named: "arrow")?.withRenderingMode(.alwaysTemplate)
+        button.setImage(image, for: .normal)
+        button.tintColor = UIColor(named: "CalendarTextBlack")
+        return button
+    }()
+
     let calendarView: CalendarView = CalendarView()
+
+    private var currentDate: Date = Date() // 현재 선택된 날짜
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
         configureDateLabels()
+        setupActions()
     }
 
     required init?(coder: NSCoder) {
@@ -50,6 +70,8 @@ class DiaryView: UIView {
         addSubview(navigationBar)
         addSubview(yearLabel)
         addSubview(monthLabel)
+        addSubview(leftArrowButton)
+        addSubview(rightArrowButton)
         addSubview(calendarView)
 
         navigationBar.snp.makeConstraints { make in
@@ -68,6 +90,18 @@ class DiaryView: UIView {
             make.centerX.equalToSuperview()
         }
 
+        leftArrowButton.snp.makeConstraints { make in
+            make.centerY.equalTo(yearLabel.snp.centerY).offset(10)
+            make.leading.equalToSuperview().offset(28)
+            make.width.height.equalTo(24)
+        }
+
+        rightArrowButton.snp.makeConstraints { make in
+            make.centerY.equalTo(yearLabel.snp.centerY).offset(10)
+            make.trailing.equalToSuperview().offset(-28)
+            make.width.height.equalTo(24)
+        }
+
         calendarView.snp.makeConstraints { make in
             make.top.equalTo(monthLabel.snp.bottom).offset(25)
             make.leading.trailing.bottom.equalToSuperview()
@@ -76,8 +110,29 @@ class DiaryView: UIView {
 
     private func configureDateLabels() {
         let calendar = Calendar.current
-        let now = Date()
-        yearLabel.text = "\(calendar.component(.year, from: now))년"
-        monthLabel.text = "\(calendar.component(.month, from: now))월"
+        yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
+        monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
+        calendarView.updateMonth(date: currentDate)
+    }
+
+    private func setupActions() {
+        leftArrowButton.addTarget(self, action: #selector(didTapLeftArrow), for: .touchUpInside)
+        rightArrowButton.addTarget(self, action: #selector(didTapRightArrow), for: .touchUpInside)
+    }
+
+    @objc private func didTapLeftArrow() {
+        updateCurrentDate(byAddingMonths: -1)
+    }
+
+    @objc private func didTapRightArrow() {
+        updateCurrentDate(byAddingMonths: 1)
+    }
+
+    private func updateCurrentDate(byAddingMonths months: Int) {
+        let calendar = Calendar.current
+        if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
+            currentDate = newDate
+            configureDateLabels()
+        }
     }
 }

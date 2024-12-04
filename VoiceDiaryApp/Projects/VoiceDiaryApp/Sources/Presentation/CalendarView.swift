@@ -13,12 +13,12 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private var diaryEntries: [DiaryEntry] = []
     private let calendar = Calendar.current
-    private let now = Date()
+    private var currentDate: Date = Date() // 현재 표시 중인 날짜
 
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 2 // 줄 간격
+        layout.minimumInteritemSpacing = 0 // 칸 간격
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
@@ -31,7 +31,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
-        stackView.spacing = 5
+        stackView.spacing = 0 // 간격 없음
         return stackView
     }()
 
@@ -50,13 +50,13 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         addSubview(collectionView)
 
         daysStackView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(10)
-            make.height.equalTo(32)
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(32) // 고정 높이
         }
 
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(daysStackView.snp.bottom).offset(10)
-            make.leading.trailing.bottom.equalToSuperview().inset(10)
+            make.top.equalTo(daysStackView.snp.bottom).offset(2) // 2 아래
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 
@@ -76,22 +76,31 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         collectionView.reloadData()
     }
 
+    // 현재 표시 중인 달을 업데이트
+    func updateMonth(date: Date) {
+        currentDate = date
+        collectionView.reloadData()
+    }
+
+    // 표시할 셀 수 계산 (달의 시작 요일과 날짜 범위 포함)
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let range = calendar.range(of: .day, in: .month, for: now)!.count
-        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        let range = calendar.range(of: .day, in: .month, for: currentDate)!.count
+        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
         return range + weekdayOffset
     }
 
+    // 셀 설정
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CalendarCell", for: indexPath) as? CalendarCell else {
             return UICollectionViewCell()
         }
 
-        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
 
         if indexPath.item < weekdayOffset {
+            // 시작 요일 전의 빈 공간
             cell.configure(day: nil, emotion: nil)
         } else {
             let day = indexPath.item - weekdayOffset + 1
@@ -102,8 +111,9 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         return cell
     }
 
+    // 셀 크기 계산
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.frame.width - 30) / 7
-        return CGSize(width: width, height: width + 30)
+        let width = collectionView.frame.width / 7
+        return CGSize(width: width, height: width + 32) // 감정 이미지 + 날짜 텍스트
     }
 }
