@@ -49,10 +49,21 @@ class CalendarCell: UICollectionViewCell {
         }
     }
 
-    func configure(day: Int?, emotion: Emotion?) {
+    func configure(day: Int?, emotion: Emotion?, isToday: Bool) {
         if let day = day {
             dayLabel.text = "\(day)"
             emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
+
+            if isToday {
+                // 오늘 날짜 스타일 - Bold 폰트 적용
+                dayLabel.font = UIFont(name: "Roboto-Bold", size: 13) ?? .boldSystemFont(ofSize: 13)
+                dayLabel.textColor = UIColor(named: "CalendarSelected") ?? .red
+            } else {
+                // 기본 스타일
+                dayLabel.font = UIFont(name: "Roboto-Regular", size: 13) ?? .systemFont(ofSize: 13)
+                dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
+                dayLabel.text = "\(day)"
+            }
         } else {
             dayLabel.text = nil
             emojiImageView.image = nil

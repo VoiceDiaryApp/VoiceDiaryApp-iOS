@@ -162,11 +162,13 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
 
         if indexPath.item < weekdayOffset {
-            cell.configure(day: nil, emotion: nil)
+            cell.configure(day: nil, emotion: nil, isToday: false)
         } else {
             let day = indexPath.item - weekdayOffset + 1
+            let cellDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)!
+            let isToday = calendar.isDate(Date(), inSameDayAs: cellDate) // 오늘 날짜 확인
             let entry = diaryEntries.first { calendar.component(.day, from: $0.date) == day }
-            cell.configure(day: day, emotion: entry?.emotion)
+            cell.configure(day: day, emotion: entry?.emotion, isToday: isToday) // 오늘 여부 전달
         }
 
         return cell
