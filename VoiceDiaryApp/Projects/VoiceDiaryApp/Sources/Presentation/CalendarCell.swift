@@ -15,6 +15,7 @@ class CalendarCell: UICollectionViewCell {
 
     private var leadingConstraint: Constraint?
     private var trailingConstraint: Constraint?
+    private var isToday: Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,23 +51,45 @@ class CalendarCell: UICollectionViewCell {
     }
 
     func configure(day: Int?, emotion: Emotion?, isToday: Bool) {
+        self.isToday = isToday // isToday 값 저장
+        
         if let day = day {
             dayLabel.text = "\(day)"
             emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
 
             if isToday {
-                // 오늘 날짜 스타일 - Bold 폰트 적용
                 dayLabel.font = UIFont(name: "Roboto-Bold", size: 13) ?? .boldSystemFont(ofSize: 13)
                 dayLabel.textColor = UIColor(named: "CalendarSelected") ?? .red
             } else {
-                // 기본 스타일
                 dayLabel.font = UIFont(name: "Roboto-Regular", size: 13) ?? .systemFont(ofSize: 13)
                 dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
-                dayLabel.text = "\(day)"
             }
         } else {
             dayLabel.text = nil
             emojiImageView.image = nil
+        }
+    }
+
+    func setSelected(_ isSelected: Bool) {
+        if isSelected {
+            dayLabel.textColor = .white
+            let selectedBackground = UIView()
+            selectedBackground.backgroundColor = UIColor(named: "CalendarSelected") ?? .red
+            selectedBackground.layer.cornerRadius = 8
+            contentView.insertSubview(selectedBackground, belowSubview: dayLabel)
+            selectedBackground.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.width.equalTo(25)
+                make.height.equalTo(21)
+                make.bottom.equalTo(dayLabel.snp.bottom).offset(-5)
+            }
+        } else {
+            // isToday를 사용하여 기본 스타일 복원
+            dayLabel.textColor = isToday
+                ? UIColor(named: "CalendarSelected") ?? .red
+                : UIColor(named: "CalendarTextBlack") ?? .black
+
+            contentView.subviews.filter { $0 != dayLabel && $0 != emojiImageView }.forEach { $0.removeFromSuperview() }
         }
     }
 }

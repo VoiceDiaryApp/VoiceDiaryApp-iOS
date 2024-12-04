@@ -20,6 +20,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     private var diaryEntries: [DiaryEntry] = []
     private let calendar = Calendar.current
     private var currentDate: Date = Date()
+    private var selectedDateIndexPath: IndexPath?
 
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -180,5 +181,17 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         let cellWidth = floor(availableWidth / 7)
 
         return CGSize(width: cellWidth, height: cellWidth + 32)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let previousIndexPath = selectedDateIndexPath,
+           let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CalendarCell {
+            previousCell.setSelected(false)
+        }
+
+        if let cell = collectionView.cellForItem(at: indexPath) as? CalendarCell {
+            cell.setSelected(true)
+            selectedDateIndexPath = indexPath 
+        }
     }
 }
