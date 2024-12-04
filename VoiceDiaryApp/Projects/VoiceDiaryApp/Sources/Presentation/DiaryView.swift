@@ -18,16 +18,16 @@ class DiaryView: UIView {
 
     private let yearLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 15)
+        label.textColor = UIColor(named: "CalendarTextBlack")
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 15)
         label.textAlignment = .center
         return label
     }()
 
     private let monthLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 20)
+        label.textColor = UIColor(named: "CalendarTextBlack")
+        label.font = UIFont(name: "Pretendard-Bold", size: 20)
         label.textAlignment = .center
         return label
     }()

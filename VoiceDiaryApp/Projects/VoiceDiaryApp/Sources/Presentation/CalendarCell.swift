@@ -42,9 +42,10 @@ class CalendarCell: UICollectionViewCell {
 
         // 패딩 제약조건 저장
         dayLabel.snp.makeConstraints { make in
-            make.top.equalTo(emojiImageView.snp.bottom).offset(8)
-            self.leadingConstraint = make.leading.equalToSuperview().inset(16).constraint
-            self.trailingConstraint = make.trailing.equalToSuperview().inset(16).constraint
+            make.top.equalTo(emojiImageView.snp.bottom).offset(0)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(44)
+            make.height.equalTo(32)
         }
     }
 
@@ -52,11 +53,6 @@ class CalendarCell: UICollectionViewCell {
         if let day = day {
             dayLabel.text = "\(day)"
             emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
-            
-            // 숫자의 자리수에 따라 패딩 조정
-            let isDoubleDigit = day >= 10
-            leadingConstraint?.update(inset: isDoubleDigit ? 12 : 16)
-            trailingConstraint?.update(inset: isDoubleDigit ? 12 : 16)
         } else {
             dayLabel.text = nil
             emojiImageView.image = nil
