@@ -111,9 +111,22 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     private func moveToPreviousMonth() {
         if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
             currentDate = previousMonth
-            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
+            delegate?.calendarViewDidUpdateDate(self, to: currentDate) // Delegate 호출
             updateMonth(date: currentDate)
         }
+    }
+
+    private func animateCalendarTransition(to newDate: Date, direction: CATransitionSubtype) {
+        currentDate = newDate
+        
+        let transition = CATransition()
+        transition.type = .push
+        transition.subtype = direction
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        
+        collectionView.layer.add(transition, forKey: kCATransition)
+        updateMonth(date: currentDate)
     }
 
     override func layoutSubviews() {
