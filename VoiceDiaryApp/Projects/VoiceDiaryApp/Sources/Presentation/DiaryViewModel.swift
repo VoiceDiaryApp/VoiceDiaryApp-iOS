@@ -40,7 +40,7 @@ class DiaryViewModel: DiaryViewModelProtocol {
     }
 
     func fetchDiary(for date: Date) {
-        // Optional: 특정 날짜에 대한 다이어리 항목 가져오기 로직
+        // 특정 날짜에 대한 다이어리 항목 가져오기 로직
     }
 
     func addDiaryEntry(for date: Date, emotion: Emotion, content: String) {
