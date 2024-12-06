@@ -8,11 +8,10 @@
 import UIKit
 import SnapKit
 
-class CalendarCell: UICollectionViewCell {
-
+class DiaryEntryCell: UICollectionViewCell {
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -23,34 +22,23 @@ class CalendarCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        // Add components to contentView
-        contentView.addSubview(emojiImageView)
         contentView.addSubview(dayLabel)
-
-        emojiImageView.contentMode = .scaleAspectFit
-        emojiImageView.snp.makeConstraints { make in
-            make.top.centerX.equalToSuperview()
-            make.width.height.equalTo(41)
-        }
-
-        dayLabel.font = .systemFont(ofSize: 13)
-        dayLabel.textColor = UIColor(named: "CalendarTextBlack")
         dayLabel.textAlignment = .center
+        dayLabel.font = .systemFont(ofSize: 12)
+
+        contentView.addSubview(emojiImageView)
+        emojiImageView.contentMode = .scaleAspectFit
+        
         dayLabel.snp.makeConstraints { make in
-            make.top.equalTo(emojiImageView.snp.bo)
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-5)
         }
 
-    }
-
-    func configure(day: Int?, emotion: Emotion?, additionalImage: UIImage? = nil) {
-        if let day = day {
-            dayLabel.text = "\(day)"
-            emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
-        } else {
-            dayLabel.text = nil
-            emojiImageView.image = nil
+        emojiImageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(5)
+            make.height.width.equalTo(24)
         }
-
     }
+
 }
