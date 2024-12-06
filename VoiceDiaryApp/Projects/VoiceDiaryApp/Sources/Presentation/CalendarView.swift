@@ -14,14 +14,15 @@ protocol CalendarViewDelegate: AnyObject {
 
 class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
-    weak var delegate: CalendarViewDelegate? // Delegate 선언
+    weak var delegate: CalendarViewDelegate?
 
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private var diaryEntries: [DiaryEntry] = []
     private let calendar = Calendar.current
     private var currentDate: Date = Date()
     private var selectedDateIndexPath: IndexPath?
-
+    private var selectedDate: Date?
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 2
@@ -48,7 +49,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         super.init(frame: frame)
         setupUI()
         setupDaysOfWeek()
-        addSwipeGestures() // 스와이프 제스처 추가
+        addSwipeGestures()
     }
 
     required init?(coder: NSCoder) {
@@ -104,7 +105,8 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     private func moveToNextMonth() {
         if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
             currentDate = nextMonth
-            delegate?.calendarViewDidUpdateDate(self, to: currentDate) // Delegate 호출
+
+            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
             updateMonth(date: currentDate)
         }
     }
@@ -112,7 +114,8 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     private func moveToPreviousMonth() {
         if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
             currentDate = previousMonth
-            delegate?.calendarViewDidUpdateDate(self, to: currentDate) // Delegate 호출
+
+            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
             updateMonth(date: currentDate)
         }
     }
@@ -144,7 +147,32 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
 
     func updateMonth(date: Date) {
         currentDate = date
+
         collectionView.reloadData()
+
+        if let selectedDate = selectedDate, !calendar.isDate(selectedDate, equalTo: currentDate, toGranularity: .month) {
+            DispatchQueue.main.async {
+                self.collectionView.visibleCells.forEach { cell in
+                    if let calendarCell = cell as? CalendarCell {
+                        calendarCell.setSelected(false)
+                    }
+                }
+            }
+        }
+
+        if let selectedDate = selectedDate, calendar.isDate(selectedDate, equalTo: currentDate, toGranularity: .month) {
+            let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
+            let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
+            let day = calendar.component(.day, from: selectedDate)
+            let selectedIndexPath = IndexPath(item: day + weekdayOffset - 1, section: 0)
+
+            DispatchQueue.main.async {
+                self.collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
+                if let cell = self.collectionView.cellForItem(at: selectedIndexPath) as? CalendarCell {
+                    cell.setSelected(true)
+                }
+            }
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -164,12 +192,17 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
 
         if indexPath.item < weekdayOffset {
             cell.configure(day: nil, emotion: nil, isToday: false)
+            cell.setSelected(false)
         } else {
             let day = indexPath.item - weekdayOffset + 1
             let cellDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)!
-            let isToday = calendar.isDate(Date(), inSameDayAs: cellDate) // 오늘 날짜 확인
-            let entry = diaryEntries.first { calendar.component(.day, from: $0.date) == day }
-            cell.configure(day: day, emotion: entry?.emotion, isToday: isToday) // 오늘 여부 전달
+            let isToday = calendar.isDate(Date(), inSameDayAs: cellDate)
+            let entry = diaryEntries.first { calendar.isDate($0.date, inSameDayAs: cellDate) }
+            
+            let isSelected = selectedDate != nil && calendar.isDate(selectedDate!, inSameDayAs: cellDate)
+            
+            cell.configure(day: day, emotion: entry?.emotion, isToday: isToday)
+            cell.setSelected(isSelected)
         }
 
         return cell
@@ -184,14 +217,14 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let previousIndexPath = selectedDateIndexPath,
-           let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CalendarCell {
-            previousCell.setSelected(false)
-        }
+        guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else { return }
+        let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
 
-        if let cell = collectionView.cellForItem(at: indexPath) as? CalendarCell {
-            cell.setSelected(true)
-            selectedDateIndexPath = indexPath 
+        if indexPath.item >= weekdayOffset {
+            let day = indexPath.item - weekdayOffset + 1
+            selectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
+            
+            collectionView.reloadData()
         }
     }
 }
