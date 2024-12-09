@@ -13,7 +13,7 @@ class CalendarCell: UICollectionViewCell {
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
 
-    private var leadingConstraint: Constraint?
+    private var leadiㅁngConstraint: Constraint?
     private var trailingConstraint: Constraint?
     private var isToday: Bool = false
 
@@ -37,7 +37,7 @@ class CalendarCell: UICollectionViewCell {
             make.width.height.equalTo(41)
         }
 
-        dayLabel.font = .systemFont(ofSize: 13)
+        dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
         dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
         dayLabel.textAlignment = .center
 
@@ -58,11 +58,11 @@ class CalendarCell: UICollectionViewCell {
             emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
 
             if isToday {
-                dayLabel.font = UIFont(name: "Roboto-Bold", size: 13) ?? .boldSystemFont(ofSize: 13)
-                dayLabel.textColor = UIColor(named: "CalendarSelected") ?? .red
+                dayLabel.font = UIFont(name: "Roboto-Bold", size: 13)
+                dayLabel.textColor = UIColor(named: "CalendarSelected")
             } else {
-                dayLabel.font = UIFont(name: "Roboto-Regular", size: 13) ?? .systemFont(ofSize: 13)
-                dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
+                dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
+                dayLabel.textColor = UIColor(named: "CalendarTextBlack")
             }
         } else {
             dayLabel.text = nil
