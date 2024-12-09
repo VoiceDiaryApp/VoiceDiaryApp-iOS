@@ -15,19 +15,19 @@ let project = Project(
                         "UIImageName": "",
                     ],
                     "UIAppFonts": [
-                        "Fonts/NotoSans-Bold.ttf",
-                        "Fonts/Pretendard-Black.ttf",
-                        "Fonts/Pretendard-Bold.ttf",
-                        "Fonts/Pretendard-ExtraBold.ttf",
-                        "Fonts/Pretendard-ExtraLight.ttf",
-                        "Fonts/Pretendard-Light.ttf",
-                        "Fonts/Pretendard-Medium.ttf",
-                        "Fonts/Pretendard-Regular.ttf",
-                        "Fonts/Pretendard-SemiBold.ttf",
-                        "Fonts/Pretendard-Thin.ttf",
-                        "Fonts/Roboto-Black.ttf",
-                        "Fonts/Roboto-Bold.ttf",
-                        "Fonts/Roboto-Regular.ttf"
+                        "NotoSans-Bold.ttf",
+                        "Pretendard-Black.ttf",
+                        "Pretendard-Bold.ttf",
+                        "Pretendard-ExtraBold.ttf",
+                        "Pretendard-ExtraLight.ttf",
+                        "Pretendard-Light.ttf",
+                        "Pretendard-Medium.ttf",
+                        "Pretendard-Regular.ttf",
+                        "Pretendard-SemiBold.ttf",
+                        "Pretendard-Thin.ttf",
+                        "Roboto-Black.ttf",
+                        "Roboto-Bold.ttf",
+                        "Roboto-Regular.ttf"
                     ]
                 ]
             ),
