@@ -62,6 +62,52 @@ class DiaryView: UIView, CalendarViewDelegate {
         view.layer.shadowRadius = 12
         return view
     }()
+    
+    private let diaryTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "일기 제목"
+        label.textColor = .black
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 15)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.12
+        label.attributedText = NSMutableAttributedString(string: "일기 제목", attributes: [
+            .kern: -0.5,
+            .paragraphStyle: paragraphStyle
+        ])
+        return label
+    }()
+
+    private let diaryDateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "11월 19일"
+        label.textColor = UIColor(named: "CalendarTextBlack")
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 12)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.4
+        label.attributedText = NSMutableAttributedString(string: "11월 19일", attributes: [
+            .kern: -0.5,
+            .paragraphStyle: paragraphStyle
+        ])
+        return label
+    }()
+
+    private let diaryContentLabel: UILabel = {
+        let label = UILabel()
+        label.text = """
+        이런 내용을 썼대요 ~ 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 이런 내용을 썼대요 ~ 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고
+        """
+        label.textColor = .black
+        label.font = UIFont(name: "Pretendard-Regular", size: 13)
+        label.numberOfLines = 3
+        label.lineBreakMode = .byCharWrapping
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.29
+        label.attributedText = NSMutableAttributedString(string: label.text ?? "", attributes: [
+            .kern: -0.5,
+            .paragraphStyle: paragraphStyle
+        ])
+        return label
+    }()
 
     private var currentDate: Date = Date() // 현재 선택된 날짜
 
@@ -176,10 +222,30 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private func setupDiaryContentView() {
         addSubview(diaryContentView)
+        diaryContentView.addSubview(diaryTitleLabel)
+        diaryContentView.addSubview(diaryDateLabel)
+        diaryContentView.addSubview(diaryContentLabel)
+        
         diaryContentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(174)
             make.bottom.equalToSuperview()
+        }
+
+        diaryTitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(diaryContentView.snp.top).offset(22)
+            make.leading.equalTo(diaryContentView.snp.leading).offset(37)
+        }
+
+        diaryDateLabel.snp.makeConstraints { make in
+            make.top.equalTo(diaryTitleLabel.snp.bottom).offset(8)
+            make.leading.equalTo(diaryTitleLabel.snp.leading)
+        }
+
+        diaryContentLabel.snp.makeConstraints { make in
+            make.top.equalTo(diaryDateLabel.snp.bottom).offset(13)
+            make.leading.equalTo(diaryContentView.snp.leading).offset(36)
+            make.trailing.equalTo(diaryContentView.snp.trailing).offset(-36)
         }
     }
 }
