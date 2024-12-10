@@ -50,6 +50,18 @@ class DiaryView: UIView, CalendarViewDelegate {
     }()
 
     let calendarView: CalendarView = CalendarView()
+    
+    private let diaryContentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 24
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
+        view.layer.shadowOpacity = 1
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 12
+        return view
+    }()
 
     private var currentDate: Date = Date() // 현재 선택된 날짜
 
@@ -58,6 +70,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         setupUI()
         configureDateLabels()
         setupActions()
+        setupDiaryContentView()
         calendarView.delegate = self // Delegate 연결
     }
 
@@ -159,5 +172,14 @@ class DiaryView: UIView, CalendarViewDelegate {
         
         calendarView.layer.add(transition, forKey: kCATransition)
         configureDateLabels()
+    }
+    
+    private func setupDiaryContentView() {
+        addSubview(diaryContentView)
+        diaryContentView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(174)
+            make.bottom.equalToSuperview()
+        }
     }
 }
