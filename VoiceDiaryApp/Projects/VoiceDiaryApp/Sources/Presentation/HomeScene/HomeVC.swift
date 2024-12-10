@@ -73,7 +73,9 @@ private extension HomeVC {
         
         goToDiaryButton.tapPublisher
             .sink { _ in
-                print("goToDiaryVC")
+                print("✅✅✅✅")
+                let dirayVC = DiaryVC()
+                self.navigationController?.pushViewController(dirayVC, animated: true)
             }
             .store(in: &cancellables)
         
