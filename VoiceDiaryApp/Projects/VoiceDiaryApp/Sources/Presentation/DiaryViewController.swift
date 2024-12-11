@@ -10,15 +10,17 @@ import Combine
 
 class DiaryViewController: UIViewController {
 
-    private var viewModel: DiaryViewModelProtocol
+    private let viewModel: DiaryViewModelProtocol
     private var cancellables: Set<AnyCancellable> = []
 
-    private let diaryView = DiaryView()
+    private lazy var diaryView: DiaryView = {
+        let view = DiaryView(viewModel: viewModel)
+        return view
+    }()
 
-    init(viewModel: DiaryViewModelProtocol) {
+    init(viewModel: DiaryViewModelProtocol = DiaryViewModel()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        diaryView.viewModel = viewModel
     }
 
     required init?(coder: NSCoder) {

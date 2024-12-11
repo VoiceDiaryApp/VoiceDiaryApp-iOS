@@ -11,6 +11,7 @@ import SnapKit
 class DiaryView: UIView, CalendarViewDelegate {
     
     var viewModel: DiaryViewModelProtocol!
+    var selectedDate: Date?
     
     let navigationBar: CustomNavigationBar = {
         let navBar = CustomNavigationBar()
@@ -67,7 +68,7 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private let diaryTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "일기 제목"
+        label.text = "Diary Title"
         label.textColor = .black
         label.font = UIFont(name: "Pretendard-SemiBold", size: 15)
         let paragraphStyle = NSMutableParagraphStyle()
@@ -95,9 +96,7 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private let diaryContentLabel: UILabel = {
         let label = UILabel()
-        label.text = """
-        이런 내용을 썼대요 ~ 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 이런 내용을 썼대요 ~ 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고 어쩌고 저쩌고
-        """
+        label.text = "Diary Content"
         label.textColor = .black
         label.font = UIFont(name: "Pretendard-Regular", size: 13)
         label.numberOfLines = 3
@@ -153,13 +152,19 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private var currentDate: Date = Date()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(viewModel: DiaryViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
         setupUI()
         configureDateLabels()
         setupActions()
         setupDiaryContentView()
+        
+        selectedDate = nil
         calendarView.delegate = self
+        
+        let hasDiary = checkIfDiaryExists(for: currentDate)
+        updateDiaryContentView(for: currentDate, hasDiary: hasDiary)
     }
     
     required init?(coder: NSCoder) {
@@ -300,6 +305,14 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
     
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
+        if let selectedDate = selectedDate {
+            updateDiaryUI(for: selectedDate, hasDiary: hasDiary)
+        } else {
+            updateDiaryUI(for: date, hasDiary: hasDiary)
+        }
+    }
+    
+    private func updateDiaryUI(for date: Date, hasDiary: Bool) {
         if hasDiary {
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
@@ -312,23 +325,31 @@ class DiaryView: UIView, CalendarViewDelegate {
             diaryContentLabel.text = viewModel.diaryEntries
                 .first { Calendar.current.isDate($0.date, inSameDayAs: date) }?.content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
-            diaryTitleLabel.isHidden = true
-            diaryDateLabel.isHidden = true
-            diaryContentLabel.isHidden = true
-            emptyDiaryCharacter.isHidden = false
-            emptyDiaryLabel.isHidden = false
-            moreLabel.text = "일기 쓰러 가기"
-            
+            showEmptyDiaryView()
+        }
+    }
+    
+    private func showEmptyDiaryView() {
+        diaryTitleLabel.isHidden = true
+        diaryDateLabel.isHidden = true
+        diaryContentLabel.isHidden = true
+        
+        emptyDiaryCharacter.isHidden = false
+        emptyDiaryLabel.isHidden = false
+        moreLabel.text = "일기 쓰러 가기"
+        
+        if emptyDiaryCharacter.superview == nil {
             diaryContentView.addSubview(emptyDiaryCharacter)
-            diaryContentView.addSubview(emptyDiaryLabel)
-            
             emptyDiaryCharacter.snp.makeConstraints { make in
                 make.centerX.equalTo(diaryContentView)
                 make.top.equalTo(diaryContentView.snp.top).offset(45)
                 make.width.equalTo(66.5)
                 make.height.equalTo(62.7)
             }
-            
+        }
+        
+        if emptyDiaryLabel.superview == nil {
+            diaryContentView.addSubview(emptyDiaryLabel)
             emptyDiaryLabel.snp.makeConstraints { make in
                 make.centerX.equalTo(diaryContentView)
                 make.top.equalTo(emptyDiaryCharacter.snp.bottom).offset(15.25)
@@ -337,6 +358,9 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
     
     private func checkIfDiaryExists(for date: Date) -> Bool {
-        return viewModel.diaryEntries.contains { Calendar.current.isDate($0.date, inSameDayAs: date) }
+        guard let diaryEntries = viewModel?.diaryEntries else {
+            return false
+        }
+        return diaryEntries.contains { Calendar.current.isDate($0.date, inSameDayAs: date) }
     }
 }
