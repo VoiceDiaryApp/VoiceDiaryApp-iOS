@@ -173,8 +173,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
         monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
         calendarView.updateMonth(date: currentDate)
-        
-        // 기본으로 오늘 날짜 설정
+
         updateDiaryDateLabel(for: currentDate)
     }
 
@@ -208,21 +207,8 @@ class DiaryView: UIView, CalendarViewDelegate {
 
     // CalendarViewDelegate 메서드 구현
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date) {
-        // 스와이프 방향 계산
-        let direction: CATransitionSubtype = date > currentDate ? .fromRight : .fromLeft
-
-        // currentDate 업데이트 및 애니메이션 적용
         currentDate = date
-        let transition = CATransition()
-        transition.type = .push
-        transition.subtype = direction
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
-        calendarView.layer.add(transition, forKey: kCATransition)
         configureDateLabels()
-        
-        // 선택된 날짜로 diaryDateLabel 업데이트
         updateDiaryDateLabel(for: date)
     }
     

@@ -105,30 +105,28 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     private func moveToNextMonth() {
         if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
             currentDate = nextMonth
-
             delegate?.calendarViewDidUpdateDate(self, to: currentDate)
-            updateMonth(date: currentDate)
+            animateCalendarTransition(to: nextMonth, direction: .fromRight)
         }
     }
 
     private func moveToPreviousMonth() {
         if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
             currentDate = previousMonth
-
             delegate?.calendarViewDidUpdateDate(self, to: currentDate)
-            updateMonth(date: currentDate)
+            animateCalendarTransition(to: previousMonth, direction: .fromLeft)
         }
     }
 
     private func animateCalendarTransition(to newDate: Date, direction: CATransitionSubtype) {
         currentDate = newDate
-        
+
         let transition = CATransition()
         transition.type = .push
         transition.subtype = direction
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
+
         collectionView.layer.add(transition, forKey: kCATransition)
         updateMonth(date: currentDate)
     }
@@ -222,9 +220,17 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
 
         if indexPath.item >= weekdayOffset {
             let day = indexPath.item - weekdayOffset + 1
-            selectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
-            
-            collectionView.reloadData()
+            let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
+
+            if newlySelectedDate != selectedDate {
+                selectedDate = newlySelectedDate
+
+                if let selectedDate = selectedDate {
+                    delegate?.calendarViewDidUpdateDate(self, to: selectedDate)
+                }
+            }
+
+            collectionView.reloadItems(at: [indexPath])
         }
     }
 }
