@@ -18,6 +18,7 @@ class DiaryViewController: UIViewController {
     init(viewModel: DiaryViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        diaryView.viewModel = viewModel
     }
 
     required init?(coder: NSCoder) {

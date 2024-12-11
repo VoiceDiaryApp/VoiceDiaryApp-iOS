@@ -10,6 +10,8 @@ import SnapKit
 
 class DiaryView: UIView, CalendarViewDelegate {
     
+    var viewModel: DiaryViewModelProtocol!
+    
     let navigationBar: CustomNavigationBar = {
         let navBar = CustomNavigationBar()
         navBar.setTitle("캘린더")
@@ -124,7 +126,32 @@ class DiaryView: UIView, CalendarViewDelegate {
         return label
     }()
     
-    private var currentDate: Date = Date() // 현재 선택된 날짜
+    private let emptyDiaryCharacter: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "emptyDiaryCharacter")
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+
+    private let emptyDiaryLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = UIColor(named: "CalendarSelected")
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 17)
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 0.99
+        label.attributedText = NSMutableAttributedString(
+            string: "일기가 비어있어요.",
+            attributes: [
+                .kern: -0.5,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private var currentDate: Date = Date()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -132,7 +159,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         configureDateLabels()
         setupActions()
         setupDiaryContentView()
-        calendarView.delegate = self // Delegate 연결
+        calendarView.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -224,7 +251,9 @@ class DiaryView: UIView, CalendarViewDelegate {
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date) {
         currentDate = date
         configureDateLabels()
-        updateDiaryDateLabel(for: date)
+        
+        let hasDiary = checkIfDiaryExists(for: date) // 특정 날짜에 일기가 있는지 확인하는 메서드
+        updateDiaryContentView(for: date, hasDiary: hasDiary)
     }
     
     private func setupDiaryContentView() {
@@ -264,7 +293,51 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private func updateDiaryDateLabel(for date: Date) {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MM월 dd일"
+        formatter.locale = Locale(identifier: "ko_KR") // 한국어 로케일 설정
+        formatter.dateFormat = "M월 d일" // 원하는 출력 형식
         diaryDateLabel.text = formatter.string(from: date)
+    }
+    
+    private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
+        if hasDiary {
+            // 일기가 있는 경우 기존 UI 표시
+            diaryTitleLabel.isHidden = false
+            diaryDateLabel.isHidden = false
+            diaryContentLabel.isHidden = false
+            emptyDiaryCharacter.isHidden = true
+            emptyDiaryLabel.isHidden = true
+            moreLabel.text = "더보기"
+            
+            diaryTitleLabel.text = "일기 제목"
+            diaryDateLabel.text = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
+            diaryContentLabel.text = "일기 내용 일부를 여기에 표시합니다."
+        } else {
+            // 일기가 없는 경우 새로운 UI 표시
+            diaryTitleLabel.isHidden = true
+            diaryDateLabel.isHidden = true
+            diaryContentLabel.isHidden = true
+            emptyDiaryCharacter.isHidden = false
+            emptyDiaryLabel.isHidden = false
+            moreLabel.text = "일기 쓰러 가기"
+            
+            diaryContentView.addSubview(emptyDiaryCharacter)
+            diaryContentView.addSubview(emptyDiaryLabel)
+            
+            emptyDiaryCharacter.snp.makeConstraints { make in
+                make.centerX.equalTo(diaryContentView)
+                make.top.equalTo(diaryContentView.snp.top).offset(45)
+                make.width.equalTo(66.5)
+                make.height.equalTo(62.7)
+            }
+            
+            emptyDiaryLabel.snp.makeConstraints { make in
+                make.centerX.equalTo(diaryContentView)
+                make.top.equalTo(emptyDiaryCharacter.snp.bottom).offset(15.25)
+            }
+        }
+    }
+    
+    private func checkIfDiaryExists(for date: Date) -> Bool {
+        return viewModel.diaryEntries.contains { Calendar.current.isDate($0.date, inSameDayAs: date) }
     }
 }
