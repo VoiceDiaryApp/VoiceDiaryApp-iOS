@@ -79,7 +79,7 @@ class DiaryView: UIView, CalendarViewDelegate {
 
     private let diaryDateLabel: UILabel = {
         let label = UILabel()
-        label.text = "11월 19일"
+        label.text = ""
         label.textColor = UIColor(named: "CalendarTextBlack")
         label.font = UIFont(name: "Pretendard-SemiBold", size: 12)
         let paragraphStyle = NSMutableParagraphStyle()
@@ -173,6 +173,9 @@ class DiaryView: UIView, CalendarViewDelegate {
         yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
         monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
         calendarView.updateMonth(date: currentDate)
+        
+        // 기본으로 오늘 날짜 설정
+        updateDiaryDateLabel(for: currentDate)
     }
 
     private func setupActions() {
@@ -218,6 +221,9 @@ class DiaryView: UIView, CalendarViewDelegate {
         
         calendarView.layer.add(transition, forKey: kCATransition)
         configureDateLabels()
+        
+        // 선택된 날짜로 diaryDateLabel 업데이트
+        updateDiaryDateLabel(for: date)
     }
     
     private func setupDiaryContentView() {
@@ -247,5 +253,11 @@ class DiaryView: UIView, CalendarViewDelegate {
             make.leading.equalTo(diaryContentView.snp.leading).offset(36)
             make.trailing.equalTo(diaryContentView.snp.trailing).offset(-36)
         }
+    }
+    
+    private func updateDiaryDateLabel(for date: Date) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM월 dd일"
+        diaryDateLabel.text = formatter.string(from: date)
     }
 }
