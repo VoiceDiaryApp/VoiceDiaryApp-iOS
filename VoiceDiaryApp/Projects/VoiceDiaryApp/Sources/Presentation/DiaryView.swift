@@ -9,13 +9,13 @@ import UIKit
 import SnapKit
 
 class DiaryView: UIView, CalendarViewDelegate {
-
+    
     let navigationBar: CustomNavigationBar = {
         let navBar = CustomNavigationBar()
         navBar.setTitle("캘린더")
         return navBar
     }()
-
+    
     private let yearLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: "CalendarTextBlack")
@@ -23,7 +23,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         label.textAlignment = .center
         return label
     }()
-
+    
     private let monthLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: "CalendarTextBlack")
@@ -31,7 +31,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         label.textAlignment = .center
         return label
     }()
-
+    
     private let leftArrowButton: UIButton = {
         let button = UIButton()
         let image = UIImage(named: "arrow")?.withRenderingMode(.alwaysTemplate)
@@ -40,7 +40,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         button.transform = CGAffineTransform(rotationAngle: .pi)
         return button
     }()
-
+    
     private let rightArrowButton: UIButton = {
         let button = UIButton()
         let image = UIImage(named: "arrow")?.withRenderingMode(.alwaysTemplate)
@@ -48,7 +48,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         button.tintColor = UIColor(named: "CalendarTextBlack")
         return button
     }()
-
+    
     let calendarView: CalendarView = CalendarView()
     
     private let diaryContentView: UIView = {
@@ -76,7 +76,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         ])
         return label
     }()
-
+    
     private let diaryDateLabel: UILabel = {
         let label = UILabel()
         label.text = ""
@@ -90,7 +90,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         ])
         return label
     }()
-
+    
     private let diaryContentLabel: UILabel = {
         let label = UILabel()
         label.text = """
@@ -108,9 +108,24 @@ class DiaryView: UIView, CalendarViewDelegate {
         ])
         return label
     }()
-
+    
+    private let moreLabel: UILabel = {
+        let label = UILabel()
+        label.text = "더보기"
+        label.textColor = UIColor(named: "CalendarSelected")
+        label.font = UIFont(name: "Pretendard-Regular", size: 11)
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.17
+        label.attributedText = NSMutableAttributedString(
+            string: "더보기",
+            attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle]
+        )
+        return label
+    }()
+    
     private var currentDate: Date = Date() // 현재 선택된 날짜
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -119,77 +134,77 @@ class DiaryView: UIView, CalendarViewDelegate {
         setupDiaryContentView()
         calendarView.delegate = self // Delegate 연결
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupUI() {
         backgroundColor = UIColor(named: "mainBeige")
-
+        
         addSubview(navigationBar)
         addSubview(yearLabel)
         addSubview(monthLabel)
         addSubview(leftArrowButton)
         addSubview(rightArrowButton)
         addSubview(calendarView)
-
+        
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(55)
         }
-
+        
         yearLabel.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom).offset(15)
             make.centerX.equalToSuperview()
         }
-
+        
         monthLabel.snp.makeConstraints { make in
             make.top.equalTo(yearLabel.snp.bottom).offset(5)
             make.centerX.equalToSuperview()
         }
-
+        
         leftArrowButton.snp.makeConstraints { make in
             make.centerY.equalTo(yearLabel.snp.centerY).offset(10)
             make.leading.equalToSuperview().offset(28)
             make.width.height.equalTo(24)
         }
-
+        
         rightArrowButton.snp.makeConstraints { make in
             make.centerY.equalTo(yearLabel.snp.centerY).offset(10)
             make.trailing.equalToSuperview().offset(-28)
             make.width.height.equalTo(24)
         }
-
+        
         calendarView.snp.makeConstraints { make in
             make.top.equalTo(monthLabel.snp.bottom).offset(25)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }
-
+    
     private func configureDateLabels() {
         let calendar = Calendar.current
         yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
         monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
         calendarView.updateMonth(date: currentDate)
-
+        
         updateDiaryDateLabel(for: currentDate)
     }
-
+    
     private func setupActions() {
         leftArrowButton.addTarget(self, action: #selector(didTapLeftArrow), for: .touchUpInside)
         rightArrowButton.addTarget(self, action: #selector(didTapRightArrow), for: .touchUpInside)
     }
-
+    
     @objc private func didTapLeftArrow() {
         animateCalendarTransition(byAddingMonths: -1, direction: .fromLeft)
     }
-
+    
     @objc private func didTapRightArrow() {
         animateCalendarTransition(byAddingMonths: 1, direction: .fromRight)
     }
-
+    
     private func animateCalendarTransition(byAddingMonths months: Int, direction: CATransitionSubtype) {
         let calendar = Calendar.current
         if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
@@ -204,7 +219,7 @@ class DiaryView: UIView, CalendarViewDelegate {
             configureDateLabels()
         }
     }
-
+    
     // CalendarViewDelegate 메서드 구현
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date) {
         currentDate = date
@@ -217,27 +232,33 @@ class DiaryView: UIView, CalendarViewDelegate {
         diaryContentView.addSubview(diaryTitleLabel)
         diaryContentView.addSubview(diaryDateLabel)
         diaryContentView.addSubview(diaryContentLabel)
+        diaryContentView.addSubview(moreLabel)
         
         diaryContentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(174)
             make.bottom.equalToSuperview()
         }
-
+        
         diaryTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryContentView.snp.top).offset(22)
             make.leading.equalTo(diaryContentView.snp.leading).offset(37)
         }
-
+        
         diaryDateLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryTitleLabel.snp.bottom).offset(8)
             make.leading.equalTo(diaryTitleLabel.snp.leading)
         }
-
+        
         diaryContentLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryDateLabel.snp.bottom).offset(13)
             make.leading.equalTo(diaryContentView.snp.leading).offset(36)
             make.trailing.equalTo(diaryContentView.snp.trailing).offset(-36)
+        }
+        
+        moreLabel.snp.makeConstraints { make in
+            make.top.equalTo(diaryContentView.snp.top).offset(22)
+            make.trailing.equalTo(diaryContentView.snp.trailing).offset(-32)
         }
     }
     
