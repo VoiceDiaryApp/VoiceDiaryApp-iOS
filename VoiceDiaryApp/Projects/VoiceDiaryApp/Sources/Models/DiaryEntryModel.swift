@@ -18,6 +18,6 @@ enum Emotion: String, Codable {
 
 struct DiaryEntry: Codable {
     let date: Date
-    var emotion: Emotion?
+    var emotion: Emotion
     var content: String
 }
