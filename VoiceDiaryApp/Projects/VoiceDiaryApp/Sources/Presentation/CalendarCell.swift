@@ -41,7 +41,6 @@ class CalendarCell: UICollectionViewCell {
         dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
         dayLabel.textAlignment = .center
 
-        // 패딩 제약조건 저장
         dayLabel.snp.makeConstraints { make in
             make.top.equalTo(emojiImageView.snp.bottom).offset(0)
             make.centerX.equalToSuperview()
@@ -51,7 +50,7 @@ class CalendarCell: UICollectionViewCell {
     }
 
     func configure(day: Int?, emotion: Emotion?, isToday: Bool) {
-        self.isToday = isToday // isToday 값 저장
+        self.isToday = isToday
         
         if let day = day {
             dayLabel.text = "\(day)"
@@ -84,7 +83,6 @@ class CalendarCell: UICollectionViewCell {
                 make.bottom.equalTo(dayLabel.snp.bottom).offset(-5)
             }
         } else {
-            // isToday를 사용하여 기본 스타일 복원
             dayLabel.textColor = isToday
                 ? UIColor(named: "CalendarSelected") ?? .red
                 : UIColor(named: "CalendarTextBlack") ?? .black

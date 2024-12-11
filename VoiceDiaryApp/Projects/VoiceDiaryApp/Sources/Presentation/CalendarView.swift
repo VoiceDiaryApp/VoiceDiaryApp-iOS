@@ -13,14 +13,13 @@ protocol CalendarViewDelegate: AnyObject {
 }
 
 class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
+    
     weak var delegate: CalendarViewDelegate?
-
+    
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private var diaryEntries: [DiaryEntry] = []
     private let calendar = Calendar.current
     private var currentDate: Date = Date()
-    private var selectedDateIndexPath: IndexPath?
     private var selectedDate: Date?
     
     private lazy var collectionView: UICollectionView = {
@@ -36,7 +35,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         collectionView.register(CalendarCell.self, forCellWithReuseIdentifier: "CalendarCell")
         return collectionView
     }()
-
+    
     private let daysStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -44,35 +43,35 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         stackView.spacing = 0
         return stackView
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
         setupDaysOfWeek()
         addSwipeGestures()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupUI() {
         addSubview(daysStackView)
         addSubview(collectionView)
-
+        
         daysStackView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(33)
             make.height.equalTo(32)
         }
-
+        
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(daysStackView.snp.bottom).offset(2)
             make.leading.trailing.equalToSuperview().inset(33)
             make.bottom.equalToSuperview()
         }
     }
-
+    
     private func setupDaysOfWeek() {
         daysOfWeek.forEach { day in
             let label = UILabel()
@@ -83,17 +82,17 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
             daysStackView.addArrangedSubview(label)
         }
     }
-
+    
     private func addSwipeGestures() {
         let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         leftSwipe.direction = .left
         addGestureRecognizer(leftSwipe)
-
+        
         let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         rightSwipe.direction = .right
         addGestureRecognizer(rightSwipe)
     }
-
+    
     @objc private func handleSwipeGesture(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .left {
             moveToNextMonth()
@@ -101,7 +100,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
             moveToPreviousMonth()
         }
     }
-
+    
     private func moveToNextMonth() {
         if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
             currentDate = nextMonth
@@ -109,7 +108,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
             animateCalendarTransition(to: nextMonth, direction: .fromRight)
         }
     }
-
+    
     private func moveToPreviousMonth() {
         if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
             currentDate = previousMonth
@@ -117,77 +116,70 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
             animateCalendarTransition(to: previousMonth, direction: .fromLeft)
         }
     }
-
+    
     private func animateCalendarTransition(to newDate: Date, direction: CATransitionSubtype) {
         currentDate = newDate
-
+        
         let transition = CATransition()
         transition.type = .push
         transition.subtype = direction
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-
+        
         collectionView.layer.add(transition, forKey: kCATransition)
         updateMonth(date: currentDate)
     }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-
         layoutIfNeeded()
         collectionView.collectionViewLayout.invalidateLayout()
     }
-
+    
     func updateDiaryEntries(_ entries: [DiaryEntry]) {
         diaryEntries = entries
         collectionView.reloadData()
     }
-
+    
     func updateMonth(date: Date) {
         currentDate = date
-
         collectionView.reloadData()
 
-        if let selectedDate = selectedDate, !calendar.isDate(selectedDate, equalTo: currentDate, toGranularity: .month) {
-            DispatchQueue.main.async {
-                self.collectionView.visibleCells.forEach { cell in
-                    if let calendarCell = cell as? CalendarCell {
-                        calendarCell.setSelected(false)
-                    }
-                }
-            }
-        }
-
         if let selectedDate = selectedDate, calendar.isDate(selectedDate, equalTo: currentDate, toGranularity: .month) {
-            let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
-            let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
-            let day = calendar.component(.day, from: selectedDate)
-            let selectedIndexPath = IndexPath(item: day + weekdayOffset - 1, section: 0)
-
-            DispatchQueue.main.async {
-                self.collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
-                if let cell = self.collectionView.cellForItem(at: selectedIndexPath) as? CalendarCell {
-                    cell.setSelected(true)
-                }
+            highlightSelectedDate()
+        }
+    }
+    
+    private func highlightSelectedDate() {
+        guard let selectedDate = selectedDate else { return }
+        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
+        let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
+        let day = calendar.component(.day, from: selectedDate)
+        let selectedIndexPath = IndexPath(item: day + weekdayOffset - 1, section: 0)
+        
+        DispatchQueue.main.async {
+            self.collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
+            if let cell = self.collectionView.cellForItem(at: selectedIndexPath) as? CalendarCell {
+                cell.setSelected(true)
             }
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let range = calendar.range(of: .day, in: .month, for: currentDate)!.count
         let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
         return range + weekdayOffset
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CalendarCell", for: indexPath) as? CalendarCell else {
             return UICollectionViewCell()
         }
-
+        
         let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
-
+        
         if indexPath.item < weekdayOffset {
             cell.configure(day: nil, emotion: nil, isToday: false)
             cell.setSelected(false)
@@ -202,15 +194,15 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
             cell.configure(day: day, emotion: entry?.emotion, isToday: isToday)
             cell.setSelected(isSelected)
         }
-
+        
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let totalHorizontalPadding: CGFloat = 66
         let availableWidth = bounds.width - totalHorizontalPadding
         let cellWidth = floor(availableWidth / 7)
-
+        
         return CGSize(width: cellWidth, height: cellWidth + 32)
     }
     
@@ -221,16 +213,13 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         if indexPath.item >= weekdayOffset {
             let day = indexPath.item - weekdayOffset + 1
             let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
-
+            
             if newlySelectedDate != selectedDate {
                 selectedDate = newlySelectedDate
-
-                if let selectedDate = selectedDate {
-                    delegate?.calendarViewDidUpdateDate(self, to: selectedDate)
-                }
+                delegate?.calendarViewDidUpdateDate(self, to: newlySelectedDate!)
             }
 
-            collectionView.reloadItems(at: [indexPath])
+            collectionView.reloadData()
         }
     }
 }

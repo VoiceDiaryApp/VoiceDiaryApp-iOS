@@ -132,7 +132,7 @@ class DiaryView: UIView, CalendarViewDelegate {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-
+    
     private let emptyDiaryLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(named: "CalendarSelected")
@@ -247,12 +247,13 @@ class DiaryView: UIView, CalendarViewDelegate {
         }
     }
     
-    // CalendarViewDelegate 메서드 구현
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date) {
         currentDate = date
+        
+        calendarView.updateMonth(date: date)
         configureDateLabels()
         
-        let hasDiary = checkIfDiaryExists(for: date) // 특정 날짜에 일기가 있는지 확인하는 메서드
+        let hasDiary = checkIfDiaryExists(for: date)
         updateDiaryContentView(for: date, hasDiary: hasDiary)
     }
     
@@ -293,26 +294,24 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private func updateDiaryDateLabel(for date: Date) {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR") // 한국어 로케일 설정
-        formatter.dateFormat = "M월 d일" // 원하는 출력 형식
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M월 d일"
         diaryDateLabel.text = formatter.string(from: date)
     }
     
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
         if hasDiary {
-            // 일기가 있는 경우 기존 UI 표시
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
             diaryContentLabel.isHidden = false
             emptyDiaryCharacter.isHidden = true
             emptyDiaryLabel.isHidden = true
-            moreLabel.text = "더보기"
             
             diaryTitleLabel.text = "일기 제목"
             diaryDateLabel.text = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
-            diaryContentLabel.text = "일기 내용 일부를 여기에 표시합니다."
+            diaryContentLabel.text = viewModel.diaryEntries
+                .first { Calendar.current.isDate($0.date, inSameDayAs: date) }?.content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
-            // 일기가 없는 경우 새로운 UI 표시
             diaryTitleLabel.isHidden = true
             diaryDateLabel.isHidden = true
             diaryContentLabel.isHidden = true
