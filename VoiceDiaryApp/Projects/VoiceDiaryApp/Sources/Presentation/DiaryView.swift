@@ -320,13 +320,60 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
 
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
-        if let selectedDate = selectedDate {
-            updateDiaryUI(for: selectedDate, hasDiary: hasDiary)
+        let isFutureDate = Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending
+
+        if hasDiary {
+            diaryTitleLabel.isHidden = false
+            diaryDateLabel.isHidden = false
+            diaryContentLabel.isHidden = false
+            emptyDiaryCharacter.isHidden = true
+            emptyDiaryLabel.isHidden = true
+
+            diaryTitleLabel.text = "일기 제목"
+            updateDiaryDateLabel(for: date)
+            diaryContentLabel.text =
+                viewModel.diaryEntries
+                .first { Calendar.current.isDate($0.date, inSameDayAs: date) }?
+                .content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
-            updateDiaryUI(for: date, hasDiary: hasDiary)
+            showEmptyDiaryView(isFutureDate: isFutureDate)
         }
     }
+    
+    private func showEmptyDiaryView(isFutureDate: Bool) {
+        diaryTitleLabel.isHidden = true
+        diaryDateLabel.isHidden = true
+        diaryContentLabel.isHidden = true
 
+        emptyDiaryCharacter.isHidden = false
+        emptyDiaryLabel.isHidden = false
+
+        if isFutureDate {
+            moreLabel.isHidden = true
+        } else {
+            moreLabel.isHidden = false
+            moreLabel.text = "일기 쓰러 가기"
+        }
+
+        if emptyDiaryCharacter.superview == nil {
+            diaryContentView.addSubview(emptyDiaryCharacter)
+            emptyDiaryCharacter.snp.makeConstraints { make in
+                make.centerX.equalTo(diaryContentView)
+                make.top.equalTo(diaryContentView.snp.top).offset(45)
+                make.width.equalTo(66.5)
+                make.height.equalTo(62.7)
+            }
+        }
+
+        if emptyDiaryLabel.superview == nil {
+            diaryContentView.addSubview(emptyDiaryLabel)
+            emptyDiaryLabel.snp.makeConstraints { make in
+                make.centerX.equalTo(diaryContentView)
+                make.top.equalTo(emptyDiaryCharacter.snp.bottom).offset(15.25)
+            }
+        }
+    }
+    
     private func updateDiaryUI(for date: Date, hasDiary: Bool) {
         if hasDiary {
             diaryTitleLabel.isHidden = false
