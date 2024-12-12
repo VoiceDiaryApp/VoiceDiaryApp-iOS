@@ -33,9 +33,18 @@ final class HomeVC: UIViewController {
         return label
     }()
     
+    private let settingButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(resource: .btnSetting), for: .normal)
+        return button
+    }()
+    
+    private let todayBubbleImage = UIImageView(image: UIImage(resource: .imgHome))
+    
     private let todayMentLabel: UILabel = {
         let label = UILabel()
         label.text = "오늘은 어떤 하루였어?"
+        label.font = .fontGuide(type: .PretandardMedium, size: 20)
         return label
     }()
     
@@ -43,15 +52,14 @@ final class HomeVC: UIViewController {
     
     private let goToDiaryButton: UIButton = {
         let button = UIButton()
-        button.setTitle("일기 쓰러 가기", for: .normal)
-        button.backgroundColor = .darkGray
+        button.setImage(UIImage(resource: .btnGoDiary), for: .normal)
+        button.setImage(UIImage(resource: .btnGoDiaryDisabled), for: .disabled)
         return button
     }()
     
     private let goToCalendarButton: UIButton = {
         let button = UIButton()
-        button.setTitle("캘린더", for: .normal)
-        button.backgroundColor = .darkGray
+        button.setImage(UIImage(resource: .btnGoCalendar), for: .normal)
         return button
     }()
     
@@ -103,10 +111,13 @@ private extension HomeVC {
     func setHierarchy() {
         view.addSubviews(todayWeekLabel,
                          todayDateLabel,
-                         todayMentLabel,
+                         settingButton,
+                         todayBubbleImage,
                          characterImageView,
                          goToDiaryButton,
                          goToCalendarButton)
+        
+        todayBubbleImage.addSubview(todayMentLabel)
     }
     
     func setLayout() {
@@ -120,30 +131,42 @@ private extension HomeVC {
             $0.leading.equalTo(todayWeekLabel.snp.leading)
         }
         
-        todayMentLabel.snp.makeConstraints {
-            $0.top.equalTo(todayDateLabel.snp.bottom).offset(70)
+        settingButton.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            $0.trailing.equalToSuperview().inset(21)
+        }
+        
+        todayBubbleImage.snp.makeConstraints {
+            $0.top.equalTo(todayDateLabel.snp.bottom).offset(54)
             $0.centerX.equalToSuperview()
+            $0.width.equalTo(221)
+            $0.height.equalTo(76)
+        }
+        
+        todayMentLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalToSuperview().inset(17)
         }
         
         characterImageView.snp.makeConstraints {
             $0.top.equalTo(todayMentLabel.snp.bottom).offset(34)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(170)
+            $0.width.equalTo(195)
             $0.height.equalTo(226)
         }
         
         goToDiaryButton.snp.makeConstraints {
             $0.top.equalTo(characterImageView.snp.bottom).offset(50)
             $0.leading.equalToSuperview().inset(41)
-            $0.width.equalTo((SizeLiterals.Screen.screenWidth - 128) / 2)
-            $0.height.equalTo(92)
+            $0.width.equalTo((SizeLiterals.Screen.screenWidth - 101) / 2)
+            $0.height.equalTo(108)
         }
         
         goToCalendarButton.snp.makeConstraints {
             $0.top.equalTo(characterImageView.snp.bottom).offset(50)
             $0.trailing.equalToSuperview().inset(41)
-            $0.width.equalTo((SizeLiterals.Screen.screenWidth - 128) / 2)
-            $0.height.equalTo(92)
+            $0.width.equalTo((SizeLiterals.Screen.screenWidth - 101) / 2)
+            $0.height.equalTo(108)
         }
     }
 }
