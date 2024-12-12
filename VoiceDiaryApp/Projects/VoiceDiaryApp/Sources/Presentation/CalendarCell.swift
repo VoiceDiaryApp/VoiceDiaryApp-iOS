@@ -13,7 +13,7 @@ class CalendarCell: UICollectionViewCell {
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
 
-    private var leadiㅁngConstraint: Constraint?
+    private var leadingConstraint: Constraint?
     private var trailingConstraint: Constraint?
     private var isToday: Bool = false
 
