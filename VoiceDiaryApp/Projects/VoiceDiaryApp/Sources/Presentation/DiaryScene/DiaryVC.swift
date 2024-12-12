@@ -29,17 +29,23 @@ final class DiaryVC: UIViewController {
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     
+    private let diaryVM = DiaryVM()
+    private let tapRecordEnd = PassthroughSubject<String, Never>()
+    
     // MARK: - UI Components
     
     private let microphoneStartButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(resource: .btnMicrophoneStart), for: .normal)
+        button.setImage(UIImage(resource: .btnMicrophoneStartDisabled), for: .disabled)
         return button
     }()
     
     private let microphoneEndButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(resource: .btnMicrophoneEnd), for: .normal)
+        button.setImage(UIImage(resource: .btnMicrophoneEndDisabled), for: .disabled)
+        button.isEnabled = false
         return button
     }()
     
@@ -52,9 +58,16 @@ final class DiaryVC: UIViewController {
         return button
     }()
     
-    private let explainLabel: UILabel = {
+    private let microphoneStartLabel: UILabel = {
         let label = UILabel()
-        label.text = "버튼을 누르고 말해보세요!"
+        label.text = "기록 시작"
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
+        return label
+    }()
+    
+    private let microphoneEndLabel: UILabel = {
+        let label = UILabel()
+        label.text = "기록 중지"
         label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         return label
     }()
@@ -76,6 +89,7 @@ final class DiaryVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
+        bindViewModel()
     }
 }
 
@@ -92,10 +106,18 @@ private extension DiaryVC {
         
         microphoneEndButton.tapPublisher
             .sink(receiveValue: {
+                self.tapRecordEnd.send(self.microphoneLabel.text ?? "")
                 self.stopTranscribing()
             })
             .store(in: &cancellables)
         
+    }
+    
+    func bindViewModel() {
+        let input = DiaryVM.Input(
+            tapRecordEnd: self.tapRecordEnd
+        )
+        let output = diaryVM.transform(input: input)
     }
     
     func setHierarchy() {
@@ -103,36 +125,51 @@ private extension DiaryVC {
                          microphoneStartButton,
                          microphoneEndButton,
                          goToDrawButton,
-                         explainLabel)
+                         microphoneStartLabel,
+                         microphoneEndLabel)
     }
     
     func setLayout() {
         microphoneLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(100)
             $0.centerX.equalToSuperview()
         }
         
-        explainLabel.snp.makeConstraints {
+        goToDrawButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-117)
             $0.centerX.equalToSuperview()
+            $0.width.equalTo(SizeLiterals.Screen.screenWidth - 87)
+            $0.height.equalTo(57)
+        }
+        
+        microphoneStartLabel.snp.makeConstraints {
+            $0.bottom.equalTo(goToDrawButton.snp.top).offset(-32)
+            $0.centerX.equalTo(microphoneStartButton)
         }
         
         microphoneStartButton.snp.makeConstraints {
-            $0.bottom.equalTo(explainLabel.snp.top)
-            $0.leading.equalToSuperview().inset(100)
-            $0.size.equalTo(104)
+            $0.bottom.equalTo(microphoneStartLabel.snp.top)
+            $0.leading.equalToSuperview().inset((SizeLiterals.Screen.screenWidth - SizeLiterals.calSupporWidth(width: 75) * 2 - 60) / 2)
+            $0.size.equalTo(SizeLiterals.calSupporWidth(width: 75))
+        }
+        
+        microphoneEndLabel.snp.makeConstraints {
+            $0.bottom.equalTo(goToDrawButton.snp.top).offset(-32)
+            $0.centerX.equalTo(microphoneEndButton)
         }
         
         microphoneEndButton.snp.makeConstraints {
-            $0.bottom.equalTo(explainLabel.snp.top)
-            $0.leading.equalTo(microphoneStartButton.snp.trailing).offset(20)
-            $0.size.equalTo(104)
+            $0.bottom.equalTo(microphoneEndLabel.snp.top)
+            $0.trailing.equalToSuperview().inset((SizeLiterals.Screen.screenWidth - SizeLiterals.calSupporWidth(width: 75) * 2 - 60) / 2)
+            $0.size.equalTo(SizeLiterals.calSupporWidth(width: 75))
         }
     }
     
     func startTranscribing() {
         guard !isTranscribing else { return }
         isTranscribing = true
+        microphoneStartButton.isEnabled = !isTranscribing
+        microphoneEndButton.isEnabled = isTranscribing
         
         if audioEngine.isRunning {
             audioEngine.stop()
@@ -200,9 +237,10 @@ private extension DiaryVC {
             audioEngine.inputNode.removeTap(onBus: 0)
         }
         recognitionRequest?.endAudio()
-        recognitionRequest?.endAudio()
         recognitionRequest = nil
         recognitionTask = nil
         isTranscribing = false
+        microphoneStartButton.isEnabled = !isTranscribing
+        microphoneEndButton.isEnabled = isTranscribing
     }
 }
