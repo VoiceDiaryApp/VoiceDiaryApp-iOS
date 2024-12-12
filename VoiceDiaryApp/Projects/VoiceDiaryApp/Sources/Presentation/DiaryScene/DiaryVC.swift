@@ -52,6 +52,7 @@ final class DiaryVC: UIViewController {
     private let goToDrawButton: UIButton = {
         let button = UIButton()
         button.setTitle("그림 그리러 가기", for: .normal)
+        button.backgroundColor = .green
         button.titleLabel?.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         button.layer.cornerRadius = 8
         button.isHidden = true
@@ -100,6 +101,7 @@ private extension DiaryVC {
         
         microphoneStartButton.tapPublisher
             .sink(receiveValue: {
+                self.goToDrawButton.isHidden = true
                 self.startTranscribing()
             })
             .store(in: &cancellables)
@@ -107,7 +109,16 @@ private extension DiaryVC {
         microphoneEndButton.tapPublisher
             .sink(receiveValue: {
                 self.tapRecordEnd.send(self.microphoneLabel.text ?? "")
+                if self.microphoneLabel.text != "" {
+                    self.goToDrawButton.isHidden = false
+                }
                 self.stopTranscribing()
+            })
+            .store(in: &cancellables)
+        
+        goToDrawButton.tapPublisher
+            .sink(receiveValue: {
+                print("goToDrawVC")
             })
             .store(in: &cancellables)
         
