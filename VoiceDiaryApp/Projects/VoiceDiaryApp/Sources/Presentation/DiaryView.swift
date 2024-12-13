@@ -430,21 +430,104 @@ class DiaryView: UIView, CalendarViewDelegate {
     
     private func processContentText(_ text: String) -> NSAttributedString {
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        
         let content = trimmedText.first == " " ? String(trimmedText.dropFirst()) : trimmedText
-        
+
+        let font = UIFont(name: "Pretendard-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13)
+        let labelWidth = UIScreen.main.bounds.width - 72
+        let maxLines = 3
+        let lineSpacing: CGFloat = 2.0
+
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = .byWordWrapping
-        paragraphStyle.lineSpacing = 2.0
-        
-        let attributedString = NSMutableAttributedString(
+        paragraphStyle.lineBreakMode = .byTruncatingTail
+        paragraphStyle.lineSpacing = lineSpacing
+
+        let fullAttributedText = NSMutableAttributedString(
             string: content,
             attributes: [
-                .font: UIFont(name: "Pretendard-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13),
+                .font: font,
                 .paragraphStyle: paragraphStyle,
                 .foregroundColor: UIColor.black
             ]
         )
-        return attributedString
+
+        let lineHeight = font.lineHeight + lineSpacing
+        let maxHeight = lineHeight * CGFloat(maxLines)
+
+        let boundingRect = fullAttributedText.boundingRect(
+            with: CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
+
+        if boundingRect.height <= maxHeight {
+            return fullAttributedText
+        }
+
+        var truncatedText = content
+        while truncatedText.count > 0 {
+            let testText = truncatedText + "..."
+            let testAttributedText = NSMutableAttributedString(
+                string: testText,
+                attributes: [
+                    .font: font,
+                    .paragraphStyle: paragraphStyle
+                ]
+            )
+
+            let testBoundingRect = testAttributedText.boundingRect(
+                with: CGSize(width: labelWidth, height: maxHeight),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+
+            if testBoundingRect.height <= maxHeight {
+                return testAttributedText
+            }
+            truncatedText.removeLast()
+        }
+
+        return NSAttributedString(
+            string: "...",
+            attributes: [
+                .font: font,
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.black
+            ]
+        )
+    }
+    
+    private func truncateText(content: String, font: UIFont, maxSize: CGSize) -> NSAttributedString {
+        let ellipsis = "..."
+        var truncatedContent = content
+        
+        while truncatedContent.count > 0 {
+            let testContent = truncatedContent + ellipsis
+            let testAttributedText = NSAttributedString(
+                string: testContent,
+                attributes: [
+                    .font: font
+                ]
+            )
+            let boundingRect = testAttributedText.boundingRect(
+                with: maxSize,
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            )
+
+            if boundingRect.height <= font.lineHeight * 3 {
+                return NSMutableAttributedString(
+                    string: testContent,
+                    attributes: [
+                        .font: font,
+                        .paragraphStyle: NSMutableParagraphStyle(),
+                        .foregroundColor: UIColor.black
+                    ]
+                )
+            }
+
+            truncatedContent = String(truncatedContent.dropLast())
+        }
+
+        return NSAttributedString(string: ellipsis)
     }
 }
