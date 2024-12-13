@@ -145,10 +145,13 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let range = calendar.range(of: .day, in: .month, for: currentDate)!.count
-        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
+        guard let range = calendar.range(of: .day, in: .month, for: currentDate),
+              let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else {
+            return 0
+        }
+
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
-        return range + weekdayOffset
+        return range.count + weekdayOffset
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -179,7 +182,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let totalHorizontalPadding: CGFloat = 66
-        let availableWidth = bounds.width - totalHorizontalPadding
+        let availableWidth = max(0, bounds.width - totalHorizontalPadding)
         let cellWidth = floor(availableWidth / 7)
         
         return CGSize(width: cellWidth, height: cellWidth + 32)

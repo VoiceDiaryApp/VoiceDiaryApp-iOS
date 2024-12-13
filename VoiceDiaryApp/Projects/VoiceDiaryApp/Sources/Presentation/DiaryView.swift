@@ -308,19 +308,27 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
 
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
+        guard let diaryEntries = viewModel?.diaryEntries else {
+            showEmptyDiaryView(isFutureDate: Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending)
+            return
+        }
+        
         if hasDiary {
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
             diaryContentLabel.isHidden = false
             emptyDiaryCharacter.isHidden = true
             emptyDiaryLabel.isHidden = true
+            
             diaryTitleLabel.text = "일기 제목"
             updateDiaryDateLabel(for: date)
-            if let diaryEntry = viewModel.diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
+            
+            if let diaryEntry = diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
                 diaryContentLabel.attributedText = processContentText(diaryEntry.content)
             } else {
                 diaryContentLabel.attributedText = processContentText("일기 내용 일부를 여기에 표시합니다.")
             }
+            
             moreLabel.isHidden = false
             moreLabel.text = "더보기"
         } else {
