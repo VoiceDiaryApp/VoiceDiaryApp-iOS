@@ -335,6 +335,9 @@ class DiaryView: UIView, CalendarViewDelegate {
                 viewModel.diaryEntries
                 .first { Calendar.current.isDate($0.date, inSameDayAs: targetDate) }?
                 .content ?? "일기 내용 일부를 여기에 표시합니다."
+            
+            moreLabel.isHidden = false
+            moreLabel.text = "더보기"
         } else {
             showEmptyDiaryView(isFutureDate: Calendar.current.compare(targetDate, to: Date(), toGranularity: .day) == .orderedDescending)
         }
