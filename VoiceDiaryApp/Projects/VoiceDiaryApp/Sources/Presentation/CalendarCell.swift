@@ -10,12 +10,9 @@ import SnapKit
 
 class CalendarCell: UICollectionViewCell {
 
+    // MARK: Properties
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
-
-    private var leadingConstraint: Constraint?
-    private var trailingConstraint: Constraint?
-    private var isToday: Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,7 +37,6 @@ class CalendarCell: UICollectionViewCell {
         dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
         dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
         dayLabel.textAlignment = .center
-
         dayLabel.snp.makeConstraints { make in
             make.top.equalTo(emojiImageView.snp.bottom).offset(0)
             make.centerX.equalToSuperview()
@@ -50,8 +46,6 @@ class CalendarCell: UICollectionViewCell {
     }
 
     func configure(day: Int?, emotion: Emotion?, isToday: Bool) {
-        self.isToday = isToday
-        
         if let day = day {
             dayLabel.text = "\(day)"
             emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
@@ -69,7 +63,7 @@ class CalendarCell: UICollectionViewCell {
         }
     }
 
-    func setSelected(_ isSelected: Bool) {
+    func setSelected(_ isSelected: Bool, isToday: Bool) {
         if isSelected {
             dayLabel.textColor = .white
             let selectedBackground = UIView()
@@ -86,7 +80,6 @@ class CalendarCell: UICollectionViewCell {
             dayLabel.textColor = isToday
                 ? UIColor(named: "CalendarSelected") ?? .red
                 : UIColor(named: "CalendarTextBlack") ?? .black
-
             contentView.subviews.filter { $0 != dayLabel && $0 != emojiImageView }.forEach { $0.removeFromSuperview() }
         }
     }
