@@ -104,15 +104,8 @@ class DiaryView: UIView, CalendarViewDelegate {
         label.textColor = .black
         label.font = UIFont(name: "Pretendard-Regular", size: 13)
         label.numberOfLines = 3
-        label.lineBreakMode = .byCharWrapping
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.29
-        label.attributedText = NSMutableAttributedString(
-            string: label.text ?? "",
-            attributes: [
-                .kern: -0.5,
-                .paragraphStyle: paragraphStyle,
-            ])
+        label.lineBreakMode = .byTruncatingTail
+        label.textAlignment = .justified
         return label
     }()
 
@@ -331,10 +324,12 @@ class DiaryView: UIView, CalendarViewDelegate {
 
             diaryTitleLabel.text = "일기 제목"
             updateDiaryDateLabel(for: targetDate)
-            diaryContentLabel.text =
-                viewModel.diaryEntries
-                .first { Calendar.current.isDate($0.date, inSameDayAs: targetDate) }?
-                .content ?? "일기 내용 일부를 여기에 표시합니다."
+
+            if let diaryEntry = viewModel.diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: targetDate) }) {
+                diaryContentLabel.attributedText = processContentText(diaryEntry.content)
+            } else {
+                diaryContentLabel.attributedText = processContentText("일기 내용 일부를 여기에 표시합니다.")
+            }
             
             moreLabel.isHidden = false
             moreLabel.text = "더보기"
@@ -431,5 +426,25 @@ class DiaryView: UIView, CalendarViewDelegate {
         return diaryEntries.contains {
             Calendar.current.isDate($0.date, inSameDayAs: date)
         }
+    }
+    
+    private func processContentText(_ text: String) -> NSAttributedString {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        let content = trimmedText.first == " " ? String(trimmedText.dropFirst()) : trimmedText
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = .byWordWrapping
+        paragraphStyle.lineSpacing = 2.0
+        
+        let attributedString = NSMutableAttributedString(
+            string: content,
+            attributes: [
+                .font: UIFont(name: "Pretendard-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13),
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.black
+            ]
+        )
+        return attributedString
     }
 }
