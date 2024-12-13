@@ -265,15 +265,15 @@ class DiaryView: UIView, CalendarViewDelegate {
         }
     }
 
-    func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date)
-    {
+    func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date) {
         currentDate = date
 
-        calendarView.updateMonth(date: date)
-        configureDateLabels()
+        let targetDate = selectedDate ?? currentDate
+        let hasDiary = checkIfDiaryExists(for: targetDate)
+        updateDiaryContentView(for: targetDate, hasDiary: hasDiary)
 
-        let hasDiary = checkIfDiaryExists(for: date)
-        updateDiaryContentView(for: date, hasDiary: hasDiary)
+        configureDateLabels()
+        calendarView.updateMonth(date: currentDate)
     }
 
     private func setupDiaryContentView() {
@@ -320,7 +320,7 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
 
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
-        let isFutureDate = Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending
+        let targetDate = selectedDate ?? date
 
         if hasDiary {
             diaryTitleLabel.isHidden = false
@@ -330,13 +330,13 @@ class DiaryView: UIView, CalendarViewDelegate {
             emptyDiaryLabel.isHidden = true
 
             diaryTitleLabel.text = "일기 제목"
-            updateDiaryDateLabel(for: date)
+            updateDiaryDateLabel(for: targetDate)
             diaryContentLabel.text =
                 viewModel.diaryEntries
-                .first { Calendar.current.isDate($0.date, inSameDayAs: date) }?
+                .first { Calendar.current.isDate($0.date, inSameDayAs: targetDate) }?
                 .content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
-            showEmptyDiaryView(isFutureDate: isFutureDate)
+            showEmptyDiaryView(isFutureDate: Calendar.current.compare(targetDate, to: Date(), toGranularity: .day) == .orderedDescending)
         }
     }
     

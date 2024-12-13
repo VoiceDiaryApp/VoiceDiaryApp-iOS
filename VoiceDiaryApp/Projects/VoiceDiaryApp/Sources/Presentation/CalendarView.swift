@@ -99,21 +99,39 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
         } else if gesture.direction == .right {
             moveToPreviousMonth()
         }
-    }
-    
-    private func moveToNextMonth() {
-        if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
-            currentDate = nextMonth
-            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
-            animateCalendarTransition(to: nextMonth, direction: .fromRight)
+
+        // Reset `selectedDate` if it does not belong to the new month
+        if let selectedDate = selectedDate {
+            let normalizedSelectedDate = calendar.startOfDay(for: selectedDate)
+            let normalizedCurrentDate = calendar.startOfDay(for: currentDate)
+            guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: normalizedCurrentDate)),
+                  let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else {
+                print("Failed to calculate new month range")
+                return
+            }
+            let lastDayOfMonth = calendar.date(byAdding: .day, value: range.count - 1, to: firstDayOfMonth)!
+            
+            if !(normalizedSelectedDate >= firstDayOfMonth && normalizedSelectedDate <= lastDayOfMonth) {
+                self.selectedDate = nil
+            }
         }
     }
-    
+
     private func moveToPreviousMonth() {
         if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
-            currentDate = previousMonth
+            currentDate = calendar.startOfDay(for: previousMonth)
             delegate?.calendarViewDidUpdateDate(self, to: currentDate)
-            animateCalendarTransition(to: previousMonth, direction: .fromLeft)
+            animateCalendarTransition(to: currentDate, direction: .fromLeft)
+            highlightSelectedDate()
+        }
+    }
+
+    private func moveToNextMonth() {
+        if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
+            currentDate = calendar.startOfDay(for: nextMonth)
+            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
+            animateCalendarTransition(to: currentDate, direction: .fromRight)
+            highlightSelectedDate()
         }
     }
     
@@ -142,29 +160,44 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     }
     
     func updateMonth(date: Date) {
-        currentDate = date
+        currentDate = calendar.startOfDay(for: date)
         collectionView.reloadData()
-
-        if let selectedDate = selectedDate, calendar.isDate(selectedDate, equalTo: currentDate, toGranularity: .month) {
-            highlightSelectedDate()
-        }
+        highlightSelectedDate()
     }
+
     
     private func highlightSelectedDate() {
         guard let selectedDate = selectedDate else { return }
-        let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
-        let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
-        let day = calendar.component(.day, from: selectedDate)
-        let selectedIndexPath = IndexPath(item: day + weekdayOffset - 1, section: 0)
-        
-        DispatchQueue.main.async {
-            self.collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
-            if let cell = self.collectionView.cellForItem(at: selectedIndexPath) as? CalendarCell {
-                cell.setSelected(true)
+
+        // Normalize dates to start of the day
+        let normalizedSelectedDate = calendar.startOfDay(for: selectedDate)
+        let normalizedCurrentDate = calendar.startOfDay(for: currentDate)
+
+        // Calculate the current month's range
+        guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: normalizedCurrentDate)),
+              let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else {
+            print("Failed to calculate month range")
+            return
+        }
+        let lastDayOfMonth = calendar.date(byAdding: .day, value: range.count - 1, to: firstDayOfMonth)!
+
+        // Highlight the selected date if it belongs to the current month
+        if normalizedSelectedDate >= firstDayOfMonth && normalizedSelectedDate <= lastDayOfMonth {
+            let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
+            let day = calendar.component(.day, from: normalizedSelectedDate)
+            let selectedIndexPath = IndexPath(item: day + weekdayOffset - 1, section: 0)
+
+            DispatchQueue.main.async {
+                self.collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
+                if let cell = self.collectionView.cellForItem(at: selectedIndexPath) as? CalendarCell {
+                    cell.setSelected(true)
+                }
             }
+        } else {
+            collectionView.reloadData()
         }
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let range = calendar.range(of: .day, in: .month, for: currentDate)!.count
         let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
@@ -212,7 +245,9 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
 
         if indexPath.item >= weekdayOffset {
             let day = indexPath.item - weekdayOffset + 1
-            let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
+            let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth).map {
+                calendar.startOfDay(for: $0) // 시간 제거
+            }
             
             if newlySelectedDate != selectedDate {
                 selectedDate = newlySelectedDate
