@@ -95,42 +95,17 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     
     @objc private func handleSwipeGesture(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .left {
-            moveToNextMonth()
+            moveToMonth(byAddingMonths: 1, direction: .fromRight)
         } else if gesture.direction == .right {
-            moveToPreviousMonth()
-        }
-
-        // Reset `selectedDate` if it does not belong to the new month
-        if let selectedDate = selectedDate {
-            let normalizedSelectedDate = calendar.startOfDay(for: selectedDate)
-            let normalizedCurrentDate = calendar.startOfDay(for: currentDate)
-            guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: normalizedCurrentDate)),
-                  let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else {
-                print("Failed to calculate new month range")
-                return
-            }
-            let lastDayOfMonth = calendar.date(byAdding: .day, value: range.count - 1, to: firstDayOfMonth)!
-            
-            if !(normalizedSelectedDate >= firstDayOfMonth && normalizedSelectedDate <= lastDayOfMonth) {
-                self.selectedDate = nil
-            }
+            moveToMonth(byAddingMonths: -1, direction: .fromLeft)
         }
     }
-
-    private func moveToPreviousMonth() {
-        if let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentDate) {
-            currentDate = calendar.startOfDay(for: previousMonth)
+    
+    private func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
+        if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
+            currentDate = calendar.startOfDay(for: newDate)
             delegate?.calendarViewDidUpdateDate(self, to: currentDate)
-            animateCalendarTransition(to: currentDate, direction: .fromLeft)
-            highlightSelectedDate()
-        }
-    }
-
-    private func moveToNextMonth() {
-        if let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentDate) {
-            currentDate = calendar.startOfDay(for: nextMonth)
-            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
-            animateCalendarTransition(to: currentDate, direction: .fromRight)
+            animateCalendarTransition(to: currentDate, direction: direction)
             highlightSelectedDate()
         }
     }
