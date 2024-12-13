@@ -103,24 +103,23 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     
     private func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
         if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
-            currentDate = calendar.startOfDay(for: newDate)
-            delegate?.calendarViewDidUpdateDate(self, to: currentDate)
+            currentDate = newDate
             animateCalendarTransition(to: currentDate, direction: direction)
-            highlightSelectedDate()
+            collectionView.reloadData()
         }
     }
-    
+
     private func animateCalendarTransition(to newDate: Date, direction: CATransitionSubtype) {
         currentDate = newDate
-        
+
         let transition = CATransition()
         transition.type = .push
         transition.subtype = direction
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
+
         collectionView.layer.add(transition, forKey: kCATransition)
-        updateMonth(date: currentDate)
+        collectionView.reloadData()
     }
     
     override func layoutSubviews() {
@@ -142,35 +141,7 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
 
     
     private func highlightSelectedDate() {
-        guard let selectedDate = selectedDate else { return }
-
-        // Normalize dates to start of the day
-        let normalizedSelectedDate = calendar.startOfDay(for: selectedDate)
-        let normalizedCurrentDate = calendar.startOfDay(for: currentDate)
-
-        // Calculate the current month's range
-        guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: normalizedCurrentDate)),
-              let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else {
-            print("Failed to calculate month range")
-            return
-        }
-        let lastDayOfMonth = calendar.date(byAdding: .day, value: range.count - 1, to: firstDayOfMonth)!
-
-        // Highlight the selected date if it belongs to the current month
-        if normalizedSelectedDate >= firstDayOfMonth && normalizedSelectedDate <= lastDayOfMonth {
-            let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
-            let day = calendar.component(.day, from: normalizedSelectedDate)
-            let selectedIndexPath = IndexPath(item: day + weekdayOffset - 1, section: 0)
-
-            DispatchQueue.main.async {
-                self.collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: [])
-                if let cell = self.collectionView.cellForItem(at: selectedIndexPath) as? CalendarCell {
-                    cell.setSelected(true)
-                }
-            }
-        } else {
-            collectionView.reloadData()
-        }
+        collectionView.reloadData()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -217,18 +188,13 @@ class CalendarView: UIView, UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else { return }
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
-
         if indexPath.item >= weekdayOffset {
             let day = indexPath.item - weekdayOffset + 1
-            let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth).map {
-                calendar.startOfDay(for: $0) // 시간 제거
-            }
-            
+            let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
             if newlySelectedDate != selectedDate {
                 selectedDate = newlySelectedDate
-                delegate?.calendarViewDidUpdateDate(self, to: newlySelectedDate!)
+                delegate?.calendarViewDidUpdateDate(self, to: selectedDate!)
             }
-
             collectionView.reloadData()
         }
     }

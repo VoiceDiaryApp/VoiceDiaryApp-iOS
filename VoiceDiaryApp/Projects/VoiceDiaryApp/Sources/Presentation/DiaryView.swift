@@ -159,11 +159,11 @@ class DiaryView: UIView, CalendarViewDelegate {
         setupActions()
         setupDiaryContentView()
 
-        selectedDate = nil
+        selectedDate = currentDate
         calendarView.delegate = self
 
-        let hasDiary = checkIfDiaryExists(for: currentDate)
-        updateDiaryContentView(for: currentDate, hasDiary: hasDiary)
+        let hasDiary = checkIfDiaryExists(for: selectedDate!)
+        updateDiaryContentView(for: selectedDate!, hasDiary: hasDiary)
     }
 
     required init?(coder: NSCoder) {
@@ -216,11 +216,10 @@ class DiaryView: UIView, CalendarViewDelegate {
 
     private func configureDateLabels() {
         let calendar = Calendar.current
+        let targetDate = selectedDate ?? currentDate
         yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
         monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
-        calendarView.updateMonth(date: currentDate)
-
-        updateDiaryDateLabel(for: currentDate)
+        updateDiaryDateLabel(for: targetDate)
     }
 
     private func setupActions() {
@@ -239,34 +238,30 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
 
     private func animateCalendarTransition(
-        byAddingMonths months: Int, direction: CATransitionSubtype
+        byAddingMonths months: Int,
+        direction: CATransitionSubtype
     ) {
         let calendar = Calendar.current
-        if let newDate = calendar.date(
-            byAdding: .month, value: months, to: currentDate)
-        {
+        if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
             currentDate = newDate
+
             let transition = CATransition()
             transition.type = .push
             transition.subtype = direction
             transition.duration = 0.3
-            transition.timingFunction = CAMediaTimingFunction(
-                name: .easeInEaseOut)
+            transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 
             calendarView.layer.add(transition, forKey: kCATransition)
+            calendarView.updateMonth(date: currentDate)
             configureDateLabels()
         }
     }
 
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date) {
-        currentDate = date
-
-        let targetDate = selectedDate ?? currentDate
-        let hasDiary = checkIfDiaryExists(for: targetDate)
-        updateDiaryContentView(for: targetDate, hasDiary: hasDiary)
-
+        selectedDate = date
+        let hasDiary = checkIfDiaryExists(for: selectedDate!)
+        updateDiaryContentView(for: selectedDate!, hasDiary: hasDiary)
         configureDateLabels()
-        calendarView.updateMonth(date: currentDate)
     }
 
     private func setupDiaryContentView() {
@@ -313,28 +308,23 @@ class DiaryView: UIView, CalendarViewDelegate {
     }
 
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
-        let targetDate = selectedDate ?? date
-
         if hasDiary {
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
             diaryContentLabel.isHidden = false
             emptyDiaryCharacter.isHidden = true
             emptyDiaryLabel.isHidden = true
-
             diaryTitleLabel.text = "일기 제목"
-            updateDiaryDateLabel(for: targetDate)
-
-            if let diaryEntry = viewModel.diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: targetDate) }) {
+            updateDiaryDateLabel(for: date)
+            if let diaryEntry = viewModel.diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
                 diaryContentLabel.attributedText = processContentText(diaryEntry.content)
             } else {
                 diaryContentLabel.attributedText = processContentText("일기 내용 일부를 여기에 표시합니다.")
             }
-            
             moreLabel.isHidden = false
             moreLabel.text = "더보기"
         } else {
-            showEmptyDiaryView(isFutureDate: Calendar.current.compare(targetDate, to: Date(), toGranularity: .day) == .orderedDescending)
+            showEmptyDiaryView(isFutureDate: Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending)
         }
     }
     
