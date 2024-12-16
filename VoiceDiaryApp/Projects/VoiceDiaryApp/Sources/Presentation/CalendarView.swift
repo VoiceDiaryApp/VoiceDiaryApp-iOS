@@ -66,7 +66,8 @@ class CalendarView: UIView {
 
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(daysStackView.snp.bottom).offset(2)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(33)
+            make.bottom.equalToSuperview()
         }
     }
 
