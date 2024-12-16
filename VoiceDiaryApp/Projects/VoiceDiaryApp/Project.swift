@@ -34,8 +34,7 @@ let project = Project(
             sources: ["Sources/**"],
             resources: ["Resources/**"],
             dependencies: [
-                .external(name: "SnapKit"),
-                .external(name: "FSCalendar")
+                .external(name: "SnapKit")
             ]
         )
     ]
