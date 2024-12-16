@@ -15,8 +15,7 @@ import PackageDescription
 let package = Package(
     name: "VoiceDiaryApp",
     dependencies: [
-        .package(url: "https://github.com/SnapKit/SnapKit", from: "5.7.1"),
-        .package(url: "https://github.com/WenchaoD/FSCalendar", from: "2.8.4")
+        .package(url: "https://github.com/SnapKit/SnapKit", from: "5.7.1")
 
         // Add your own dependencies here:
         // .package(url: "https://github.com/Alamofire/Alamofire", from: "5.0.0"),
@@ -26,8 +25,7 @@ let package = Package(
         .target(
             name: "VoiceDiaryApp",
             dependencies: [
-                "SnapKit",
-                "FSCalendar"
+                "SnapKit"
             ]
         )
     ]
