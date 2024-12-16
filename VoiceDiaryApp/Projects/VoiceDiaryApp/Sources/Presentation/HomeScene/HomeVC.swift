@@ -89,7 +89,8 @@ private extension HomeVC {
         
         goToCalendarButton.tapPublisher
             .sink { _ in
-                print("goToCalendarVC")
+                let calendarVC = CalendarVC()
+                self.navigationController?.pushViewController(calendarVC, animated: true)
             }
             .store(in: &cancellables)
     }

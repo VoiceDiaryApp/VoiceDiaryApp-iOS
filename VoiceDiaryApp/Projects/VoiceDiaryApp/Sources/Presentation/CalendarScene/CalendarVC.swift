@@ -1,5 +1,5 @@
 //
-//  DiaryViewController.swift
+//  CalendarVC.swift
 //  VoiceDiaryApp
 //
 //  Created by 신호연 on 11/29/24.
@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class DiaryViewController: UIViewController {
+class CalendarVC: UIViewController {
 
     private let viewModel: DiaryViewModelProtocol
     private var cancellables: Set<AnyCancellable> = []
