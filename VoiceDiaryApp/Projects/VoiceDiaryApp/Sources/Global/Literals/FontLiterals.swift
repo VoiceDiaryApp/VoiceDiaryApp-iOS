@@ -5,4 +5,18 @@
 //  Created by 고아라 on 11/26/24.
 //
 
-import Foundation
+import UIKit
+
+enum FontType: String {
+    case PretandardBold = "Pretendard-Bold"
+    case PretandardSemiBold = "Pretendard-SemiBold"
+    case PretandardMedium = "Pretendard-Medium"
+}
+
+extension UIFont {
+    
+    static func fontGuide(type: FontType, size: CGFloat) -> UIFont {
+        let font = UIFont(name: type.rawValue, size: size)!
+        return font
+    }
+}
