@@ -48,9 +48,7 @@ class CustomNavigationBar: UIView {
 
     private func setupUI() {
         // Add subviews
-        addSubview(backButton)
-        addSubview(titleLabel)
-        addSubview(rightIcon)
+        addSubviews(backButton, titleLabel, rightIcon)
 
         // Back Button Constraints
         backButton.snp.makeConstraints { make in

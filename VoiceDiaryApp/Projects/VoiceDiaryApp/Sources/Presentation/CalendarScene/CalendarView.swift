@@ -55,8 +55,7 @@ class CalendarView: UIView {
     }
 
     private func setupUI() {
-        addSubview(daysStackView)
-        addSubview(collectionView)
+        addSubviews(daysStackView, collectionView)
 
         daysStackView.snp.makeConstraints { make in
             make.top.equalToSuperview()

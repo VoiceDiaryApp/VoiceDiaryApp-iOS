@@ -22,13 +22,13 @@ class DiaryEntryCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        contentView.addSubview(dayLabel)
+        contentView.addSubviews(dayLabel, emojiImageView)
+
         dayLabel.textAlignment = .center
         dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
 
-        contentView.addSubview(emojiImageView)
         emojiImageView.contentMode = .scaleAspectFit
-        
+
         dayLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().offset(-5)

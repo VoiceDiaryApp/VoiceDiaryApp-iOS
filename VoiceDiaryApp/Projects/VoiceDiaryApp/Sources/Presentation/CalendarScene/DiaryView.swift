@@ -173,12 +173,7 @@ class DiaryView: UIView, CalendarViewDelegate {
     private func setupUI() {
         backgroundColor = UIColor(named: "mainBeige")
 
-        addSubview(navigationBar)
-        addSubview(yearLabel)
-        addSubview(monthLabel)
-        addSubview(leftArrowButton)
-        addSubview(rightArrowButton)
-        addSubview(calendarView)
+        addSubviews(navigationBar, yearLabel, monthLabel, leftArrowButton, rightArrowButton, calendarView)
 
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
@@ -266,11 +261,8 @@ class DiaryView: UIView, CalendarViewDelegate {
 
     private func setupDiaryContentView() {
         addSubview(diaryContentView)
-        diaryContentView.addSubview(diaryTitleLabel)
-        diaryContentView.addSubview(diaryDateLabel)
-        diaryContentView.addSubview(diaryContentLabel)
-        diaryContentView.addSubview(moreLabel)
-
+        diaryContentView.addSubviews(diaryTitleLabel, diaryDateLabel, diaryContentLabel, moreLabel)
+        
         diaryContentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(174)
