@@ -78,10 +78,10 @@ private extension HomeVC {
     
     func setUI() {
         view.backgroundColor = .white
+        self.navigationController?.navigationBar.isHidden = true
         
         goToDiaryButton.tapPublisher
             .sink { _ in
-                print("✅✅✅✅")
                 let dirayVC = DiaryVC()
                 self.navigationController?.pushViewController(dirayVC, animated: true)
             }
@@ -122,7 +122,7 @@ private extension HomeVC {
     
     func setLayout() {
         todayWeekLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(SizeLiterals.calSupporHeight(height: 24))
             $0.leading.equalToSuperview().inset(43)
         }
         
@@ -156,17 +156,17 @@ private extension HomeVC {
         }
         
         goToDiaryButton.snp.makeConstraints {
-            $0.top.equalTo(characterImageView.snp.bottom).offset(50)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-SizeLiterals.calSupporHeight(height: 110))
             $0.leading.equalToSuperview().inset(41)
             $0.width.equalTo((SizeLiterals.Screen.screenWidth - 101) / 2)
-            $0.height.equalTo(108)
+            $0.height.equalTo(120)
         }
         
         goToCalendarButton.snp.makeConstraints {
-            $0.top.equalTo(characterImageView.snp.bottom).offset(50)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-SizeLiterals.calSupporHeight(height: 110))
             $0.trailing.equalToSuperview().inset(41)
             $0.width.equalTo((SizeLiterals.Screen.screenWidth - 101) / 2)
-            $0.height.equalTo(108)
+            $0.height.equalTo(120)
         }
     }
 }
