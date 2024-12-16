@@ -24,8 +24,7 @@ class CalendarCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        contentView.addSubview(emojiImageView)
-        contentView.addSubview(dayLabel)
+        contentView.addSubviews(emojiImageView, dayLabel)
 
         emojiImageView.contentMode = .scaleAspectFit
         emojiImageView.snp.makeConstraints { make in
