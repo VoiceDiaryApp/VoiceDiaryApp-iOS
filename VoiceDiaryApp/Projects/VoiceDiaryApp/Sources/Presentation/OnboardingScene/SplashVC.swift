@@ -31,6 +31,9 @@ final class SplashVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.showNextPage()
+        }
     }
 }
 
@@ -57,5 +60,10 @@ private extension SplashVC {
             $0.top.equalTo(logoImageView.snp.bottom).offset(17)
             $0.centerX.equalToSuperview()
         }
+    }
+    
+    func showNextPage() {
+        let homeVC = HomeVC()
+        self.navigationController?.pushViewController(homeVC, animated: true)
     }
 }
