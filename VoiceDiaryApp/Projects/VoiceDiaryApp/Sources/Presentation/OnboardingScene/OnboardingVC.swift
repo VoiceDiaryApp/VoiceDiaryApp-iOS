@@ -35,6 +35,15 @@ final class OnboardingVC: UIViewController {
         return label
     }()
     
+    private let timePicker: UIDatePicker = {
+        let picker = UIDatePicker()
+        picker.datePickerMode = .time
+        picker.preferredDatePickerStyle = .wheels
+        picker.locale = Locale(identifier: "ko-KR")
+        picker.timeZone = .autoupdatingCurrent
+        return picker
+    }()
+    
     private let startButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .yellow
@@ -64,6 +73,7 @@ private extension OnboardingVC {
         
         startButton.tapPublisher
             .sink(receiveValue: {
+                self.printSelectedTime()
                 self.changeRootToHomeVC()
             })
             .store(in: &cancellables)
@@ -72,6 +82,7 @@ private extension OnboardingVC {
     func setHierarchy() {
         view.addSubviews(onboardingTitleLabel,
                          onboardingSubTitleLabel,
+                         timePicker,
                          startButton)
     }
     
@@ -84,6 +95,12 @@ private extension OnboardingVC {
         onboardingSubTitleLabel.snp.makeConstraints {
             $0.top.equalTo(onboardingTitleLabel.snp.bottom).offset(17)
             $0.leading.equalTo(onboardingTitleLabel.snp.leading)
+        }
+        
+        timePicker.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.equalTo(SizeLiterals.Screen.screenWidth - 64)
+            $0.height.equalTo(217)
         }
         
         startButton.snp.makeConstraints {
@@ -100,5 +117,14 @@ private extension OnboardingVC {
             return
         }
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
+    }
+    
+    func printSelectedTime() {
+        let selectedDate = timePicker.date
+        let formatter = DateFormatter()
+        formatter.dateFormat = "a hh:mm"
+        formatter.locale = Locale(identifier: "ko-KR")
+        let formattedTime = formatter.string(from: selectedDate)
+        print("Selected Time: \(formattedTime)")
     }
 }
