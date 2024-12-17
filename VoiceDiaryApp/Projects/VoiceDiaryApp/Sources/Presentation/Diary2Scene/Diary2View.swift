@@ -17,6 +17,17 @@ final class Diary2View: UIView {
     private var emotionButtons: [UIButton] = []
     private let canvasView = PKCanvasView()
     
+    private var currentColor: UIColor = .black
+    private let colorPickerVC = UIColorPickerViewController()
+    
+    // Tool Buttons
+    private let toolEraser = UIButton()
+    private let toolPencil = UIButton()
+    private let toolFinePen = UIButton()
+    private let toolBoldPen = UIButton()
+    private let toolCalligraphyPen = UIButton()
+    private let toolColorPicker = UIButton()
+    
     // MARK: - UI Components
     
     let navigationBar: CustomNavigationBar = {
@@ -33,15 +44,27 @@ final class Diary2View: UIView {
         return stackView
     }()
     
-    private let toolView: UIView = {
+    private let toolView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .bottom
+        stackView.distribution = .fillEqually
+        stackView.backgroundColor = .white
+        stackView.layer.cornerRadius = 8
+        stackView.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
+        stackView.layer.shadowOpacity = 1
+        stackView.layer.shadowOffset = CGSize(width: 0, height: -3)
+        stackView.layer.shadowRadius = 4
+        stackView.layer.masksToBounds = false
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 26)
+        
+        return stackView
+    }()
+    
+    private let linkedView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 8
-        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
-        view.layer.shadowOpacity = 1
-        view.layer.shadowOffset = CGSize(width: 0, height: -3)
-        view.layer.shadowRadius = 4
-        view.layer.masksToBounds = false
         return view
     }()
     
@@ -64,6 +87,8 @@ final class Diary2View: UIView {
         setupLayout()
         setupEmotionButtons()
         setupPencilKit()
+        setupToolButtons()
+        setupColorPicker()
     }
     
     required init?(coder: NSCoder) {
@@ -77,7 +102,7 @@ final class Diary2View: UIView {
     }
     
     private func setupHierarchy() {
-        addSubviews(navigationBar, moodEmojiView, canvasView, toolView, saveButton)
+        addSubviews(navigationBar, moodEmojiView, canvasView, linkedView, toolView, saveButton)
     }
     
     private func setupLayout() {
@@ -99,6 +124,12 @@ final class Diary2View: UIView {
             make.height.equalTo(306)
         }
         
+        linkedView.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(canvasView)
+            make.top.equalTo(canvasView.snp.bottom).offset(-8)
+            make.bottom.equalTo(toolView.snp.top).offset(8)
+        }
+        
         toolView.snp.makeConstraints { make in
             make.top.equalTo(canvasView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(28)
@@ -118,7 +149,7 @@ final class Diary2View: UIView {
         canvasView.drawingPolicy = .anyInput
         canvasView.backgroundColor = .white
         canvasView.layer.cornerRadius = 8
-        canvasView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
     }
     
     // MARK: - Emotion Buttons Setup
@@ -135,6 +166,39 @@ final class Diary2View: UIView {
         }
     }
     
+    // MARK: - Tool Buttons Setup
+    
+    private func setupToolButtons() {
+        let tools = [(toolEraser, "tool_Eraser"),
+                     (toolPencil, "tool_Pencil"),
+                     (toolFinePen, "tool_FinePen"),
+                     (toolBoldPen, "tool_BoldPen"),
+                     (toolCalligraphyPen, "tool_CalligraphyPen"),
+                     (toolColorPicker, "tool_ColorPicker")]
+        
+        tools.forEach { button, imageName in
+            let image = UIImage(named: imageName)
+            
+            if button == toolColorPicker {
+                button.setImage(image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                button.tintColor = currentColor
+            } else {
+                button.setImage(image, for: .normal)
+            }
+            
+            button.addTarget(self, action: #selector(toolButtonTapped(_:)), for: .touchUpInside)
+            toolView.addArrangedSubview(button)
+        }
+    }
+    
+    // MARK: - Color Picker Setup
+    
+    private func setupColorPicker() {
+        colorPickerVC.delegate = self
+    }
+    
+    // MARK: - Actions
+    
     @objc private func emotionButtonTapped(_ sender: UIButton) {
         let tappedEmotion = emotions[sender.tag]
         updateSelectedEmotion(to: tappedEmotion)
@@ -147,5 +211,44 @@ final class Diary2View: UIView {
             let imageName = (emotion == newEmotion) ? "\(emotion.rawValue)_stroke" : emotion.rawValue
             button.setImage(UIImage(named: imageName), for: .normal)
         }
+    }
+    
+    @objc private func toolButtonTapped(_ sender: UIButton) {
+        if sender == toolEraser {
+            canvasView.tool = PKEraserTool(.vector)
+        } else if sender == toolPencil {
+            canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
+        } else if sender == toolFinePen {
+            canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 2)
+        } else if sender == toolBoldPen {
+            canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 8)
+        } else if sender == toolCalligraphyPen {
+            canvasView.tool = PKInkingTool(.marker, color: currentColor, width: 5)
+        } else if sender == toolColorPicker {
+            presentColorPicker()
+        }
+    }
+
+    private func presentColorPicker() {
+        if let viewController = self.window?.rootViewController {
+            viewController.present(colorPickerVC, animated: true, completion: nil)
+        }
+    }
+}
+
+// MARK: - UIColorPickerViewControllerDelegate
+extension Diary2View: UIColorPickerViewControllerDelegate {
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        updateColorPickerButtonColor(to: viewController.selectedColor)
+    }
+    
+    func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
+        updateColorPickerButtonColor(to: viewController.selectedColor)
+    }
+    
+    private func updateColorPickerButtonColor(to color: UIColor) {
+        currentColor = color
+        toolColorPicker.tintColor = color
+        canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
     }
 }
