@@ -98,6 +98,7 @@ final class CustomNavigationBar: UIView {
         setHierarchy()
         setLayout()
         setButton()
+        setSwipeGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -173,5 +174,16 @@ private extension CustomNavigationBar {
                 self.saveButtonAction?()
             })
             .store(in: &cancellables)
+    }
+    
+    func setSwipeGesture() {
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture))
+        swipeGesture.direction = .right
+        swipeGesture.cancelsTouchesInView = false
+        self.addGestureRecognizer(swipeGesture)
+    }
+    
+    @objc private func handleSwipeGesture() {
+        backButtonAction?()
     }
 }
