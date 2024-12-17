@@ -93,6 +93,13 @@ private extension HomeVC {
                 self.navigationController?.pushViewController(calendarVC, animated: true)
             }
             .store(in: &cancellables)
+        
+        settingButton.tapPublisher
+            .sink { _ in
+                let settingVC = SettingVC()
+                self.navigationController?.pushViewController(settingVC, animated: true)
+            }
+            .store(in: &cancellables)
     }
     
     func getFormattedDate(from date: Date) -> (formattedDate: String, 
