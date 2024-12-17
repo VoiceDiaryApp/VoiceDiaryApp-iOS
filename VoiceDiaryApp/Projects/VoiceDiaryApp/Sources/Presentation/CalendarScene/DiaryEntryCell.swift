@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class DiaryEntryCell: UICollectionViewCell {
+final class DiaryEntryCell: UICollectionViewCell {
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
     

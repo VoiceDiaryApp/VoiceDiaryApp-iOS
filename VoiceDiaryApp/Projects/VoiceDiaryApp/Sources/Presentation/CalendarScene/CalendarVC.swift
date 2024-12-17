@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class CalendarVC: UIViewController {
+final class CalendarVC: UIViewController {
 
     private let viewModel: DiaryViewModelProtocol
     private var cancellables: Set<AnyCancellable> = []
@@ -34,7 +34,7 @@ class CalendarVC: UIViewController {
     }
 
     private func setupUI() {
-        view.backgroundColor = UIColor(named: "mainBeige")
+        view.backgroundColor = UIColor(resource: .mainBeige)
         view.addSubview(diaryView)
         diaryView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
