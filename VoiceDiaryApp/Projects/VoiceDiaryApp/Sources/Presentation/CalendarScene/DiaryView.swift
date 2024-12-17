@@ -112,7 +112,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
     private let moreLabel: UILabel = {
         let label = UILabel()
         label.text = "더보기"
-        label.textColor = UIColor(resource: .calendarTextBlack)
+        label.textColor = UIColor(resource: .calendarSelected)
         label.font = UIFont(name: "Pretendard-Regular", size: 11)
 
         let paragraphStyle = NSMutableParagraphStyle()
@@ -133,7 +133,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     private let emptyDiaryLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(resource: .calendarTextBlack)
+        label.textColor = UIColor(resource: .calendarSelected)
         label.font = UIFont(name: "Pretendard-SemiBold", size: 17)
 
         let paragraphStyle = NSMutableParagraphStyle()
