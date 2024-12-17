@@ -39,6 +39,7 @@ final class Diary2View: UIView {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 8
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         return view
     }()
     
@@ -47,13 +48,18 @@ final class Diary2View: UIView {
         view.backgroundColor = .white
         view.layer.cornerRadius = 8
         
-        // Drop shadow setup
         view.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
         view.layer.shadowOpacity = 1
         view.layer.shadowOffset = CGSize(width: 0, height: -3)
         view.layer.shadowRadius = 4
         view.layer.masksToBounds = false
         
+        return view
+    }()
+    
+    private let linkedView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
         return view
     }()
     
@@ -88,7 +94,7 @@ final class Diary2View: UIView {
     }
     
     private func setupHierarchy() {
-        addSubviews(navigationBar, moodEmojiView, drawingView, toolView, saveButton)
+        addSubviews(navigationBar, moodEmojiView, drawingView, linkedView, toolView, saveButton)
     }
     
     private func setupLayout() {
@@ -108,6 +114,12 @@ final class Diary2View: UIView {
             make.top.equalTo(moodEmojiView.snp.bottom).offset(57)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(306)
+        }
+        
+        linkedView.snp.makeConstraints{ make in
+            make.top.equalTo(drawingView.snp.bottom)
+            make.leading.trailing.equalTo(drawingView)
+            make.height.equalTo(8)
         }
         
         toolView.snp.makeConstraints{ make in
