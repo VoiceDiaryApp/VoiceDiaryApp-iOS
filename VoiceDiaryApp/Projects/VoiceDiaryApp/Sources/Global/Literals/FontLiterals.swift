@@ -11,6 +11,9 @@ enum FontType: String {
     case PretandardBold = "Pretendard-Bold"
     case PretandardSemiBold = "Pretendard-SemiBold"
     case PretandardMedium = "Pretendard-Medium"
+    case PretandardRegular = "Pretendard-Regular"
+    case RobotobBold = "Roboto-Bold"
+    case RobotoRegular = "Roboto-Regular"
 }
 
 extension UIFont {

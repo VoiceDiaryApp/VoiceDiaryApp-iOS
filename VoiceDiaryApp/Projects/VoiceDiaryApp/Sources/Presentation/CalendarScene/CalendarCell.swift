@@ -33,7 +33,7 @@ final class CalendarCell: UICollectionViewCell {
             make.width.height.equalTo(41)
         }
 
-        dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
+        dayLabel.font = .fontGuide(type: .PretandardRegular, size: 13)
         dayLabel.textColor = UIColor(resource: .calendarTextBlack)
         dayLabel.textAlignment = .center
         dayLabel.snp.makeConstraints { make in
@@ -50,10 +50,10 @@ final class CalendarCell: UICollectionViewCell {
             emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
 
             if isToday {
-                dayLabel.font = UIFont(name: "Roboto-Bold", size: 13)
+                dayLabel.font = .fontGuide(type: .RobotobBold, size: 13)
                 dayLabel.textColor = UIColor(resource: .calendarSelected)
             } else {
-                dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
+                dayLabel.font = .fontGuide(type: .RobotoRegular, size: 13)
                 dayLabel.textColor = UIColor(resource: .calendarTextBlack)
             }
         } else {
