@@ -16,7 +16,6 @@ final class Diary2View: UIView {
     private let emotions: [Emotion] = [.angry, .happy, .neutral, .sad, .smiling, .tired]
     private var emotionButtons: [UIButton] = []
     private let canvasView = PKCanvasView()
-    private let toolPicker = PKToolPicker()
     
     // MARK: - UI Components
     
@@ -50,7 +49,8 @@ final class Diary2View: UIView {
         let button = UIButton()
         button.setTitle("기록하기", for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = UIColor.yellow
+        button.backgroundColor = UIColor(resource: .mainYellow)
+        button.titleLabel?.font = UIFont.fontGuide(type: .PretandardSemiBold, size: 17)
         button.layer.cornerRadius = 8
         return button
     }()
@@ -119,20 +119,6 @@ final class Diary2View: UIView {
         canvasView.backgroundColor = .white
         canvasView.layer.cornerRadius = 8
         canvasView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
-        // ToolPicker 설정
-        DispatchQueue.main.async {
-            if let window = UIApplication.shared.connectedScenes
-                .compactMap({ ($0 as? UIWindowScene)?.windows.first(where: { $0.isKeyWindow }) })
-                .first {
-                let toolPicker = PKToolPicker()
-                toolPicker.selectedTool = PKInkingTool(.pen, color: .systemBlue, width: 5)
-                
-                toolPicker.setVisible(true, forFirstResponder: self.canvasView)
-                toolPicker.addObserver(self.canvasView)
-                self.canvasView.becomeFirstResponder()
-            }
-        }
     }
     
     // MARK: - Emotion Buttons Setup
