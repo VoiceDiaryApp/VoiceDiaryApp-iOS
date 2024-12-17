@@ -69,7 +69,7 @@ final class Diary2View: UIView {
     // MARK: - UI Setup
     
     private func setupUI() {
-        backgroundColor = UIColor(named: "mainBeige")
+        backgroundColor = UIColor(resource: .mainBeige)
     }
     
     private func setupHierarchy() {

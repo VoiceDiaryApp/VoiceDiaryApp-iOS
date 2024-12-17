@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class CalendarCell: UICollectionViewCell {
+final class CalendarCell: UICollectionViewCell {
 
     // MARK: Properties
     private let dayLabel = UILabel()

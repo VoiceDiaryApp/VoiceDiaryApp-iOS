@@ -15,7 +15,7 @@ protocol DiaryViewModelProtocol {
     func addDiaryEntry(for date: Date, emotion: Emotion, content: String)
 }
 
-class DiaryViewModel: DiaryViewModelProtocol {
+final class DiaryViewModel: DiaryViewModelProtocol {
     @Published private(set) var diaryEntries: [DiaryEntry] = []
 
     var diaryEntriesPublisher: Published<[DiaryEntry]>.Publisher { $diaryEntries }

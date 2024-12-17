@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class CalendarVC: UIViewController {
+final class CalendarVC: UIViewController {
 
     private let viewModel: DiaryViewModelProtocol
     private var cancellables: Set<AnyCancellable> = []

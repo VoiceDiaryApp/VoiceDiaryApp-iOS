@@ -12,7 +12,7 @@ protocol CalendarViewDelegate: AnyObject {
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date)
 }
 
-class CalendarView: UIView {
+final class CalendarView: UIView {
 
     // MARK: Properties
     weak var delegate: CalendarViewDelegate?

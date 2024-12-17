@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class CustomNavigationBar: UIView {
+final class CustomNavigationBar: UIView {
 
     private let backButton: UIButton = {
         let button = UIButton()

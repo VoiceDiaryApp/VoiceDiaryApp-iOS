@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class DiaryView: UIView, CalendarViewDelegate {
+final class DiaryView: UIView, CalendarViewDelegate {
 
     var viewModel: DiaryViewModelProtocol!
     var selectedDate: Date?
