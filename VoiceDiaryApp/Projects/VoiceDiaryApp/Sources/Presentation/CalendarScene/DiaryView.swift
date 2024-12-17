@@ -21,7 +21,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     private let yearLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "CalendarTextBlack")
+        label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = UIFont(name: "Pretendard-SemiBold", size: 15)
         label.textAlignment = .center
         return label
@@ -29,7 +29,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     private let monthLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "CalendarTextBlack")
+        label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = UIFont(name: "Pretendard-Bold", size: 20)
         label.textAlignment = .center
         return label
@@ -39,7 +39,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         let button = UIButton()
         let image = UIImage(named: "arrow")?.withRenderingMode(.alwaysTemplate)
         button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "CalendarTextBlack")
+        button.tintColor = UIColor(resource: .calendarTextBlack)
         button.transform = CGAffineTransform(rotationAngle: .pi)
         return button
     }()
@@ -48,7 +48,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         let button = UIButton()
         let image = UIImage(named: "arrow")?.withRenderingMode(.alwaysTemplate)
         button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "CalendarTextBlack")
+        button.tintColor = UIColor(resource: .calendarTextBlack)
         return button
     }()
 
@@ -85,7 +85,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
     private let diaryDateLabel: UILabel = {
         let label = UILabel()
         label.text = ""
-        label.textColor = UIColor(named: "CalendarTextBlack")
+        label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = UIFont(name: "Pretendard-SemiBold", size: 12)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.4
@@ -112,7 +112,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
     private let moreLabel: UILabel = {
         let label = UILabel()
         label.text = "더보기"
-        label.textColor = UIColor(named: "CalendarSelected")
+        label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = UIFont(name: "Pretendard-Regular", size: 11)
 
         let paragraphStyle = NSMutableParagraphStyle()
@@ -133,7 +133,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     private let emptyDiaryLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(named: "CalendarSelected")
+        label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = UIFont(name: "Pretendard-SemiBold", size: 17)
 
         let paragraphStyle = NSMutableParagraphStyle()
@@ -171,7 +171,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
     }
 
     private func setupUI() {
-        backgroundColor = UIColor(named: "mainBeige")
+        backgroundColor = UIColor(resource: .mainBeige)
 
         addSubviews(navigationBar, yearLabel, monthLabel, leftArrowButton, rightArrowButton, calendarView)
 

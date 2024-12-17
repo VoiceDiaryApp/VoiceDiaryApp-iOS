@@ -46,7 +46,7 @@ final class Diary2View: UIView {
         let button = UIButton()
         button.setTitle("기록하기", for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = UIColor(hex: "#FFDF7E")
+        button.backgroundColor = UIColor(resource: .mainYellow)
         button.layer.cornerRadius = 8
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 15)
         return button

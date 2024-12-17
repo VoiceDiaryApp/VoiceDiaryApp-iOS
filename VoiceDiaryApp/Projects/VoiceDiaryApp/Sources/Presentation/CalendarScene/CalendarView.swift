@@ -74,7 +74,7 @@ final class CalendarView: UIView {
         daysOfWeek.forEach { day in
             let label = UILabel()
             label.text = day
-            label.textColor = UIColor(named: "CalendarTextBlack") ?? .black
+            label.textColor = UIColor(resource: .calendarTextBlack)
             label.font = UIFont(name: "Roboto-Regular", size: 13)
             label.textAlignment = .center
             daysStackView.addArrangedSubview(label)

@@ -34,7 +34,7 @@ final class CalendarVC: UIViewController {
     }
 
     private func setupUI() {
-        view.backgroundColor = UIColor(named: "mainBeige")
+        view.backgroundColor = UIColor(resource: .mainBeige)
         view.addSubview(diaryView)
         diaryView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

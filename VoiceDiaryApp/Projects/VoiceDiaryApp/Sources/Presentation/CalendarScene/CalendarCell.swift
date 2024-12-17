@@ -34,7 +34,7 @@ final class CalendarCell: UICollectionViewCell {
         }
 
         dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
-        dayLabel.textColor = UIColor(named: "CalendarTextBlack") ?? .black
+        dayLabel.textColor = UIColor(resource: .calendarTextBlack)
         dayLabel.textAlignment = .center
         dayLabel.snp.makeConstraints { make in
             make.top.equalTo(emojiImageView.snp.bottom).offset(0)
@@ -51,10 +51,10 @@ final class CalendarCell: UICollectionViewCell {
 
             if isToday {
                 dayLabel.font = UIFont(name: "Roboto-Bold", size: 13)
-                dayLabel.textColor = UIColor(named: "CalendarSelected")
+                dayLabel.textColor = UIColor(resource: .calendarSelected)
             } else {
                 dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
-                dayLabel.textColor = UIColor(named: "CalendarTextBlack")
+                dayLabel.textColor = UIColor(resource: .calendarTextBlack)
             }
         } else {
             dayLabel.text = nil
@@ -66,7 +66,7 @@ final class CalendarCell: UICollectionViewCell {
         if isSelected {
             dayLabel.textColor = .white
             let selectedBackground = UIView()
-            selectedBackground.backgroundColor = UIColor(named: "CalendarSelected") ?? .red
+            selectedBackground.backgroundColor = UIColor(resource: .calendarSelected)
             selectedBackground.layer.cornerRadius = 8
             contentView.insertSubview(selectedBackground, belowSubview: dayLabel)
             selectedBackground.snp.makeConstraints { make in
@@ -77,8 +77,8 @@ final class CalendarCell: UICollectionViewCell {
             }
         } else {
             dayLabel.textColor = isToday
-                ? UIColor(named: "CalendarSelected") ?? .red
-                : UIColor(named: "CalendarTextBlack") ?? .black
+            ? UIColor(resource: .calendarSelected)
+            : UIColor(resource: .calendarTextBlack)
             contentView.subviews.filter { $0 != dayLabel && $0 != emojiImageView }.forEach { $0.removeFromSuperview() }
         }
     }
