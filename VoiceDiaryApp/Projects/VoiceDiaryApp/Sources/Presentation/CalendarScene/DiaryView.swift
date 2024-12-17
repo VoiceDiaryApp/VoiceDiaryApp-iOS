@@ -120,6 +120,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
             string: "더보기",
             attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle]
         )
+        label.isUserInteractionEnabled = true
         return label
     }()
 
@@ -221,9 +222,9 @@ final class DiaryView: UIView, CalendarViewDelegate {
             self, action: #selector(didTapLeftArrow), for: .touchUpInside)
         rightArrowButton.addTarget(
             self, action: #selector(didTapRightArrow), for: .touchUpInside)
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapMoreLabel))
-            moreLabel.isUserInteractionEnabled = true
-            moreLabel.addGestureRecognizer(tapGesture)
+        moreLabel.addGestureRecognizer(tapGesture)
     }
 
     @objc private func didTapLeftArrow() {
