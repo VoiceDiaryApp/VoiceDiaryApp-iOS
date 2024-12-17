@@ -7,17 +7,16 @@
 
 import UIKit
 import SnapKit
+import PencilKit
 
 final class Diary2View: UIView {
     
     // MARK: - Properties
     private var selectedEmotion: Emotion?
-    
-    private let emotions: [Emotion] = [
-        .angry, .happy, .neutral, .sad, .smiling, .tired
-    ]
-    
+    private let emotions: [Emotion] = [.angry, .happy, .neutral, .sad, .smiling, .tired]
     private var emotionButtons: [UIButton] = []
+    private let canvasView = PKCanvasView()
+    private let toolPicker = PKToolPicker()
     
     // MARK: - UI Components
     
@@ -35,31 +34,15 @@ final class Diary2View: UIView {
         return stackView
     }()
     
-    private let drawingView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.layer.cornerRadius = 8
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        return view
-    }()
-    
     private let toolView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 8
-        
         view.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
         view.layer.shadowOpacity = 1
         view.layer.shadowOffset = CGSize(width: 0, height: -3)
         view.layer.shadowRadius = 4
         view.layer.masksToBounds = false
-        
-        return view
-    }()
-    
-    private let linkedView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
         return view
     }()
     
@@ -67,9 +50,8 @@ final class Diary2View: UIView {
         let button = UIButton()
         button.setTitle("기록하기", for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = UIColor(resource: .mainYellow)
+        button.backgroundColor = UIColor.yellow
         button.layer.cornerRadius = 8
-        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 15)
         return button
     }()
     
@@ -81,6 +63,7 @@ final class Diary2View: UIView {
         setupHierarchy()
         setupLayout()
         setupEmotionButtons()
+        setupPencilKit()
     }
     
     required init?(coder: NSCoder) {
@@ -94,7 +77,7 @@ final class Diary2View: UIView {
     }
     
     private func setupHierarchy() {
-        addSubviews(navigationBar, moodEmojiView, drawingView, linkedView, toolView, saveButton)
+        addSubviews(navigationBar, moodEmojiView, canvasView, toolView, saveButton)
     }
     
     private func setupLayout() {
@@ -110,20 +93,14 @@ final class Diary2View: UIView {
             make.height.equalTo(46)
         }
         
-        drawingView.snp.makeConstraints { make in
+        canvasView.snp.makeConstraints { make in
             make.top.equalTo(moodEmojiView.snp.bottom).offset(57)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(306)
         }
         
-        linkedView.snp.makeConstraints{ make in
-            make.top.equalTo(drawingView.snp.bottom)
-            make.leading.trailing.equalTo(drawingView)
-            make.height.equalTo(8)
-        }
-        
-        toolView.snp.makeConstraints{ make in
-            make.top.equalTo(drawingView.snp.bottom)
+        toolView.snp.makeConstraints { make in
+            make.top.equalTo(canvasView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(72)
         }
@@ -132,6 +109,29 @@ final class Diary2View: UIView {
             make.leading.trailing.equalToSuperview().inset(44)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-21)
             make.height.equalTo(57)
+        }
+    }
+    
+    // MARK: - PencilKit Setup
+    
+    private func setupPencilKit() {
+        canvasView.drawingPolicy = .anyInput
+        canvasView.backgroundColor = .white
+        canvasView.layer.cornerRadius = 8
+        canvasView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+
+        // ToolPicker 설정
+        DispatchQueue.main.async {
+            if let window = UIApplication.shared.connectedScenes
+                .compactMap({ ($0 as? UIWindowScene)?.windows.first(where: { $0.isKeyWindow }) })
+                .first {
+                let toolPicker = PKToolPicker()
+                toolPicker.selectedTool = PKInkingTool(.pen, color: .systemBlue, width: 5)
+                
+                toolPicker.setVisible(true, forFirstResponder: self.canvasView)
+                toolPicker.addObserver(self.canvasView)
+                self.canvasView.becomeFirstResponder()
+            }
         }
     }
     
@@ -156,7 +156,6 @@ final class Diary2View: UIView {
     
     private func updateSelectedEmotion(to newEmotion: Emotion) {
         selectedEmotion = newEmotion
-        
         for (index, button) in emotionButtons.enumerated() {
             let emotion = emotions[index]
             let imageName = (emotion == newEmotion) ? "\(emotion.rawValue)_stroke" : emotion.rawValue
