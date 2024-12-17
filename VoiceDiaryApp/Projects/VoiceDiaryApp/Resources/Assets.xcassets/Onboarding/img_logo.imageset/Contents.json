@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "backButton.svg",
+      "filename" : "Group 37158.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "Group 37158@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Group 37158@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

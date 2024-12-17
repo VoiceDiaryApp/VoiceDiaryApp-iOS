@@ -79,6 +79,7 @@ private extension HomeVC {
     func setUI() {
         view.backgroundColor = .white
         self.navigationController?.navigationBar.isHidden = true
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         goToDiaryButton.tapPublisher
             .sink { _ in

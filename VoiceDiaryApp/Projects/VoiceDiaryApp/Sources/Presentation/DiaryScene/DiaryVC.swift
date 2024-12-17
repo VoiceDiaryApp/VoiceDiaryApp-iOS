@@ -34,6 +34,12 @@ final class DiaryVC: UIViewController {
     
     // MARK: - UI Components
     
+    private let navigationBar: CustomNavigationBar = {
+        let navigationBar = CustomNavigationBar()
+        navigationBar.setTitleLabel = "일기 쓰기"
+        return navigationBar
+    }()
+    
     private let microphoneStartButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(resource: .btnMicrophoneStart), for: .normal)
@@ -99,6 +105,10 @@ private extension DiaryVC {
     func setUI() {
         view.backgroundColor  = .white
         
+        navigationBar.backButtonAction = {
+            self.navigationController?.popViewController(animated: true)
+        }
+        
         microphoneStartButton.tapPublisher
             .sink(receiveValue: {
                 self.goToDrawButton.isHidden = true
@@ -132,7 +142,8 @@ private extension DiaryVC {
     }
     
     func setHierarchy() {
-        view.addSubviews(microphoneLabel,
+        view.addSubviews(navigationBar,
+                         microphoneLabel,
                          microphoneStartButton,
                          microphoneEndButton,
                          goToDrawButton,
@@ -141,6 +152,13 @@ private extension DiaryVC {
     }
     
     func setLayout() {
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 55))
+            
+        }
+        
         microphoneLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(100)
             $0.centerX.equalToSuperview()
