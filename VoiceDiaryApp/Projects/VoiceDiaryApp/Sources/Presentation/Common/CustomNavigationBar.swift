@@ -6,71 +6,172 @@
 //
 
 import UIKit
+
 import SnapKit
+import Combine
 
 final class CustomNavigationBar: UIView {
-
+    
+    // MARK: - Properties
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    var setTitleLabel: String? {
+        get { titleLabel.text }
+        set { titleLabel.text = newValue }
+    }
+    
+    var isBackButtonIncluded: Bool {
+        get { !backButton.isHidden }
+        set { backButton.isHidden = !newValue }
+    }
+    
+    var isExitButtonIncluded: Bool {
+        get { !exitButton.isHidden }
+        set { exitButton.isHidden = !newValue }
+    }
+    
+    var isLetterButtonIncluded: Bool {
+        get { !letterButton.isHidden }
+        set { letterButton.isHidden = !newValue }
+    }
+    
+    var isSaveButtonIncluded: Bool {
+        get { !saveButton.isHidden }
+        set { saveButton.isHidden = !newValue }
+    }
+    
+    var backButtonAction: (() -> Void)?
+    var letterButtonAction: (() -> Void)?
+    var exitButtonAction: (() -> Void)?
+    var saveButtonAction: (() -> Void)?
+    
+    // MARK: - UI Components
+    
     private let backButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "backButton.svg"), for: .normal)
+        button.setImage(UIImage(resource: .btnBack), for: .normal)
         button.contentMode = .scaleAspectFit
         return button
     }()
-
+    
+    private let exitButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(resource: .btnExit), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.isHidden = true
+        return button
+    }()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = ""
         label.textColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
-        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 20)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.17
         label.attributedText = NSMutableAttributedString(string: "", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.textAlignment = .center
         return label
     }()
-
-    private let rightIcon: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "rightIcon")
-        imageView.contentMode = .scaleAspectFit
-        return imageView
+    
+    private let letterButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(resource: .btnLetter), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.isHidden = true
+        return button
     }()
-
+    
+    private let saveButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(resource: .btnSave), for: .normal)
+        button.contentMode = .scaleAspectFit
+        button.isHidden = true
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .clear
-        setupUI()
+        
+        setUI()
+        setHierarchy()
+        setLayout()
+        setButton()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    private func setupUI() {
-        // Add subviews
-        addSubviews(backButton, titleLabel, rightIcon)
-
-        // Back Button Constraints
+private extension CustomNavigationBar {
+    
+    func setUI() {
+        self.backgroundColor = .clear
+    }
+    
+    func setHierarchy() {
+        addSubviews(backButton,
+                    exitButton,
+                    titleLabel,
+                    letterButton,
+                    saveButton)
+    }
+    
+    func setLayout() {
         backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(19)
+            make.leading.equalToSuperview().inset(19)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
-
-        // Title Label Constraints
+        
+        exitButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(19)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(24)
+        }
+        
         titleLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-
-        // Right Icon Constraints
-        rightIcon.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-26)
+        
+        letterButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(26)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(31)
+            make.size.equalTo(31)
+        }
+        
+        saveButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(26)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(31)
         }
     }
     
-    func setTitle(_ title: String) {
-        titleLabel.text = title
+    func setButton() {
+        backButton.tapPublisher
+            .sink(receiveValue: {
+                self.backButtonAction?()
+            })
+            .store(in: &cancellables)
+        
+        letterButton.tapPublisher
+            .sink(receiveValue: {
+                self.letterButtonAction?()
+            })
+            .store(in: &cancellables)
+        
+        exitButton.tapPublisher
+            .sink(receiveValue: {
+                self.exitButtonAction?()
+            })
+            .store(in: &cancellables)
+        
+        saveButton.tapPublisher
+            .sink(receiveValue: {
+                self.saveButtonAction?()
+            })
+            .store(in: &cancellables)
     }
 }

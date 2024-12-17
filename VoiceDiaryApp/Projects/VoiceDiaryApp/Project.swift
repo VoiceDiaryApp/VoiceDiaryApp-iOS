@@ -31,6 +31,10 @@ let project = Project(
                         "Roboto-Black.ttf",
                         "Roboto-Bold.ttf",
                         "Roboto-Regular.ttf"
+                    ],
+                    "UIUserInterfaceStyle": "Light",
+                    "UISupportedInterfaceOrientations": [
+                        "UIInterfaceOrientationPortrait"
                     ]
                 ]
             ),

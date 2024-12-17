@@ -32,7 +32,7 @@ final class Diary2View: UIView {
     
     let navigationBar: CustomNavigationBar = {
         let navBar = CustomNavigationBar()
-        navBar.setTitle("일기 쓰기")
+//        navBar.setTitle("일기 쓰기")
         return navBar
     }()
     
@@ -151,7 +151,6 @@ final class Diary2View: UIView {
         canvasView.layer.cornerRadius = 8
         canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
     }
-    
     // MARK: - Emotion Buttons Setup
     
     private func setupEmotionButtons() {
@@ -198,7 +197,6 @@ final class Diary2View: UIView {
     }
     
     // MARK: - Actions
-    
     @objc private func emotionButtonTapped(_ sender: UIButton) {
         let tappedEmotion = emotions[sender.tag]
         updateSelectedEmotion(to: tappedEmotion)
@@ -212,7 +210,6 @@ final class Diary2View: UIView {
             button.setImage(UIImage(named: imageName), for: .normal)
         }
     }
-    
     @objc private func toolButtonTapped(_ sender: UIButton) {
         if sender == toolEraser {
             canvasView.tool = PKEraserTool(.vector)

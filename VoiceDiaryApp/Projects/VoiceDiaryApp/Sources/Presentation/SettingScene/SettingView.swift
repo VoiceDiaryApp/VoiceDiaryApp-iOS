@@ -11,10 +11,10 @@ import SnapKit
 class SettingView: UIView {
     
     // MARK: - UI Elements
-    let navigationBar: CustomNavigationBar = {
-        let navBar = CustomNavigationBar()
-        navBar.setTitle("설정")
-        return navBar
+    private let navigationBar: CustomNavigationBar = {
+        let navigationBar = CustomNavigationBar()
+        navigationBar.setTitleLabel = "설정"
+        return navigationBar
     }()
     
     // MARK: - Initializer

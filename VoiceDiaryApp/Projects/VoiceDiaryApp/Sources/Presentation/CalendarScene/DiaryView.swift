@@ -15,7 +15,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     let navigationBar: CustomNavigationBar = {
         let navBar = CustomNavigationBar()
-        navBar.setTitle("캘린더")
+        navBar.setTitleLabel = "캘린더"
         return navBar
     }()
 
