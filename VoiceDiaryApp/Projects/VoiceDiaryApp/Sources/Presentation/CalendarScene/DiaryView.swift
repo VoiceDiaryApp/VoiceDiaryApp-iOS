@@ -22,7 +22,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
     private let yearLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
-        label.font = UIFont(name: "Pretendard-SemiBold", size: 15)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 15)
         label.textAlignment = .center
         return label
     }()
@@ -30,8 +30,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
     private let monthLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
-        label.font = UIFont(name: "Pretendard-Bold", size: 20)
-        label.textAlignment = .center
+        label.font = .fontGuide(type: .PretandardBold, size: 20)
         return label
     }()
 
@@ -70,7 +69,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         let label = UILabel()
         label.text = "Diary Title"
         label.textColor = .black
-        label.font = UIFont(name: "Pretendard-SemiBold", size: 15)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 15)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.12
         label.attributedText = NSMutableAttributedString(
@@ -86,7 +85,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         let label = UILabel()
         label.text = ""
         label.textColor = UIColor(resource: .calendarTextBlack)
-        label.font = UIFont(name: "Pretendard-SemiBold", size: 12)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 12)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.4
         label.attributedText = NSMutableAttributedString(
@@ -102,7 +101,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         let label = UILabel()
         label.text = "Diary Content"
         label.textColor = .black
-        label.font = UIFont(name: "Pretendard-Regular", size: 13)
+        label.font = .fontGuide(type: .PretandardRegular, size: 13)
         label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .justified
@@ -448,7 +447,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let content = trimmedText.first == " " ? String(trimmedText.dropFirst()) : trimmedText
 
-        let font = UIFont(name: "Pretendard-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13)
+        let font = UIFont.fontGuide(type: .PretandardRegular, size: 13)
         let labelWidth = UIScreen.main.bounds.width - 72
         let maxLines = 3
         let lineSpacing: CGFloat = 2.0

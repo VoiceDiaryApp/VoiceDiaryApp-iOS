@@ -25,7 +25,7 @@ final class DiaryEntryCell: UICollectionViewCell {
         contentView.addSubviews(dayLabel, emojiImageView)
 
         dayLabel.textAlignment = .center
-        dayLabel.font = UIFont(name: "Roboto-Regular", size: 13)
+        dayLabel.font = .fontGuide(type: .RobotoRegular, size: 13)
 
         emojiImageView.contentMode = .scaleAspectFit
 
