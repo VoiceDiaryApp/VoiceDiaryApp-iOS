@@ -21,6 +21,11 @@ final class CustomNavigationBar: UIView {
         set { titleLabel.text = newValue }
     }
     
+    var isBackButtonIncluded: Bool {
+        get { !backButton.isHidden }
+        set { backButton.isHidden = !newValue }
+    }
+    
     var isExitButtonIncluded: Bool {
         get { !exitButton.isHidden }
         set { exitButton.isHidden = !newValue }
@@ -37,6 +42,9 @@ final class CustomNavigationBar: UIView {
     }
     
     var backButtonAction: (() -> Void)?
+    var letterButtonAction: (() -> Void)?
+    var exitButtonAction: (() -> Void)?
+    var saveButtonAction: (() -> Void)?
     
     // MARK: - UI Components
     
@@ -145,6 +153,24 @@ private extension CustomNavigationBar {
         backButton.tapPublisher
             .sink(receiveValue: {
                 self.backButtonAction?()
+            })
+            .store(in: &cancellables)
+        
+        letterButton.tapPublisher
+            .sink(receiveValue: {
+                self.letterButtonAction?()
+            })
+            .store(in: &cancellables)
+        
+        exitButton.tapPublisher
+            .sink(receiveValue: {
+                self.exitButtonAction?()
+            })
+            .store(in: &cancellables)
+        
+        saveButton.tapPublisher
+            .sink(receiveValue: {
+                self.saveButtonAction?()
             })
             .store(in: &cancellables)
     }
