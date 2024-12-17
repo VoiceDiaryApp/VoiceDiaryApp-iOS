@@ -42,6 +42,21 @@ final class Diary2View: UIView {
         return view
     }()
     
+    private let toolView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
+        
+        // Drop shadow setup
+        view.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
+        view.layer.shadowOpacity = 1
+        view.layer.shadowOffset = CGSize(width: 0, height: -3)
+        view.layer.shadowRadius = 4
+        view.layer.masksToBounds = false
+        
+        return view
+    }()
+    
     private let saveButton: UIButton = {
         let button = UIButton()
         button.setTitle("기록하기", for: .normal)
@@ -73,7 +88,7 @@ final class Diary2View: UIView {
     }
     
     private func setupHierarchy() {
-        addSubviews(navigationBar, moodEmojiView, drawingView, saveButton)
+        addSubviews(navigationBar, moodEmojiView, drawingView, toolView, saveButton)
     }
     
     private func setupLayout() {
@@ -90,9 +105,15 @@ final class Diary2View: UIView {
         }
         
         drawingView.snp.makeConstraints { make in
-            make.top.equalTo(moodEmojiView.snp.bottom).offset(17)
+            make.top.equalTo(moodEmojiView.snp.bottom).offset(57)
             make.leading.trailing.equalToSuperview().inset(28)
-            make.bottom.equalTo(saveButton.snp.top).offset(-24)
+            make.height.equalTo(306)
+        }
+        
+        toolView.snp.makeConstraints{ make in
+            make.top.equalTo(drawingView.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(28)
+            make.height.equalTo(72)
         }
         
         saveButton.snp.makeConstraints { make in
