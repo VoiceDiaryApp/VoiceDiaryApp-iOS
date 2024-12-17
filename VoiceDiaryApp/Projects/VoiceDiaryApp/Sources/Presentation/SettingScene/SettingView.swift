@@ -48,4 +48,9 @@ class SettingView: UIView {
             make.height.equalTo(55)
         }
     }
+    
+    // MARK: - Public Method
+    func setNavigationBarBackAction(_ action: @escaping () -> Void) {
+        navigationBar.backButtonAction = action
+    }
 }
