@@ -18,9 +18,19 @@ let project = Project(
                     "NSPhotoLibraryAddUsageDescription": "사진을 저장하기 위해 앨범 접근 권한이 필요합니다.",
                     "NSSpeechRecognitionUsageDescription": "음성 명령 입력을 위해 음성 인식 권한이 필요합니다.",
                     "UIAppFonts": [
-                        "Pretendard-Medium.otf",
-                        "Pretendard-SemiBold.otf",
-                        "Pretendard-Bold.otf"
+                        "NotoSans-Bold.ttf",
+                        "Pretendard-Black.ttf",
+                        "Pretendard-Bold.ttf",
+                        "Pretendard-ExtraBold.ttf",
+                        "Pretendard-ExtraLight.ttf",
+                        "Pretendard-Light.ttf",
+                        "Pretendard-Medium.ttf",
+                        "Pretendard-Regular.ttf",
+                        "Pretendard-SemiBold.ttf",
+                        "Pretendard-Thin.ttf",
+                        "Roboto-Black.ttf",
+                        "Roboto-Bold.ttf",
+                        "Roboto-Regular.ttf"
                     ]
                 ]
             ),
