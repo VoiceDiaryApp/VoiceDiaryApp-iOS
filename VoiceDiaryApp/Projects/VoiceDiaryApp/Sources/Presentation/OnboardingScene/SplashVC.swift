@@ -63,7 +63,7 @@ private extension SplashVC {
     }
     
     func showNextPage() {
-        let homeVC = HomeVC()
-        self.navigationController?.pushViewController(homeVC, animated: true)
+        let onboardingVC = OnboardingVC()
+        self.navigationController?.pushViewController(onboardingVC, animated: true)
     }
 }
