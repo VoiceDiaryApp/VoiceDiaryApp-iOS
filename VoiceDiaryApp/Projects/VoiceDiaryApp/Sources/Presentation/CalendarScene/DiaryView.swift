@@ -222,6 +222,9 @@ final class DiaryView: UIView, CalendarViewDelegate {
             self, action: #selector(didTapLeftArrow), for: .touchUpInside)
         rightArrowButton.addTarget(
             self, action: #selector(didTapRightArrow), for: .touchUpInside)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapMoreLabel))
+            moreLabel.isUserInteractionEnabled = true
+            moreLabel.addGestureRecognizer(tapGesture)
     }
 
     @objc private func didTapLeftArrow() {
@@ -232,6 +235,29 @@ final class DiaryView: UIView, CalendarViewDelegate {
         animateCalendarTransition(byAddingMonths: 1, direction: .fromRight)
     }
 
+    @objc private func didTapMoreLabel() {
+        if moreLabel.text == "일기 쓰러 가기" {
+            navigateToDiaryVC()
+        }
+    }
+    
+    private func navigateToDiaryVC() {
+        guard let currentVC = findViewController() else { return }
+        let diaryVC = DiaryVC()
+        currentVC.navigationController?.pushViewController(diaryVC, animated: true)
+    }
+
+    private func findViewController() -> UIViewController? {
+        var responder: UIResponder? = self
+        while responder != nil {
+            responder = responder?.next
+            if let viewController = responder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
+    }
+    
     private func animateCalendarTransition(
         byAddingMonths months: Int,
         direction: CATransitionSubtype
