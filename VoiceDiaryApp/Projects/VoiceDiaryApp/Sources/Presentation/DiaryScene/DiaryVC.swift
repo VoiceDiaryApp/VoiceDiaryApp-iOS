@@ -58,7 +58,7 @@ final class DiaryVC: UIViewController {
     private let goToDrawButton: UIButton = {
         let button = UIButton()
         button.setTitle("그림 그리러 가기", for: .normal)
-        button.backgroundColor = .green
+        button.backgroundColor = UIColor(resource: .mainYellow)
         button.titleLabel?.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         button.layer.cornerRadius = 8
         button.isHidden = true
@@ -103,7 +103,7 @@ final class DiaryVC: UIViewController {
 private extension DiaryVC {
     
     func setUI() {
-        view.backgroundColor  = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         
         navigationBar.backButtonAction = {

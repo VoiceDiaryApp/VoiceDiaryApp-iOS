@@ -61,7 +61,7 @@ private extension LetterVC {
     
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
         
         navigationBar.exitButtonAction = {
             print("tapExitButton")

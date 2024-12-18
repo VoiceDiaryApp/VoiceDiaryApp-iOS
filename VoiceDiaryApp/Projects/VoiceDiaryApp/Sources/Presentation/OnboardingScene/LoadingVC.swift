@@ -44,7 +44,7 @@ private extension LoadingVC {
     
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
     }
     
     func setHierarchy() {
