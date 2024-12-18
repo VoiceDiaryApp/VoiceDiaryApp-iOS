@@ -10,7 +10,7 @@ import SnapKit
 
 final class DiaryView: UIView, CalendarViewDelegate {
 
-    var viewModel: DiaryViewModelProtocol!
+    var viewModel: CalendarVMProtocol!
     var selectedDate: Date?
 
     let navigationBar: CustomNavigationBar = {
@@ -151,7 +151,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     private var currentDate: Date = Date()
 
-    init(viewModel: DiaryViewModelProtocol) {
+    init(viewModel: CalendarVMProtocol) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         

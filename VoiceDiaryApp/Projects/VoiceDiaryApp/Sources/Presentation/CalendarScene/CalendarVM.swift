@@ -1,5 +1,5 @@
 //
-//  DiaryViewModel.swift
+//  CalendarVM.swift
 //  VoiceDiaryApp
 //
 //  Created by 신호연 on 11/29/24.
@@ -8,14 +8,14 @@
 import Foundation
 import Combine
 
-protocol DiaryViewModelProtocol {
+protocol CalendarVMProtocol {
     var diaryEntries: [DiaryEntry] { get }
     var diaryEntriesPublisher: Published<[DiaryEntry]>.Publisher { get }
     func fetchDiary(for date: Date)
     func addDiaryEntry(for date: Date, emotion: Emotion, content: String)
 }
 
-final class DiaryViewModel: DiaryViewModelProtocol {
+final class CalendarVM: CalendarVMProtocol {
     @Published private(set) var diaryEntries: [DiaryEntry] = []
 
     var diaryEntriesPublisher: Published<[DiaryEntry]>.Publisher { $diaryEntries }
