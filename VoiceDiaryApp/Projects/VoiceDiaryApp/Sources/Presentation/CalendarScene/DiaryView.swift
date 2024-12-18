@@ -10,7 +10,7 @@ import SnapKit
 
 final class DiaryView: UIView, CalendarViewDelegate {
 
-    var viewModel: DiaryViewModelProtocol!
+    var viewModel: CalendarVMProtocol!
     var selectedDate: Date?
 
     let navigationBar: CustomNavigationBar = {
@@ -19,7 +19,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         return navBar
     }()
 
-    private let yearLabel: UILabel = {
+    let yearLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = .fontGuide(type: .PretandardSemiBold, size: 15)
@@ -27,7 +27,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         return label
     }()
 
-    private let monthLabel: UILabel = {
+    let monthLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = .fontGuide(type: .PretandardBold, size: 20)
@@ -151,9 +151,14 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
     private var currentDate: Date = Date()
 
-    init(viewModel: DiaryViewModelProtocol) {
+    init(viewModel: CalendarVMProtocol) {
         self.viewModel = viewModel
         super.init(frame: .zero)
+        
+        navigationBar.backButtonAction = { [weak self] in
+            self?.navigateBack()
+        }
+        
         setupUI()
         configureDateLabels()
         setupActions()
@@ -164,6 +169,11 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
         let hasDiary = checkIfDiaryExists(for: selectedDate!)
         updateDiaryContentView(for: selectedDate!, hasDiary: hasDiary)
+    }
+    
+    private func navigateBack() {
+        guard let currentVC = findViewController() else { return }
+        currentVC.navigationController?.popViewController(animated: true)
     }
 
     required init?(coder: NSCoder) {
