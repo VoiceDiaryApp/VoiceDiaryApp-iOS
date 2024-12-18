@@ -58,16 +58,21 @@ final class DiaryVC: UIViewController {
     private let goToDrawButton: UIButton = {
         let button = UIButton()
         button.setTitle("그림 그리러 가기", for: .normal)
-        button.backgroundColor = UIColor(resource: .mainYellow)
+        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(UIColor(resource: .calendarTextBlack), for: .disabled)
+        button.setBackgroundColor(UIColor(resource: .mainYellow), for: .normal)
+        button.setBackgroundColor(UIColor(resource: .mainYellow).withAlphaComponent(0.5),
+                                  for: .disabled)
         button.titleLabel?.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         button.layer.cornerRadius = 8
-        button.isHidden = true
+        button.isEnabled = false
         return button
     }()
     
     private let microphoneStartLabel: UILabel = {
         let label = UILabel()
         label.text = "기록 시작"
+        label.textColor = UIColor(resource: .calendarSelected)
         label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         return label
     }()
@@ -75,6 +80,7 @@ final class DiaryVC: UIViewController {
     private let microphoneEndLabel: UILabel = {
         let label = UILabel()
         label.text = "기록 중지"
+        label.textColor = UIColor(resource: .btnUnselected)
         label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         return label
     }()
@@ -112,7 +118,7 @@ private extension DiaryVC {
         
         microphoneStartButton.tapPublisher
             .sink(receiveValue: {
-                self.goToDrawButton.isHidden = true
+                self.goToDrawButton.isEnabled = false
                 self.startTranscribing()
             })
             .store(in: &cancellables)
@@ -120,9 +126,7 @@ private extension DiaryVC {
         microphoneEndButton.tapPublisher
             .sink(receiveValue: {
                 self.tapRecordEnd.send(self.microphoneLabel.text ?? "")
-                if self.microphoneLabel.text != "" {
-                    self.goToDrawButton.isHidden = false
-                }
+                self.goToDrawButton.isEnabled = (self.microphoneLabel.text != "")
                 self.stopTranscribing()
             })
             .store(in: &cancellables)
@@ -163,35 +167,35 @@ private extension DiaryVC {
         }
         
         microphoneLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(100)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(125)
             $0.centerX.equalToSuperview()
         }
         
         goToDrawButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-117)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-50)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(SizeLiterals.Screen.screenWidth - 87)
             $0.height.equalTo(57)
         }
         
         microphoneStartLabel.snp.makeConstraints {
-            $0.bottom.equalTo(goToDrawButton.snp.top).offset(-32)
+            $0.bottom.equalTo(goToDrawButton.snp.top).offset(-50)
             $0.centerX.equalTo(microphoneStartButton)
         }
         
         microphoneStartButton.snp.makeConstraints {
-            $0.bottom.equalTo(microphoneStartLabel.snp.top)
+            $0.bottom.equalTo(microphoneStartLabel.snp.top).offset(-10)
             $0.leading.equalToSuperview().inset((SizeLiterals.Screen.screenWidth - SizeLiterals.calSupporWidth(width: 75) * 2 - 60) / 2)
             $0.size.equalTo(SizeLiterals.calSupporWidth(width: 75))
         }
         
         microphoneEndLabel.snp.makeConstraints {
-            $0.bottom.equalTo(goToDrawButton.snp.top).offset(-32)
+            $0.bottom.equalTo(goToDrawButton.snp.top).offset(-50)
             $0.centerX.equalTo(microphoneEndButton)
         }
         
         microphoneEndButton.snp.makeConstraints {
-            $0.bottom.equalTo(microphoneEndLabel.snp.top)
+            $0.bottom.equalTo(microphoneEndLabel.snp.top).offset(-10)
             $0.trailing.equalToSuperview().inset((SizeLiterals.Screen.screenWidth - SizeLiterals.calSupporWidth(width: 75) * 2 - 60) / 2)
             $0.size.equalTo(SizeLiterals.calSupporWidth(width: 75))
         }
@@ -202,6 +206,8 @@ private extension DiaryVC {
         isTranscribing = true
         microphoneStartButton.isEnabled = !isTranscribing
         microphoneEndButton.isEnabled = isTranscribing
+        microphoneStartLabel.textColor = UIColor(resource: .btnUnselected)
+        microphoneEndLabel.textColor = UIColor(resource: .calendarSelected)
         
         if audioEngine.isRunning {
             audioEngine.stop()
@@ -274,5 +280,7 @@ private extension DiaryVC {
         isTranscribing = false
         microphoneStartButton.isEnabled = !isTranscribing
         microphoneEndButton.isEnabled = isTranscribing
+        microphoneStartLabel.textColor = UIColor(resource: .calendarSelected)
+        microphoneEndLabel.textColor = UIColor(resource: .btnUnselected)
     }
 }
