@@ -11,7 +11,7 @@ import Combine
 final class Diary2VC: UIViewController {
     
     // MARK: - Properties
-    private let viewModel = Diary2ViewModel()
+    private let viewModel = Diary2VM()
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - View
@@ -25,19 +25,22 @@ final class Diary2VC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
-        diaryView.delegate = self
         bindViewModel()
+        bindActions()
     }
     
     // MARK: - ViewModel Binding
     private func bindViewModel() {
         
     }
-}
-
-extension Diary2VC: Diary2ViewDelegate {
-    func saveButtonTapped() {
-        let loadingVC = LoadingVC()
-        self.navigationController?.pushViewController(loadingVC, animated: true)
+    
+    // MARK: - Actions Binding
+    private func bindActions() {
+        diaryView.saveButton.tapPublisher
+            .sink { [weak self] _ in
+                let loadingVC = LoadingVC()
+                self?.navigationController?.pushViewController(loadingVC, animated: true)
+            }
+            .store(in: &cancellables)
     }
 }

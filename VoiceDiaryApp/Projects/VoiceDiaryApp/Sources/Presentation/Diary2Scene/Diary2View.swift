@@ -74,7 +74,7 @@ final class Diary2View: UIView {
         return view
     }()
     
-    private lazy var saveButton: UIButton = {
+    internal lazy var saveButton: UIButton = {
         let button = UIButton()
         button.setTitle("기록하기", for: .normal)
         button.setTitleColor(.black, for: .normal)
