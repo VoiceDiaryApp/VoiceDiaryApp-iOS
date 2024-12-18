@@ -30,10 +30,10 @@ final class Diary2View: UIView {
     
     // MARK: - UI Components
     
-    let navigationBar: CustomNavigationBar = {
-        let navBar = CustomNavigationBar()
-//        navBar.setTitle("일기 쓰기")
-        return navBar
+    private let navigationBar: CustomNavigationBar = {
+        let navigationBar = CustomNavigationBar()
+        navigationBar.setTitleLabel = "일기 쓰기"
+        return navigationBar
     }()
     
     private let moodEmojiView: UIStackView = {
@@ -227,9 +227,19 @@ final class Diary2View: UIView {
     }
 
     private func presentColorPicker() {
-        if let viewController = self.window?.rootViewController {
-            viewController.present(colorPickerVC, animated: true, completion: nil)
+        guard let topController = findTopViewController() else { return }
+        topController.present(colorPickerVC, animated: true, completion: nil)
+    }
+
+    private func findTopViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else { return nil }
+        
+        var topController = keyWindow.rootViewController
+        while let presentedController = topController?.presentedViewController {
+            topController = presentedController
         }
+        return topController
     }
 }
 
