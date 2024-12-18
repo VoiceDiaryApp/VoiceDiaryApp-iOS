@@ -175,15 +175,4 @@ private extension CustomNavigationBar {
             })
             .store(in: &cancellables)
     }
-    
-    func setSwipeGesture() {
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture))
-        swipeGesture.direction = .right
-        swipeGesture.cancelsTouchesInView = false
-        self.addGestureRecognizer(swipeGesture)
-    }
-    
-    @objc private func handleSwipeGesture() {
-        backButtonAction?()
-    }
 }
