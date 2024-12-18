@@ -252,6 +252,7 @@ final class Diary2View: UIView {
     @objc private func emotionButtonTapped(_ sender: UIButton) {
         let tappedEmotion = emotions[sender.tag]
         updateSelectedEmotion(to: tappedEmotion)
+        self.makeVibrate(degree: .medium)
     }
     
     private func updateSelectedEmotion(to newEmotion: Emotion) {
