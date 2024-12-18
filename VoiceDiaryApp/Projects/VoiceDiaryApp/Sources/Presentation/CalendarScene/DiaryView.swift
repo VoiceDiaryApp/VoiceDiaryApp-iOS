@@ -154,6 +154,11 @@ final class DiaryView: UIView, CalendarViewDelegate {
     init(viewModel: DiaryViewModelProtocol) {
         self.viewModel = viewModel
         super.init(frame: .zero)
+        
+        navigationBar.backButtonAction = { [weak self] in
+            self?.navigateBack()
+        }
+        
         setupUI()
         configureDateLabels()
         setupActions()
@@ -164,6 +169,11 @@ final class DiaryView: UIView, CalendarViewDelegate {
 
         let hasDiary = checkIfDiaryExists(for: selectedDate!)
         updateDiaryContentView(for: selectedDate!, hasDiary: hasDiary)
+    }
+    
+    private func navigateBack() {
+        guard let currentVC = findViewController() else { return }
+        currentVC.navigationController?.popViewController(animated: true)
     }
 
     required init?(coder: NSCoder) {
