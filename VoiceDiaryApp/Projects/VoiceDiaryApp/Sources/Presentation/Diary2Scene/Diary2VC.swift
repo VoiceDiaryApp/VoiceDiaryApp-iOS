@@ -25,11 +25,19 @@ final class Diary2VC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
+        diaryView.delegate = self
         bindViewModel()
     }
     
     // MARK: - ViewModel Binding
     private func bindViewModel() {
         
+    }
+}
+
+extension Diary2VC: Diary2ViewDelegate {
+    func saveButtonTapped() {
+        let loadingVC = LoadingVC()
+        self.navigationController?.pushViewController(loadingVC, animated: true)
     }
 }

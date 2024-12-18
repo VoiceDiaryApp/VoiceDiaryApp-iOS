@@ -9,7 +9,13 @@ import UIKit
 import SnapKit
 import PencilKit
 
+protocol Diary2ViewDelegate: AnyObject {
+    func saveButtonTapped()
+}
+
 final class Diary2View: UIView {
+    
+    weak var delegate: Diary2ViewDelegate?
     
     // MARK: - Properties
     private var selectedEmotion: Emotion?
@@ -68,7 +74,7 @@ final class Diary2View: UIView {
         return view
     }()
     
-    private let saveButton: UIButton = {
+    private lazy var saveButton: UIButton = {
         let button = UIButton()
         button.setTitle("기록하기", for: .normal)
         button.setTitleColor(.black, for: .normal)
@@ -89,6 +95,7 @@ final class Diary2View: UIView {
         setupPencilKit()
         setupToolButtons()
         setupColorPicker()
+        setupSaveButtonAction()
     }
     
     required init?(coder: NSCoder) {
@@ -173,10 +180,10 @@ final class Diary2View: UIView {
                      (toolFinePen, "tool_FinePen"),
                      (toolBoldPen, "tool_BoldPen"),
                      (toolCalligraphyPen, "tool_CalligraphyPen")]
-
+        
         let spacings: [CGFloat] = [16, 19, 15, 17, 17]
         var previousButton: UIButton?
-
+        
         tools.enumerated().forEach { index, tool in
             let (button, imageName) = tool
             let image = UIImage(named: imageName)
@@ -194,7 +201,7 @@ final class Diary2View: UIView {
             }
             previousButton = button
         }
-
+        
         toolColorPicker.layer.cornerRadius = 22
         toolColorPicker.layer.borderWidth = 8.5
         toolColorPicker.layer.borderColor = currentColor.cgColor
@@ -206,31 +213,31 @@ final class Diary2View: UIView {
         innerCircle.layer.cornerRadius = 13.5
         innerCircle.layer.masksToBounds = true
         toolColorPicker.addSubview(innerCircle)
-
+        
         innerCircle.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(27)
         }
-
+        
         toolColorPicker.addTarget(self, action: #selector(colorPickerTapped), for: .touchUpInside)
         toolView.addSubview(toolColorPicker)
-
+        
         toolColorPicker.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.trailing.equalToSuperview().offset(-26)
             make.width.height.equalTo(44)
         }
     }
-
+    
     @objc private func colorPickerTapped() {
         presentColorPicker()
     }
-
+    
     private func presentColorPicker() {
         guard let topController = findTopViewController() else { return }
         topController.present(colorPickerVC, animated: true, completion: nil)
     }
-
+    
     private func findTopViewController() -> UIViewController? {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else { return nil }
@@ -279,6 +286,13 @@ final class Diary2View: UIView {
         }
     }
     
+    private func setupSaveButtonAction() {
+        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func saveButtonTapped() {
+        delegate?.saveButtonTapped()
+    }
 }
 
 // MARK: - UIColorPickerViewControllerDelegate
