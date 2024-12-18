@@ -35,6 +35,8 @@ final class CalendarVC: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = UIColor(resource: .mainBeige)
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        
         view.addSubview(diaryView)
         diaryView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
