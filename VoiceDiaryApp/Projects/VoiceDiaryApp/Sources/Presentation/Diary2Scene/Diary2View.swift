@@ -172,22 +172,74 @@ final class Diary2View: UIView {
                      (toolPencil, "tool_Pencil"),
                      (toolFinePen, "tool_FinePen"),
                      (toolBoldPen, "tool_BoldPen"),
-                     (toolCalligraphyPen, "tool_CalligraphyPen"),
-                     (toolColorPicker, "tool_ColorPicker")]
-        
-        tools.forEach { button, imageName in
+                     (toolCalligraphyPen, "tool_CalligraphyPen")]
+
+        let spacings: [CGFloat] = [16, 19, 15, 17, 17]
+        var previousButton: UIButton?
+
+        tools.enumerated().forEach { index, tool in
+            let (button, imageName) = tool
             let image = UIImage(named: imageName)
-            
-            if button == toolColorPicker {
-                button.setImage(image?.withRenderingMode(.alwaysTemplate), for: .normal)
-                button.tintColor = currentColor
-            } else {
-                button.setImage(image, for: .normal)
-            }
-            
+            button.setImage(image, for: .normal)
             button.addTarget(self, action: #selector(toolButtonTapped(_:)), for: .touchUpInside)
-            toolView.addArrangedSubview(button)
+            toolView.addSubview(button)
+            
+            button.snp.makeConstraints { make in
+                if let previous = previousButton {
+                    make.leading.equalTo(previous.snp.trailing).offset(spacings[index - 1])
+                } else {
+                    make.leading.equalToSuperview().offset(spacings[index])
+                }
+                make.bottom.equalToSuperview()
+            }
+            previousButton = button
         }
+
+        toolColorPicker.layer.cornerRadius = 22
+        toolColorPicker.layer.borderWidth = 8.5
+        toolColorPicker.layer.borderColor = currentColor.cgColor
+        toolColorPicker.layer.masksToBounds = true
+        toolColorPicker.isUserInteractionEnabled = true
+        
+        let innerCircle = UIView()
+        innerCircle.backgroundColor = .white
+        innerCircle.layer.cornerRadius = 13.5
+        innerCircle.layer.masksToBounds = true
+        toolColorPicker.addSubview(innerCircle)
+
+        innerCircle.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(27)
+        }
+
+        toolColorPicker.addTarget(self, action: #selector(colorPickerTapped), for: .touchUpInside)
+        toolView.addSubview(toolColorPicker)
+
+        toolColorPicker.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-26)
+            make.width.height.equalTo(44)
+        }
+    }
+
+    @objc private func colorPickerTapped() {
+        presentColorPicker()
+    }
+
+    private func presentColorPicker() {
+        guard let topController = findTopViewController() else { return }
+        topController.present(colorPickerVC, animated: true, completion: nil)
+    }
+
+    private func findTopViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else { return nil }
+        
+        var topController = keyWindow.rootViewController
+        while let presentedController = topController?.presentedViewController {
+            topController = presentedController
+        }
+        return topController
     }
     
     // MARK: - Color Picker Setup
@@ -225,22 +277,7 @@ final class Diary2View: UIView {
             presentColorPicker()
         }
     }
-
-    private func presentColorPicker() {
-        guard let topController = findTopViewController() else { return }
-        topController.present(colorPickerVC, animated: true, completion: nil)
-    }
-
-    private func findTopViewController() -> UIViewController? {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else { return nil }
-        
-        var topController = keyWindow.rootViewController
-        while let presentedController = topController?.presentedViewController {
-            topController = presentedController
-        }
-        return topController
-    }
+    
 }
 
 // MARK: - UIColorPickerViewControllerDelegate
@@ -256,6 +293,7 @@ extension Diary2View: UIColorPickerViewControllerDelegate {
     private func updateColorPickerButtonColor(to color: UIColor) {
         currentColor = color
         toolColorPicker.tintColor = color
+        toolColorPicker.layer.borderColor = color.cgColor
         canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
     }
 }
