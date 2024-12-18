@@ -129,8 +129,9 @@ private extension DiaryVC {
         
         goToDrawButton.tapPublisher
             .sink { [weak self] _ in
-                let diary2VC = Diary2VC()
-                self?.navigationController?.pushViewController(diary2VC, animated: true)
+                guard let self = self else { return }
+                let diary2VC = Diary2VC(viewModel: self.diaryVM)
+                self.navigationController?.pushViewController(diary2VC, animated: true)
             }
             .store(in: &cancellables)
         
