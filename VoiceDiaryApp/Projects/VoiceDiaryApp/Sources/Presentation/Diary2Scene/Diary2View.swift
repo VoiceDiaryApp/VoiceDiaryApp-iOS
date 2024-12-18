@@ -212,6 +212,7 @@ final class Diary2View: UIView {
         innerCircle.backgroundColor = .white
         innerCircle.layer.cornerRadius = 13.5
         innerCircle.layer.masksToBounds = true
+        innerCircle.isUserInteractionEnabled = false
         toolColorPicker.addSubview(innerCircle)
         
         innerCircle.snp.makeConstraints { make in
