@@ -46,8 +46,14 @@ private extension Diary2VC {
         self.navigationController?.navigationBar.isHidden = true
     }
     
-    func bindViewModel() {
-        
+    // MARK: - ViewModel Binding
+    private func bindViewModel() {
+        diaryView.isSaveEnabledPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isSaveEnabled in
+                self?.diaryView.updateSaveButtonState(isEnabled: isSaveEnabled)
+            }
+            .store(in: &cancellables)
     }
     
     func bindActions() {

@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import PencilKit
+import Combine
 
 enum DrawingTool {
     case eraser, pencil, finePen, boldPen, calligraphyPen
@@ -81,6 +82,13 @@ final class Diary2View: UIView {
         button.layer.cornerRadius = 8
         return button
     }()
+    
+    private let selectedEmotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
+    var isSaveEnabledPublisher: AnyPublisher<Bool, Never> {
+        selectedEmotionSubject
+            .map { $0 != nil }
+            .eraseToAnyPublisher()
+    }
     
     // MARK: - Init
     
@@ -260,12 +268,14 @@ final class Diary2View: UIView {
     
     private func updateSelectedEmotion(to newEmotion: Emotion) {
         selectedEmotion = newEmotion
+        selectedEmotionSubject.send(newEmotion)
         for (index, button) in emotionButtons.enumerated() {
             let emotion = emotions[index]
             let imageName = (emotion == newEmotion) ? "\(emotion.rawValue)_stroke" : emotion.rawValue
             button.setImage(UIImage(named: imageName), for: .normal)
         }
     }
+    
     @objc private func toolButtonTapped(_ sender: UIButton) {
         if sender == toolEraser {
             canvasView.tool = PKEraserTool(.vector)
@@ -280,6 +290,12 @@ final class Diary2View: UIView {
         } else if sender == toolColorPicker {
             presentColorPicker()
         }
+    }
+    
+    func updateSaveButtonState(isEnabled: Bool) {
+        saveButton.isUserInteractionEnabled = isEnabled
+        saveButton.backgroundColor = isEnabled ? UIColor(resource: .mainYellow) : UIColor(resource: .mainYellow).withAlphaComponent(0.5)
+        saveButton.setTitleColor(isEnabled ? .black : UIColor.black.withAlphaComponent(0.5), for: .normal)
     }
 }
 
