@@ -181,25 +181,24 @@ final class Diary2View: UIView {
                      (toolBoldPen, "tool_BoldPen"),
                      (toolCalligraphyPen, "tool_CalligraphyPen")]
         
-        let spacings: [CGFloat] = [16, 19, 15, 17, 17]
-        var previousButton: UIButton?
+        let toolContainer = UIStackView()
+        toolContainer.axis = .horizontal
+        toolContainer.distribution = .equalSpacing
+        toolContainer.alignment = .center
+        toolView.addSubview(toolContainer)
+        toolView.addSubview(toolColorPicker)
         
-        tools.enumerated().forEach { index, tool in
-            let (button, imageName) = tool
+        tools.forEach { (button, imageName) in
             let image = UIImage(named: imageName)
             button.setImage(image, for: .normal)
             button.addTarget(self, action: #selector(toolButtonTapped(_:)), for: .touchUpInside)
-            toolView.addSubview(button)
-            
-            button.snp.makeConstraints { make in
-                if let previous = previousButton {
-                    make.leading.equalTo(previous.snp.trailing).offset(spacings[index - 1])
-                } else {
-                    make.leading.equalToSuperview().offset(spacings[index])
-                }
-                make.bottom.equalToSuperview()
-            }
-            previousButton = button
+            toolContainer.addArrangedSubview(button)
+        }
+        
+        toolContainer.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalTo(toolColorPicker.snp.leading).offset(-43)
+            make.top.bottom.equalToSuperview()
         }
         
         toolColorPicker.layer.cornerRadius = 22
@@ -221,11 +220,10 @@ final class Diary2View: UIView {
         }
         
         toolColorPicker.addTarget(self, action: #selector(colorPickerTapped), for: .touchUpInside)
-        toolView.addSubview(toolColorPicker)
         
         toolColorPicker.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
             make.trailing.equalToSuperview().offset(-26)
+            make.centerY.equalToSuperview()
             make.width.height.equalTo(44)
         }
     }
