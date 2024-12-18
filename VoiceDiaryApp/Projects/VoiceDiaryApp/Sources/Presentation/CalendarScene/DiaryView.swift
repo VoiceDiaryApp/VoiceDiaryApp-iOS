@@ -19,7 +19,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         return navBar
     }()
 
-    private let yearLabel: UILabel = {
+    let yearLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = .fontGuide(type: .PretandardSemiBold, size: 15)
@@ -27,7 +27,7 @@ final class DiaryView: UIView, CalendarViewDelegate {
         return label
     }()
 
-    private let monthLabel: UILabel = {
+    let monthLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = .fontGuide(type: .PretandardBold, size: 20)
