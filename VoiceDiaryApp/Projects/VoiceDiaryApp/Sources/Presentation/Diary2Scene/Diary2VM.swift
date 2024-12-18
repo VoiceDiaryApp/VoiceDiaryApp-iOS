@@ -12,6 +12,9 @@ final class Diary2VM {
     
     @Published var diaryTitle: String = ""
     
-    init() {
+    init() {}
+
+    func saveDiary() {
+        print("Diary saved with title: \(diaryTitle)")
     }
 }

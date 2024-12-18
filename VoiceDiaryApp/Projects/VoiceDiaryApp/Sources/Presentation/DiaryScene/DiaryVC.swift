@@ -128,9 +128,10 @@ private extension DiaryVC {
             .store(in: &cancellables)
         
         goToDrawButton.tapPublisher
-            .sink(receiveValue: {
-                print("goToDrawVC")
-            })
+            .sink { [weak self] _ in
+                let diary2VC = Diary2VC()
+                self?.navigationController?.pushViewController(diary2VC, animated: true)
+            }
             .store(in: &cancellables)
         
     }
