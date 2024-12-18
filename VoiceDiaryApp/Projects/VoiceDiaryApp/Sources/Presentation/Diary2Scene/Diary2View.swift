@@ -9,13 +9,11 @@ import UIKit
 import SnapKit
 import PencilKit
 
-protocol Diary2ViewDelegate: AnyObject {
-    func saveButtonTapped()
+enum DrawingTool {
+    case eraser, pencil, finePen, boldPen, calligraphyPen
 }
 
 final class Diary2View: UIView {
-    
-    weak var delegate: Diary2ViewDelegate?
     
     // MARK: - Properties
     private var selectedEmotion: Emotion?
@@ -95,7 +93,6 @@ final class Diary2View: UIView {
         setupPencilKit()
         setupToolButtons()
         setupColorPicker()
-        setupSaveButtonAction()
     }
     
     required init?(coder: NSCoder) {
@@ -283,14 +280,6 @@ final class Diary2View: UIView {
         } else if sender == toolColorPicker {
             presentColorPicker()
         }
-    }
-    
-    private func setupSaveButtonAction() {
-        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc private func saveButtonTapped() {
-        delegate?.saveButtonTapped()
     }
 }
 
