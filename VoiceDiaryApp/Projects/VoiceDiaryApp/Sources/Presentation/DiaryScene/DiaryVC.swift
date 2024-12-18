@@ -104,6 +104,7 @@ private extension DiaryVC {
     
     func setUI() {
         view.backgroundColor  = .white
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         
         navigationBar.backButtonAction = {
             self.navigationController?.popViewController(animated: true)

@@ -10,7 +10,7 @@ import Combine
 
 final class CalendarVC: UIViewController {
 
-    private let viewModel: DiaryViewModelProtocol
+    private let viewModel: CalendarVMProtocol
     private var cancellables: Set<AnyCancellable> = []
 
     private lazy var diaryView: DiaryView = {
@@ -18,7 +18,7 @@ final class CalendarVC: UIViewController {
         return view
     }()
 
-    init(viewModel: DiaryViewModelProtocol = DiaryViewModel()) {
+    init(viewModel: CalendarVMProtocol = CalendarVM()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,6 +35,8 @@ final class CalendarVC: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = UIColor(resource: .mainBeige)
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        
         view.addSubview(diaryView)
         diaryView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
