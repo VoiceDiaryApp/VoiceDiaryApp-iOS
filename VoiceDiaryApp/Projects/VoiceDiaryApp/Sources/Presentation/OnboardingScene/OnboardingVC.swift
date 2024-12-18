@@ -69,6 +69,7 @@ private extension OnboardingVC {
     
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         view.backgroundColor = .white
         
         startButton.tapPublisher
