@@ -9,6 +9,7 @@
 import UIKit
 
 import SnapKit
+import Photos
 
 final class LetterVC: UIViewController {
     
@@ -67,7 +68,9 @@ private extension LetterVC {
         }
         
         navigationBar.saveButtonAction = {
-            print("tapSaveButton")
+            guard let screenshot = self.captureScreenshot() else { return }
+            
+            UIImageWriteToSavedPhotosAlbum(screenshot, self, #selector(self.imageSaveCompleted(_:didFinishSavingWithError:contextInfo:)), nil)
         }
     }
     
@@ -102,6 +105,23 @@ private extension LetterVC {
         letterLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(41)
             $0.leading.trailing.equalToSuperview().inset(33)
+        }
+    }
+    
+    func captureScreenshot() -> UIImage? {
+        let targetView = view.snapshot(of: CGRect(
+            origin: CGPoint(x: 0, y: navigationBar.frame.maxY),
+            size: CGSize(width: view.frame.width, height: view.frame.height - navigationBar.frame.maxY)
+        ))
+        
+        return targetView
+    }
+    
+    @objc func imageSaveCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            print("이미지 저장 실패: \(error.localizedDescription)")
+        } else {
+            print("이미지 저장 성공")
         }
     }
 }
