@@ -30,7 +30,7 @@ class SettingView: UIView {
         let label = UILabel()
         label.text = "처음에 정한 시간에 알람을 보내드려요."
         label.font = .fontGuide(type: .PretandardMedium, size: 13)
-        label.textColor = UIColor(hex: "6B6B6B", alpha: 1)
+        label.textColor = UIColor(resource: .calendarTextBlack)
         return label
     }()
     
@@ -49,7 +49,7 @@ class SettingView: UIView {
         let label = UILabel()
         label.text = "삭제된 내용은 복구할 수 없어요."
         label.font = .fontGuide(type: .PretandardMedium, size: 13)
-        label.textColor = UIColor(hex: "6B6B6B", alpha: 1)
+        label.textColor = UIColor(resource: .calendarTextBlack)
         return label
     }()
     
