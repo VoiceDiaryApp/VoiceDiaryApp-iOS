@@ -31,7 +31,12 @@ final class Diary2VC: UIViewController {
     
     // MARK: - ViewModel Binding
     private func bindViewModel() {
-        
+        diaryView.isSaveEnabledPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isSaveEnabled in
+                self?.diaryView.updateSaveButtonState(isEnabled: isSaveEnabled)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Actions Binding
