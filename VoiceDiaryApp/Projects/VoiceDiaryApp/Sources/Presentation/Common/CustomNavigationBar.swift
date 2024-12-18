@@ -98,6 +98,7 @@ final class CustomNavigationBar: UIView {
         setHierarchy()
         setLayout()
         setButton()
+        setSwipeGesture()
     }
     
     required init?(coder: NSCoder) {

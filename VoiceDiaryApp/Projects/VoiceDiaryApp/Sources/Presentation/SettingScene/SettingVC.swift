@@ -20,5 +20,18 @@ class SettingVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
+        setupNavigationBar()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
+    
+    private func setupNavigationBar() {
+        settingView.setNavigationBarBackAction { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
 }
