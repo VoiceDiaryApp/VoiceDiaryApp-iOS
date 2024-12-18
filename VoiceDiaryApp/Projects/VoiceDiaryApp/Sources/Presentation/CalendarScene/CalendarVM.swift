@@ -22,8 +22,7 @@ final class CalendarVM: CalendarVMProtocol {
 
     init() {
         diaryEntries = []
-        loadInitialDiaryData()
-    }
+        loadInitialDiaryData()    }
 
     private func loadInitialDiaryData() {
         fetchDiary(for: Date())
@@ -31,6 +30,7 @@ final class CalendarVM: CalendarVMProtocol {
 
     func fetchDiary(for date: Date) {
         let key = dateKey(for: date)
+
         if let savedData = UserDefaults.standard.data(forKey: key),
            let diaryEntry = try? JSONDecoder().decode(DiaryEntry.self, from: savedData) {
             diaryEntries = [diaryEntry]

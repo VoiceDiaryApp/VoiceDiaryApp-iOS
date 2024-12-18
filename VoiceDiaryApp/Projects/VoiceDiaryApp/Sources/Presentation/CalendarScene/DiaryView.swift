@@ -246,8 +246,19 @@ final class DiaryView: UIView, CalendarViewDelegate {
     }
 
     @objc private func didTapMoreLabel() {
-        if moreLabel.text == "일기 쓰러 가기" {
-            navigateToDiaryVC()
+        guard let currentVC = findViewController() else { return }
+        
+        switch moreLabel.text {
+        case "더보기":
+            let detailVC = DetailVC(viewModel: viewModel)
+            currentVC.navigationController?.pushViewController(detailVC, animated: true)
+            
+        case "일기 쓰러 가기":
+            let diaryVC = DiaryVC()
+            currentVC.navigationController?.pushViewController(diaryVC, animated: true)
+            
+        default:
+            break
         }
     }
     
