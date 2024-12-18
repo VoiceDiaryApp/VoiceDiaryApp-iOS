@@ -36,13 +36,19 @@ let project = Project(
                     "UIUserInterfaceStyle": "Light",
                     "UISupportedInterfaceOrientations": [
                         "UIInterfaceOrientationPortrait"
+                    ],
+                    "GenerativeAIConfig": [
+                        "ModelVersion": "1.5",
+                        "EnableDebugMode": true,
+                        "DefaultLanguage": "ko"
                     ]
                 ]
             ),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
             dependencies: [
-                .external(name: "SnapKit")
+                .external(name: "SnapKit"),
+                .external(name: "GoogleGenerativeAI")
             ]
         )
     ]
