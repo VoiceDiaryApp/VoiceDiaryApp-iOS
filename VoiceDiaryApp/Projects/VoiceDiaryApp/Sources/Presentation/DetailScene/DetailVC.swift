@@ -36,20 +36,14 @@ final class DetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupBindings()
         setupActions()
+        bindViewModel()
     }
 
-    // MARK: - UI Setup
+    // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = UIColor(resource: .mainBeige)
         navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
-    // MARK: - Bindings & Actions
-
-    private func setupBindings() {
     }
 
     private func setupActions() {
@@ -60,6 +54,19 @@ final class DetailVC: UIViewController {
         detailView.navigationBar.letterButtonAction = { [weak self] in
             self?.navigateToLetterVC()
         }
+    }
+
+    private func bindViewModel() {
+        guard let diaryEntry = viewModel.diaryEntries.first else { return }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "M월 d일"
+        let dateString = dateFormatter.string(from: diaryEntry.date)
+
+        detailView.diaryHeaderView.configure(
+            title: "일기 제목",
+            date: dateString,
+            emotion: diaryEntry.emotion
+        )
     }
 
     // MARK: - Navigation
