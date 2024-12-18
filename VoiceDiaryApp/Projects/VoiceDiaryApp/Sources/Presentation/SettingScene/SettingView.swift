@@ -17,10 +17,7 @@ class SettingView: UIView {
         return navigationBar
     }()
     
-    private let alertView: UIView = {
-        let view = UIView()
-        return view
-    }()
+    private let alertView = UIView()
     
     private let alertTitle: UILabel = {
         let label = UILabel()
@@ -37,15 +34,9 @@ class SettingView: UIView {
         return label
     }()
     
-    private let alertToggle: UISwitch = {
-        let switchButton = UISwitch()
-        return switchButton
-    }()
+    private let alertToggle = UISwitch()
     
-    private let deleteView: UIView = {
-       let view = UIView()
-        return view
-    }()
+    private let deleteView = UIView()
     
     private let deleteTitle: UILabel = {
         let label = UILabel()
