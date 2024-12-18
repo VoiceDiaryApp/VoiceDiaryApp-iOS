@@ -22,6 +22,37 @@ final class DetailView: UIView {
 
     let diaryHeaderView = DiaryHeaderView()
 
+    private let diaryImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .white
+        imageView.layer.cornerRadius = 8
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+
+    private let replyView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
+        view.layer.borderColor = UIColor(resource: .calendarSelected).cgColor
+        view.layer.borderWidth = 2
+        return view
+    }()
+
+    private let replyLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .black
+        label.font = .fontGuide(type: .PretandardRegular, size: 13)
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        label.text = "답장 내용이 여기에 표시됩니다.\n답장 레이블 높이는 내용에 따라 조정됩니다."
+        return label
+    }()
+
     // MARK: - Initializers
 
     override init(frame: CGRect) {
@@ -37,10 +68,27 @@ final class DetailView: UIView {
 
     private func setupView() {
         backgroundColor = UIColor(resource: .mainBeige)
-        addSubviews(navigationBar, diaryHeaderView)
+        addSubview(scrollView)
+
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(navigationBar, diaryHeaderView, diaryImageView, replyView)
+        replyView.addSubview(replyLabel)
+
+        setupLayout()
+    }
+
+    private func setupLayout() {
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
+        }
 
         navigationBar.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(contentView.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(44)
         }
@@ -48,7 +96,34 @@ final class DetailView: UIView {
         diaryHeaderView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom)
             make.leading.trailing.equalToSuperview()
+            make.height.equalTo(78)
         }
+
+        diaryImageView.snp.makeConstraints { make in
+            make.top.equalTo(diaryHeaderView.snp.bottom).offset(13)
+            make.leading.trailing.equalToSuperview().inset(28)
+            make.height.equalTo(306)
+        }
+
+        replyView.snp.makeConstraints { make in
+            make.top.equalTo(diaryImageView.snp.bottom).offset(21)
+            make.leading.trailing.equalToSuperview().inset(28)
+            make.bottom.equalToSuperview().offset(-20)
+        }
+
+        replyLabel.snp.makeConstraints { make in
+            make.top.bottom.leading.trailing.equalToSuperview().inset(27)
+        }
+    }
+
+    // MARK: - Public Methods
+
+    func configureDiaryImage(with image: UIImage?) {
+        diaryImageView.image = image
+    }
+
+    func configureReplyText(with text: String) {
+        replyLabel.text = text
     }
 }
 
