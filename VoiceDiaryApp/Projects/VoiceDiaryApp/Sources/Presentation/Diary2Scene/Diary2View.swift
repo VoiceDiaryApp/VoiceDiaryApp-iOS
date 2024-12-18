@@ -19,7 +19,7 @@ final class Diary2View: UIView {
     
     // MARK: - Properties
     private var selectedEmotion: Emotion?
-    private let emotions: [Emotion] = [.angry, .happy, .neutral, .sad, .smiling, .tired]
+    private let emotions: [Emotion] = [.happy, .smiling, .neutral, .angry, .sad, .tired]
     private var emotionButtons: [UIButton] = []
     private let canvasView = PKCanvasView()
     
