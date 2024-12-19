@@ -9,24 +9,42 @@ import Combine
 
 final class DiaryVM: ViewModel {
     
+    private var cancellables = Set<AnyCancellable>()
+    private var recordingContent: String = ""
+    
     struct Input {
-        let tapRecordEnd: PassthroughSubject<String, Never>
+        let onRecording: PassthroughSubject<String, Never>
+        let tapRecordEnd: PassthroughSubject<Void, Never>
     }
     
     struct Output {
-//        let
+        var recordContent = CurrentValueSubject<String, Never>("")
     }
     
     var recordContent: String?
     
     func transform(input: Input) -> Output {
+        let output = Output()
+        self.bindOutput(output: output)
         
-        let recordContent = input.tapRecordEnd
-        print("🍎🍎diaryvm🍎🍎")
-        print(recordContent)
+        input.onRecording
+            .sink { value in
+                self.recordingContent = value
+            }
+            .store(in: &cancellables)
         
-        return Output(
-        )
+        input.tapRecordEnd
+            .sink { _ in
+                print("✅✅recordingcontent✅✅")
+                print(self.recordingContent)
+                output.recordContent.send(self.recordingContent)
+            }
+            .store(in: &cancellables)
+        
+        return output
     }
     
+    private func bindOutput(output: Output) {
+        
+    }
 }

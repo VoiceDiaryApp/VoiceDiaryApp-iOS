@@ -30,7 +30,9 @@ final class DiaryVC: UIViewController {
     private let audioEngine = AVAudioEngine()
     
     private let diaryVM = DiaryVM()
-    private let tapRecordEnd = PassthroughSubject<String, Never>()
+    private let onRecording = PassthroughSubject<String, Never>()
+    private let tapRecordEnd = PassthroughSubject<Void, Never>()
+    private var recordedContent: String = ""
     
     // MARK: - UI Components
     
@@ -125,8 +127,7 @@ private extension DiaryVC {
         
         microphoneEndButton.tapPublisher
             .sink(receiveValue: {
-                self.tapRecordEnd.send(self.microphoneLabel.text ?? "")
-                self.goToDrawButton.isEnabled = (self.microphoneLabel.text != "")
+                self.tapRecordEnd.send()
                 self.stopTranscribing()
             })
             .store(in: &cancellables)
@@ -143,9 +144,17 @@ private extension DiaryVC {
     
     func bindViewModel() {
         let input = DiaryVM.Input(
+            onRecording: self.onRecording,
             tapRecordEnd: self.tapRecordEnd
         )
+        
         let output = diaryVM.transform(input: input)
+        output.recordContent.sink(receiveValue: { value in
+            self.goToDrawButton.isEnabled = (value != "")
+            self.microphoneLabel.text = value
+            self.recordedContent = value
+        })
+        .store(in: &cancellables)
     }
     
     func setHierarchy() {
@@ -168,6 +177,7 @@ private extension DiaryVC {
         
         microphoneLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(125)
+            $0.leading.trailing.equalToSuperview().inset(75)
             $0.centerX.equalToSuperview()
         }
         
@@ -242,12 +252,12 @@ private extension DiaryVC {
             if let result = result {
                 DispatchQueue.main.async {
                     self.microphoneLabel.text = result.bestTranscription.formattedString
+                    self.onRecording.send(result.bestTranscription.formattedString)
                 }
                 isFinal = result.isFinal
             }
-            
             if error != nil || isFinal {
-                self.cleanup()
+                self.stopTranscribing()
             }
         }
         
@@ -260,16 +270,13 @@ private extension DiaryVC {
             try audioEngine.start()
         } catch {
             print("오디오 엔진 시작 실패: \(error)")
-            cleanup()
+            stopTranscribing()
         }
     }
     
     func stopTranscribing() {
+        microphoneLabel.text = recordedContent
         recognitionTask?.cancel()
-        cleanup()
-    }
-    
-    func cleanup() {
         if audioEngine.isRunning {
             audioEngine.stop()
             audioEngine.inputNode.removeTap(onBus: 0)
