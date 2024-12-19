@@ -72,7 +72,7 @@ final class DetailVC: UIViewController {
     // MARK: - Navigation
 
     private func navigateToLetterVC() {
-        let letterVC = LetterVC()
-        navigationController?.pushViewController(letterVC, animated: true)
+//        let letterVC = LetterVC()
+//        navigationController?.pushViewController(letterVC, animated: true)
     }
 }

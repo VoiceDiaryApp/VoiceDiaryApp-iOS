@@ -151,6 +151,8 @@ private extension DiaryVC {
         
         let output = diaryVM.transform(input: input)
         output.recordContent.sink(receiveValue: { value in
+            print("✅✅✅✅")
+            print(value)
             self.goToDrawButton.isEnabled = (value != "")
             self.microphoneLabel.text = value
             self.recordedContent = value

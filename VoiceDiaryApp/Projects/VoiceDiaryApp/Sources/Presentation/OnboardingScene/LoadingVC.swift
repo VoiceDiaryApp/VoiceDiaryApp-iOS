@@ -47,7 +47,7 @@ final class LoadingVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.showNextPage()
         }
     }

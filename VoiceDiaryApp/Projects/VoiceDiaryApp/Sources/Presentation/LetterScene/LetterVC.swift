@@ -10,12 +10,14 @@ import UIKit
 
 import SnapKit
 import Photos
+import Combine
 
 final class LetterVC: UIViewController {
     
     // MARK: - Properties
     
     private let diaryVM: DiaryVM
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - UI Components
     
@@ -67,6 +69,7 @@ final class LetterVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
+        bindViewModel()
     }
 }
 
@@ -93,6 +96,24 @@ private extension LetterVC {
                 }
             }
         }
+    }
+    
+    func bindViewModel() {
+        let input = DiaryVM.Input(
+            onRecording: PassthroughSubject(),
+            tapRecordEnd: PassthroughSubject(),
+            tapDrawEnd: PassthroughSubject()
+        )
+        
+        let output = diaryVM.transform(input: input)
+        
+        output.geminiLetter
+            .sink(receiveValue: { letter in
+                print("🔥🔥outputletter🔥🔥")
+                print(letter)
+                self.letterLabel.text = letter
+        })
+        .store(in: &cancellables)
     }
     
     func setHierarchy() {
