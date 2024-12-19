@@ -62,5 +62,3 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
-
-/VoiceDiaryApp/Projects/VoiceDiaryApp/Derived/InfoPlists/GenerativeAI-Info.plist
