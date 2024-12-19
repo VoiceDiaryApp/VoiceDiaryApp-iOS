@@ -14,6 +14,23 @@ enum Emotion: String, Codable {
     case sad = "sad_face"
     case smiling = "smiling_face"
     case tired = "tired_face"
+    
+    var emotionToPrompt: String {
+        switch self {
+        case .angry:
+            return "화가 나는 하루였다."
+        case .happy:
+            return "행복한 하루였다."
+        case .neutral:
+            return "평범한 하루였다."
+        case .sad:
+            return "슬픈 하루였다."
+        case .smiling:
+            return "좋은 하루였다."
+        case .tired:
+            return "피곤한 하루였다."
+        }
+    }
 }
 
 struct DiaryEntry: Codable {
