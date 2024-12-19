@@ -18,6 +18,7 @@ let project = Project(
                     "NSPhotoLibraryAddUsageDescription": "사진을 저장하기 위해 앨범 접근 권한이 필요합니다.",
                     "NSPhotoLibraryUsageDescription": "앱에서 사진을 저장하기 위해 사진 접근 권한이 필요합니다.",
                     "NSSpeechRecognitionUsageDescription": "음성 명령 입력을 위해 음성 인식 권한이 필요합니다.",
+                    "API_KEY": "$(API_KEY)",
                     "UIAppFonts": [
                         "NotoSans-Bold.ttf",
                         "Pretendard-Black.ttf",
@@ -49,7 +50,16 @@ let project = Project(
             dependencies: [
                 .external(name: "SnapKit"),
                 .external(name: "GoogleGenerativeAI")
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    "API_KEY": "$(API_KEY)"
+                ],
+                configurations: [
+                    .debug(name: "Debug", xcconfig: "Configs/GenerativeAI.xcconfig"),
+                    .release(name: "Release", xcconfig: "Configs/GenerativeAI.xcconfig")
+                ]
+            )
         )
     ]
 )
