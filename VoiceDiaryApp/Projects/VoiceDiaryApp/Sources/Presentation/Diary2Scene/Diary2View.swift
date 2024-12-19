@@ -35,7 +35,7 @@ final class Diary2View: UIView {
     
     // MARK: - UI Components
     
-    private let navigationBar: CustomNavigationBar = {
+    let navigationBar: CustomNavigationBar = {
         let navigationBar = CustomNavigationBar()
         navigationBar.setTitleLabel = "일기 쓰기"
         return navigationBar

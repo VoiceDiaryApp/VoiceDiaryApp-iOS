@@ -44,6 +44,10 @@ private extension Diary2VC {
     
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
+        
+        diaryView.navigationBar.backButtonAction = {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
     
     // MARK: - ViewModel Binding
