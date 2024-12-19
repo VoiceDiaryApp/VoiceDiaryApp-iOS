@@ -35,6 +35,7 @@ final class Diary2VC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setUI()
         bindViewModel()
         bindActions()
     }
@@ -50,7 +51,6 @@ private extension Diary2VC {
         }
     }
     
-    // MARK: - ViewModel Binding
     private func bindViewModel() {
         diaryView.isSaveEnabledPublisher
             .receive(on: RunLoop.main)
@@ -58,11 +58,19 @@ private extension Diary2VC {
                 self?.diaryView.updateSaveButtonState(isEnabled: isSaveEnabled)
             }
             .store(in: &cancellables)
+        
+        diaryView.selectedEmotionSubject
+            .sink { emotion in
+                print("😈😈select emotion😈😈")
+                print(emotion ?? Emotion.angry)
+            }
+            .store(in: &cancellables)
     }
     
     func bindActions() {
         diaryView.saveButton.tapPublisher
             .sink { [weak self] _ in
+                // gemini 통신 시점
                 let loadingVC = LoadingVC()
                 self?.navigationController?.pushViewController(loadingVC, animated: true)
             }

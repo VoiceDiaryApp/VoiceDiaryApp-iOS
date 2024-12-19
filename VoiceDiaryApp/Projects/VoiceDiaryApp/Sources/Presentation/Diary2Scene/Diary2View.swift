@@ -83,7 +83,7 @@ final class Diary2View: UIView {
         return button
     }()
     
-    private let selectedEmotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
+    let selectedEmotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
     var isSaveEnabledPublisher: AnyPublisher<Bool, Never> {
         selectedEmotionSubject
             .map { $0 != nil }
