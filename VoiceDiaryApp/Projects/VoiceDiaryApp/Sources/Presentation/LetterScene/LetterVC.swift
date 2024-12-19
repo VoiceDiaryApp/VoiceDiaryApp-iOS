@@ -13,6 +13,10 @@ import Photos
 
 final class LetterVC: UIViewController {
     
+    // MARK: - Properties
+    
+    private let diaryVM: DiaryVM
+    
     // MARK: - UI Components
     
     private let navigationBar: CustomNavigationBar = {
@@ -47,6 +51,15 @@ final class LetterVC: UIViewController {
     }()
     
     // MARK: - Life Cycles
+    
+    init(viewModel: DiaryVM) {
+        self.diaryVM = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

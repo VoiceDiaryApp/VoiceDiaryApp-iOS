@@ -82,9 +82,10 @@ private extension Diary2VC {
     func bindActions() {
         diaryView.saveButton.tapPublisher
             .sink { [weak self] _ in
-                self?.tapDrawEnd.send(self?.selectedEmotion ?? Emotion.happy)
-                let loadingVC = LoadingVC()
-                self?.navigationController?.pushViewController(loadingVC, animated: true)
+                guard let self = self else { return }
+                self.tapDrawEnd.send(self.selectedEmotion ?? Emotion.happy)
+                let loadingVC = LoadingVC(viewModel: self.diaryVM)
+                self.navigationController?.pushViewController(loadingVC, animated: true)
             }
             .store(in: &cancellables)
     }
