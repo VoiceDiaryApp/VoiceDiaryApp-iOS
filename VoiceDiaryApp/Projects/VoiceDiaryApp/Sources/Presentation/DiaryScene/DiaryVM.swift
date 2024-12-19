@@ -15,13 +15,13 @@ final class DiaryVM: ViewModel {
     struct Input {
         let onRecording: PassthroughSubject<String, Never>
         let tapRecordEnd: PassthroughSubject<Void, Never>
+        let tapDrawEnd: PassthroughSubject<Emotion, Never>
     }
     
     struct Output {
         var recordContent = CurrentValueSubject<String, Never>("")
+        var geminiLetter = CurrentValueSubject<String, Never>("")
     }
-    
-    var recordContent: String?
     
     func transform(input: Input) -> Output {
         let output = Output()
@@ -38,6 +38,13 @@ final class DiaryVM: ViewModel {
                 print("✅✅recordingcontent✅✅")
                 print(self.recordingContent)
                 output.recordContent.send(self.recordingContent)
+            }
+            .store(in: &cancellables)
+        
+        input.tapDrawEnd
+            .sink { value in
+                print("✅✅selectemotion✅✅")
+                print(value)
             }
             .store(in: &cancellables)
         

@@ -145,7 +145,8 @@ private extension DiaryVC {
     func bindViewModel() {
         let input = DiaryVM.Input(
             onRecording: self.onRecording,
-            tapRecordEnd: self.tapRecordEnd
+            tapRecordEnd: self.tapRecordEnd,
+            tapDrawEnd: PassthroughSubject()
         )
         
         let output = diaryVM.transform(input: input)

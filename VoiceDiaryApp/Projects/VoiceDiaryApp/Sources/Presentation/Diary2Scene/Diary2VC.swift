@@ -11,10 +11,14 @@ import Combine
 final class Diary2VC: UIViewController {
     
     // MARK: - Properties
+    
     private let diaryVM: DiaryVM
     private var cancellables = Set<AnyCancellable>()
+    private var selectedEmotion: Emotion?
+    private var tapDrawEnd = PassthroughSubject<Emotion, Never>()
     
     // MARK: - View
+    
     private let diaryView = Diary2View()
     
     // MARK: - Life Cycle
@@ -36,6 +40,7 @@ final class Diary2VC: UIViewController {
         super.viewDidLoad()
         
         setUI()
+        bindView()
         bindViewModel()
         bindActions()
     }
@@ -51,7 +56,15 @@ private extension Diary2VC {
         }
     }
     
-    private func bindViewModel() {
+    func bindViewModel() {
+        let input = DiaryVM.Input(
+            onRecording: PassthroughSubject(),
+            tapRecordEnd: PassthroughSubject(),
+            tapDrawEnd: self.tapDrawEnd
+        )
+    }
+    
+    func bindView() {
         diaryView.isSaveEnabledPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] isSaveEnabled in
@@ -61,8 +74,7 @@ private extension Diary2VC {
         
         diaryView.selectedEmotionSubject
             .sink { emotion in
-                print("😈😈select emotion😈😈")
-                print(emotion ?? Emotion.angry)
+                self.selectedEmotion = emotion
             }
             .store(in: &cancellables)
     }
@@ -70,7 +82,7 @@ private extension Diary2VC {
     func bindActions() {
         diaryView.saveButton.tapPublisher
             .sink { [weak self] _ in
-                // gemini 통신 시점
+                self?.tapDrawEnd.send(self?.selectedEmotion ?? Emotion.happy)
                 let loadingVC = LoadingVC()
                 self?.navigationController?.pushViewController(loadingVC, animated: true)
             }
