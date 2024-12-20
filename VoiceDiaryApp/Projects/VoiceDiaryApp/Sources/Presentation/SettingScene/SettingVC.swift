@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import Combine
 
 class SettingVC: UIViewController {
     
     // MARK: - View
     private let settingView = SettingView()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Life Cycle
     override func loadView() {
@@ -21,6 +23,7 @@ class SettingVC: UIViewController {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         setupNavigationBar()
+        bindAlertToggle()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -33,5 +36,14 @@ class SettingVC: UIViewController {
         settingView.setNavigationBarBackAction { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
+    }
+    
+    private func bindAlertToggle() {
+        settingView.alertTogglePublisher
+            .sink { isOn in
+                print("Alert Toggle is now: \(isOn)")
+                // 필요한 동작 추가 (예: UserDefaults 저장, 네트워크 호출 등)
+            }
+            .store(in: &cancellables)
     }
 }
