@@ -23,6 +23,11 @@ final class Diary2View: UIView {
     private let canvasView = PKCanvasView()
     
     private var currentColor: UIColor = .black
+    private var colorSelectedSubject = PassthroughSubject<UIColor, Never>()
+    var colorSelectedPublisher: AnyPublisher<UIColor, Never> {
+        colorSelectedSubject.eraseToAnyPublisher()
+    }
+    private var cancellables = Set<AnyCancellable>()
     private let colorPickerVC = UIColorPickerViewController()
     
     // Tool Buttons
@@ -101,6 +106,7 @@ final class Diary2View: UIView {
         setupPencilKit()
         setupToolButtons()
         setupColorPicker()
+        bindColorPicker()
     }
     
     required init?(coder: NSCoder) {
@@ -234,7 +240,8 @@ final class Diary2View: UIView {
     }
     
     @objc private func colorPickerTapped() {
-        presentColorPicker()
+        guard let topController = findTopViewController() else { return }
+        topController.present(colorPickerVC, animated: true, completion: nil)
     }
     
     private func presentColorPicker() {
@@ -256,7 +263,7 @@ final class Diary2View: UIView {
     // MARK: - Color Picker Setup
     
     private func setupColorPicker() {
-        colorPickerVC.delegate = self
+        colorPickerVC.supportsAlpha = false
     }
     
     // MARK: - Actions
@@ -297,6 +304,20 @@ final class Diary2View: UIView {
         saveButton.backgroundColor = isEnabled ? UIColor(resource: .mainYellow) : UIColor(resource: .mainYellow).withAlphaComponent(0.5)
         saveButton.setTitleColor(isEnabled ? .black : UIColor.black.withAlphaComponent(0.5), for: .normal)
     }
+    
+    private func bindColorPicker() {
+        colorPickerVC.publisher(for: \.selectedColor)
+            .sink { [weak self] color in
+                self?.updateColor(color)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateColor(_ color: UIColor) {
+        currentColor = color
+        toolColorPicker.layer.borderColor = color.cgColor
+        canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
+    }
 }
 
 // MARK: - UIColorPickerViewControllerDelegate
@@ -306,8 +327,9 @@ extension Diary2View: UIColorPickerViewControllerDelegate {
     }
     
     func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
-        updateColorPickerButtonColor(to: viewController.selectedColor)
-    }
+            let selectedColor = viewController.selectedColor
+            colorSelectedSubject.send(selectedColor)
+        }
     
     private func updateColorPickerButtonColor(to color: UIColor) {
         currentColor = color
