@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 protocol CalendarViewDelegate: AnyObject {
     func calendarViewDidUpdateDate(_ calendarView: CalendarView, to date: Date)
@@ -16,6 +17,9 @@ final class CalendarView: UIView {
 
     // MARK: Properties
     weak var delegate: CalendarViewDelegate?
+    private var diaryEntriesSubject = CurrentValueSubject<[DiaryEntry], Never>([])
+    private var selectedDateSubject = CurrentValueSubject<Date?, Never>(nil)
+    private var cancellables = Set<AnyCancellable>()
 
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private let calendar = Calendar.current
@@ -48,6 +52,7 @@ final class CalendarView: UIView {
         setupUI()
         setupDaysOfWeek()
         addSwipeGestures()
+        bindDataToCollectionView()
     }
 
     required init?(coder: NSCoder) {
@@ -126,18 +131,24 @@ final class CalendarView: UIView {
     }
 
     func updateDiaryEntries(_ entries: [DiaryEntry]) {
-        diaryEntries = entries
-        collectionView.reloadData()
+        diaryEntriesSubject.send(entries)
+    }
+
+    func highlightSelectedDate(date: Date?) {
+        selectedDateSubject.send(date)
     }
 
     func updateMonth(date: Date) {
         currentDate = date
         collectionView.reloadData()
     }
-
-    func highlightSelectedDate(date: Date?) {
-        selectedDate = date
-        collectionView.reloadData()
+    
+    private func bindDataToCollectionView() {
+        Publishers.CombineLatest(diaryEntriesSubject, selectedDateSubject)
+            .sink { [weak self] (entries, selectedDate) in
+                self?.collectionView.reloadData()
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -191,10 +202,14 @@ extension CalendarView: UICollectionViewDataSource, UICollectionViewDelegateFlow
         if indexPath.item >= weekdayOffset {
             let day = indexPath.item - weekdayOffset + 1
             let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
-            if newlySelectedDate != selectedDate {
-                selectedDate = newlySelectedDate
-                delegate?.calendarViewDidUpdateDate(self, to: newlySelectedDate!)
+            
+            selectedDate = newlySelectedDate
+            selectedDateSubject.send(newlySelectedDate)
+
+            if let newlySelectedDate = newlySelectedDate {
+                delegate?.calendarViewDidUpdateDate(self, to: newlySelectedDate)
             }
+
             collectionView.reloadData()
         }
     }
