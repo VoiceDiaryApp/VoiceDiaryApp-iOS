@@ -14,6 +14,7 @@ enum FontType: String {
     case PretandardRegular = "Pretendard-Regular"
     case RobotobBold = "Roboto-Bold"
     case RobotoRegular = "Roboto-Regular"
+    case NanumHand = "나눔손글씨 또박또박"
 }
 
 extension UIFont {
