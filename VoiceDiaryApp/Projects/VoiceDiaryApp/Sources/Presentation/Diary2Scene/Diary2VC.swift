@@ -60,7 +60,8 @@ private extension Diary2VC {
         let input = DiaryVM.Input(
             onRecording: PassthroughSubject(),
             tapRecordEnd: PassthroughSubject(),
-            tapDrawEnd: self.tapDrawEnd
+            tapDrawEnd: self.tapDrawEnd,
+            viewWillAppear: PassthroughSubject()
         )
         let _ = diaryVM.transform(input: input)
     }
