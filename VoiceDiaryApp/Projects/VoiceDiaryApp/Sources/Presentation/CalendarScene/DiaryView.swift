@@ -7,10 +7,14 @@
 
 import UIKit
 import SnapKit
+import Combine
 
-final class DiaryView: UIView, CalendarViewDelegate {
+final class DiaryView: UIView {
+    
+    private var cancellables = Set<AnyCancellable>()
 
     var viewModel: CalendarVMProtocol!
+    
     var selectedDate: Date?
 
     let navigationBar: CustomNavigationBar = {
@@ -163,9 +167,9 @@ final class DiaryView: UIView, CalendarViewDelegate {
         configureDateLabels()
         setupActions()
         setupDiaryContentView()
+        bindCalendarView()
 
         selectedDate = currentDate
-        calendarView.delegate = self
 
         let hasDiary = checkIfDiaryExists(for: selectedDate!)
         updateDiaryContentView(for: selectedDate!, hasDiary: hasDiary)
@@ -566,5 +570,17 @@ final class DiaryView: UIView, CalendarViewDelegate {
         }
 
         return NSAttributedString(string: ellipsis)
+    }
+    
+    private func bindCalendarView() {
+        calendarView.selectedDatePublisher
+            .sink { [weak self] selectedDate in
+                guard let self = self, let selectedDate = selectedDate else { return }
+                // 선택된 날짜에 따라 UI를 업데이트
+                let hasDiary = self.checkIfDiaryExists(for: selectedDate)
+                self.updateDiaryContentView(for: selectedDate, hasDiary: hasDiary)
+                self.configureDateLabels()
+            }
+            .store(in: &cancellables)
     }
 }

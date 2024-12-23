@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class SettingView: UIView {
+    // MARK: - Combine
+    var alertTogglePublisher = PassthroughSubject<Bool, Never>()
     
     // MARK: - UI Elements
     private let navigationBar: CustomNavigationBar = {
@@ -34,7 +37,11 @@ class SettingView: UIView {
         return label
     }()
     
-    private let alertToggle = UISwitch()
+    private let alertToggle: UISwitch = {
+        let toggle = UISwitch()
+        toggle.addTarget(self, action: #selector(alertToggleChanged(_:)), for: .valueChanged)
+        return toggle
+    }()
     
     private let deleteView = UIView()
     
@@ -125,5 +132,10 @@ class SettingView: UIView {
     // MARK: - Public Method
     func setNavigationBarBackAction(_ action: @escaping () -> Void) {
         navigationBar.backButtonAction = action
+    }
+    
+    // MARK: - Toggle Action
+    @objc private func alertToggleChanged(_ sender: UISwitch) {
+        alertTogglePublisher.send(sender.isOn)
     }
 }
