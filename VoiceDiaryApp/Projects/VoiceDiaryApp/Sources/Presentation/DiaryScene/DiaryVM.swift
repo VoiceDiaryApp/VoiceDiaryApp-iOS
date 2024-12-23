@@ -93,7 +93,7 @@ private extension DiaryVM {
     func generatePrompt(content: String,
                         emotion: Emotion,
                         output: Output) {
-        let generatedPrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"에 대한 답장을 써줘. 나는 일기를 쓰는 아이고 우리는 친구이지만 호칭은 너라고 해줘. 내가 쓴 일기를 너한테 보내면, 도깨비가 귀여운 말투로 나에게 답장을 써줘. 답장은 이모티콘 없이 편안하고 친근한 말투로, 내용은 조금 길고 따뜻한 감정이 담겨 있으면 좋겠어. 그리고 생략된 말이나 괄호는 없었으면 좋겠어."
+        let generatedPrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"에 대한 답장을 써줘. 나는 일기를 쓰는 아이고 우리는 친구이지만 호칭은 너라고 해줘. 내가 쓴 일기를 너한테 보내면, 도깨비가 귀여운 말투로 나에게 답장을 써줘. 답장은 이모티콘 없이 편안하고 친근한 말투로, 내용은 조금 길고 따뜻한 감정이 담겨 있으면 좋겠어. 그리고 생략된 말이나 괄호는 없었으면 좋겠고 1문단으로 작성해줘."
         print("💭💭generatedPrompt💭💭")
         print(generatedPrompt)
         Task {

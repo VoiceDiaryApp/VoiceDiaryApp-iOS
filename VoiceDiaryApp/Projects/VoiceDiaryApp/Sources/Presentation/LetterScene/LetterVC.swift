@@ -46,7 +46,7 @@ final class LetterVC: UIViewController {
     private let letterLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = .fontGuide(type: .NanumHand, size: 25)
+        label.font = .fontGuide(type: .NanumHand, size: 26)
         label.numberOfLines = 0
         label.textAlignment = .left
         return label
