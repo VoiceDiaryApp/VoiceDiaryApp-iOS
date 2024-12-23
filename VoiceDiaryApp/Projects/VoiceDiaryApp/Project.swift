@@ -50,7 +50,9 @@ let project = Project(
             resources: ["Resources/**"],
             dependencies: [
                 .external(name: "SnapKit"),
-                .external(name: "GoogleGenerativeAI")
+                .external(name: "GoogleGenerativeAI"),
+                .external(name: "Realm"),
+                .external(name: "RealmSwift")
             ],
             settings: .settings(
                 base: [
