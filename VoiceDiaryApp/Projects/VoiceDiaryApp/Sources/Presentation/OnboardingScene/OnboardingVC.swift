@@ -46,7 +46,7 @@ final class OnboardingVC: UIViewController {
     
     private let startButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .yellow
+        button.backgroundColor = UIColor(resource: .mainYellow)
         button.setTitle("시작하기", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.titleLabel?.font = .fontGuide(type: .PretandardSemiBold, size: 17)
@@ -70,7 +70,7 @@ private extension OnboardingVC {
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
         
         startButton.tapPublisher
             .sink(receiveValue: {

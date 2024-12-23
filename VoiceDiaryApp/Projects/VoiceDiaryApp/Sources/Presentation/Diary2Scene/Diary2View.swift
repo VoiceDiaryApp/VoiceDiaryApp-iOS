@@ -40,7 +40,7 @@ final class Diary2View: UIView {
     
     // MARK: - UI Components
     
-    private let navigationBar: CustomNavigationBar = {
+    let navigationBar: CustomNavigationBar = {
         let navigationBar = CustomNavigationBar()
         navigationBar.setTitleLabel = "일기 쓰기"
         return navigationBar
@@ -88,7 +88,7 @@ final class Diary2View: UIView {
         return button
     }()
     
-    private let selectedEmotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
+    let selectedEmotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
     var isSaveEnabledPublisher: AnyPublisher<Bool, Never> {
         selectedEmotionSubject
             .map { $0 != nil }

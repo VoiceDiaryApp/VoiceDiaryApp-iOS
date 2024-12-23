@@ -11,6 +11,10 @@ import SnapKit
 
 final class LoadingVC: UIViewController {
     
+    // MARK: - Properties
+    
+    private let diaryVM: DiaryVM
+    
     // MARK: - UI Components
     
     private let loadingImageView = UIImageView(image: UIImage(resource: .imgLoading))
@@ -28,13 +32,22 @@ final class LoadingVC: UIViewController {
     
     // MARK: - Life Cycles
     
+    init(viewModel: DiaryVM) {
+        self.diaryVM = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
         setHierarchy()
         setLayout()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.showNextPage()
         }
     }
@@ -44,7 +57,7 @@ private extension LoadingVC {
     
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
     }
     
     func setHierarchy() {
@@ -67,7 +80,8 @@ private extension LoadingVC {
     }
     
     func showNextPage() {
-//        let letterVC = LetterVC()
-//        self.navigationController?.pushViewController(letterVC, animated: true)
+        let letterVC = LetterVC(viewModel: diaryVM)
+        letterVC.modalPresentationStyle = .overFullScreen
+        self.present(letterVC, animated: true)
     }
 }

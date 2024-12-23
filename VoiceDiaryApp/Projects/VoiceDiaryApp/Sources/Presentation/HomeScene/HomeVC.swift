@@ -77,7 +77,7 @@ final class HomeVC: UIViewController {
 private extension HomeVC {
     
     func setUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
         self.navigationController?.navigationBar.isHidden = true
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         

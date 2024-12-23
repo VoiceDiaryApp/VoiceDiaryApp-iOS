@@ -10,8 +10,15 @@ import UIKit
 
 import SnapKit
 import Photos
+import Combine
 
 final class LetterVC: UIViewController {
+    
+    // MARK: - Properties
+    
+    private let diaryVM: DiaryVM
+    private var cancellables = Set<AnyCancellable>()
+    private let viewWillAppear: PassthroughSubject<Void, Never> = PassthroughSubject()
     
     // MARK: - UI Components
     
@@ -38,9 +45,8 @@ final class LetterVC: UIViewController {
     
     private let letterLabel: UILabel = {
         let label = UILabel()
-        label.text = "편지내용\n편지지지지지지지지지\n어쩌구저쩌구루루ㅜ루루루루룰"
         label.textColor = .black
-        label.font = .fontGuide(type: .PretandardMedium, size: 17)
+        label.font = .fontGuide(type: .NanumHand, size: 26)
         label.numberOfLines = 0
         label.textAlignment = .left
         return label
@@ -48,12 +54,28 @@ final class LetterVC: UIViewController {
     
     // MARK: - Life Cycles
     
+    init(viewModel: DiaryVM) {
+        self.diaryVM = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewWillAppear.send()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
         setHierarchy()
         setLayout()
+        bindViewModel()
     }
 }
 
@@ -61,10 +83,10 @@ private extension LetterVC {
     
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .mainBeige)
         
         navigationBar.exitButtonAction = {
-            print("tapExitButton")
+            self.changeRootToHomeVC()
         }
         
         navigationBar.saveButtonAction = {
@@ -80,6 +102,23 @@ private extension LetterVC {
                 }
             }
         }
+    }
+    
+    func bindViewModel() {
+        let input = DiaryVM.Input(
+            onRecording: PassthroughSubject(),
+            tapRecordEnd: PassthroughSubject(),
+            tapDrawEnd: PassthroughSubject(),
+            viewWillAppear: self.viewWillAppear
+        )
+        
+        let output = diaryVM.transform(input: input)
+        
+        output.geminiLetter
+            .sink(receiveValue: { letter in
+                self.letterLabel.text = letter
+        })
+        .store(in: &cancellables)
     }
     
     func setHierarchy() {
