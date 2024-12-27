@@ -9,6 +9,11 @@ import UIKit
 import SnapKit
 import Combine
 
+private enum MoreLabelAction {
+    case showDetails
+    case writeDiary
+}
+
 final class DiaryView: UIView {
     
     private var cancellables = Set<AnyCancellable>()
@@ -155,6 +160,8 @@ final class DiaryView: UIView {
 
     private var currentDate: Date = Date()
 
+    private var moreLabelAction: MoreLabelAction = .writeDiary
+    
     init(viewModel: CalendarVMProtocol) {
         self.viewModel = viewModel
         super.init(frame: .zero)
@@ -351,11 +358,6 @@ final class DiaryView: UIView {
     }
 
     private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
-        guard let diaryEntries = viewModel?.diaryEntries else {
-            showEmptyDiaryView(isFutureDate: Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending)
-            return
-        }
-        
         if hasDiary {
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
@@ -366,7 +368,7 @@ final class DiaryView: UIView {
             diaryTitleLabel.text = "일기 제목"
             updateDiaryDateLabel(for: date)
             
-            if let diaryEntry = diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
+            if let diaryEntry = viewModel.diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
                 diaryContentLabel.attributedText = processContentText(diaryEntry.content)
             } else {
                 diaryContentLabel.attributedText = processContentText("일기 내용 일부를 여기에 표시합니다.")
@@ -374,8 +376,10 @@ final class DiaryView: UIView {
             
             moreLabel.isHidden = false
             moreLabel.text = "더보기"
+            moreLabelAction = .showDetails
         } else {
             showEmptyDiaryView(isFutureDate: Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending)
+            moreLabelAction = .writeDiary
         }
     }
     

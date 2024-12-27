@@ -1,5 +1,5 @@
 //
-//  DiaryEntryModel.swift
+//  DiaryEntry.swift
 //  VoiceDiaryApp
 //
 //  Created by 신호연 on 12/4/24.
