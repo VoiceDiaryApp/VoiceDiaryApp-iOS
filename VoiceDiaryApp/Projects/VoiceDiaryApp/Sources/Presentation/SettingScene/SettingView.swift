@@ -13,6 +13,7 @@ class SettingView: UIView {
     // MARK: - Combine
     var alertTogglePublisher = PassthroughSubject<Bool, Never>()
     var alertChangePublisher = PassthroughSubject<Void, Never>()
+    var deleteActionPublisher = PassthroughSubject<Void, Never>()
     
     // MARK: - UI Elements
     private let navigationBar: CustomNavigationBar = {
@@ -85,6 +86,7 @@ class SettingView: UIView {
         setupHierarchy()
         setupLayout()
         setupAlertChangeViewTapGesture()
+        setupDeleteViewTapGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -93,6 +95,7 @@ class SettingView: UIView {
         setupHierarchy()
         setupLayout()
         setupAlertChangeViewTapGesture()
+        setupDeleteViewTapGesture()
     }
     
     // MARK: - UI Setup
@@ -169,6 +172,11 @@ class SettingView: UIView {
         alertChangeView.addGestureRecognizer(tapGesture)
     }
     
+    private func setupDeleteViewTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(deleteViewTapped))
+        deleteView.addGestureRecognizer(tapGesture)
+    }
+        
     // MARK: - Public Method
     func setNavigationBarBackAction(_ action: @escaping () -> Void) {
         navigationBar.backButtonAction = action
@@ -181,5 +189,9 @@ class SettingView: UIView {
     
     @objc private func alertChangeTapped() {
         alertChangePublisher.send(())
+    }
+    
+    @objc private func deleteViewTapped() {
+        deleteActionPublisher.send(())
     }
 }
