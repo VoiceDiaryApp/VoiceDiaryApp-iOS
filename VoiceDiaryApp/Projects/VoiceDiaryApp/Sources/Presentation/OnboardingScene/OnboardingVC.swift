@@ -62,6 +62,7 @@ final class OnboardingVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
+        saveSelectedTime()
     }
 }
 
@@ -74,7 +75,7 @@ private extension OnboardingVC {
         
         startButton.tapPublisher
             .sink(receiveValue: {
-                self.printSelectedTime()
+                self.saveSelectedTime()
                 self.changeRootToHomeVC()
             })
             .store(in: &cancellables)
@@ -120,12 +121,13 @@ private extension OnboardingVC {
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
     }
     
-    func printSelectedTime() {
+    func saveSelectedTime() {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
-        formatter.dateFormat = "a hh:mm"
-        formatter.locale = Locale(identifier: "ko-KR")
-        let formattedTime = formatter.string(from: selectedDate)
-        print("Selected Time: \(formattedTime)")
+        formatter.dateFormat = "HH:mm"
+        let timeString = formatter.string(from: selectedDate)
+        
+        UserDefaults.standard.set(timeString, forKey: "dailyNotificationTime")
+        NotificationManager.shared.scheduleDailyNotification(time: timeString)
     }
 }

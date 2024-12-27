@@ -40,8 +40,17 @@ class SettingVC: UIViewController {
     private func bindAlertToggle() {
         settingView.alertTogglePublisher
             .sink { isOn in
-                print("Alert Toggle is now: \(isOn)")
-                // 필요한 동작 추가 (예: UserDefaults 저장, 네트워크 호출 등)
+                
+                if isOn {
+                    if let savedTime = UserDefaults.standard.string(forKey: "dailyNotificationTime") {
+                        NotificationManager.shared.scheduleDailyNotification(time: savedTime)
+                    } else {
+                        print("알림 시간이 설정되지 않았습니다.")
+                    }
+                } else {
+                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                }
+                UserDefaults.standard.set(isOn, forKey: "isNotificationEnabled")
             }
             .store(in: &cancellables)
     }

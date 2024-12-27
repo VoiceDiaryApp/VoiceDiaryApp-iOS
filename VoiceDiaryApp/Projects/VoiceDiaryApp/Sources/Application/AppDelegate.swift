@@ -7,12 +7,13 @@
 
 import Foundation
 import UIKit
+import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    func application( 
+    func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
@@ -21,6 +22,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = rootVC
         window.makeKeyAndVisible()
         self.window = window
+
+        requestNotificationAuthorization()
+
+        if let savedTime = UserDefaults.standard.string(forKey: "dailyNotificationTime") {
+            NotificationManager.shared.scheduleDailyNotification(time: savedTime)
+        }
+
         return true
+    }
+    
+    func requestNotificationAuthorization() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if !granted { }
+        }
     }
 }
