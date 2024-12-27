@@ -119,6 +119,7 @@ class SettingVC: UIViewController {
         
         let cancelButton = UIButton()
         cancelButton.setTitle("취소", for: .normal)
+        cancelButton.setTitleColor(.black, for: .normal)
         cancelButton.titleLabel?.font = .fontGuide(type: .PretandardSemiBold, size: 15)
         cancelButton.backgroundColor = UIColor(resource: .mainYellow)
         cancelButton.layer.cornerRadius = 8
@@ -127,6 +128,7 @@ class SettingVC: UIViewController {
         
         let deleteButton = UIButton()
         deleteButton.setTitle("삭제", for: .normal)
+        deleteButton.setTitleColor(.black, for: .normal)
         deleteButton.titleLabel?.font = .fontGuide(type: .PretandardSemiBold, size: 15)
         deleteButton.backgroundColor = UIColor(resource: .mainYellow)
         deleteButton.layer.cornerRadius = 8
