@@ -12,6 +12,7 @@ import Combine
 class SettingView: UIView {
     // MARK: - Combine
     var alertTogglePublisher = PassthroughSubject<Bool, Never>()
+    var alertChangePublisher = PassthroughSubject<Void, Never>()
     
     // MARK: - UI Elements
     private let navigationBar: CustomNavigationBar = {
@@ -43,6 +44,23 @@ class SettingView: UIView {
         return toggle
     }()
     
+    private let alertChangeView = UIView()
+    
+    private let alertChangeTitle: UILabel = {
+        let label = UILabel()
+        label.text = "알림 시간 변경"
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
+        return label
+    }()
+    
+    private let alertChangeDescriptionText: UILabel = {
+        let label = UILabel()
+        label.text = "알림 시간을 변경할 수 있어요."
+        label.font = .fontGuide(type: .PretandardMedium, size: 13)
+        label.textColor = UIColor(resource: .calendarTextBlack)
+        return label
+    }()
+    
     private let deleteView = UIView()
     
     private let deleteTitle: UILabel = {
@@ -66,6 +84,7 @@ class SettingView: UIView {
         setupUI()
         setupHierarchy()
         setupLayout()
+        setupAlertChangeViewTapGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -73,6 +92,7 @@ class SettingView: UIView {
         setupUI()
         setupHierarchy()
         setupLayout()
+        setupAlertChangeViewTapGesture()
     }
     
     // MARK: - UI Setup
@@ -81,8 +101,9 @@ class SettingView: UIView {
     }
     
     private func setupHierarchy() {
-        addSubviews(navigationBar, alertView, deleteView)
+        addSubviews(navigationBar, alertView, alertChangeView, deleteView)
         alertView.addSubviews(alertTitle, alertDescriptionText, alertToggle)
+        alertChangeView.addSubviews(alertChangeTitle, alertChangeDescriptionText)
         deleteView.addSubviews(deleteTitle, deleteDescriptionText)
     }
     
@@ -96,7 +117,7 @@ class SettingView: UIView {
         alertView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom).offset(33)
             make.leading.trailing.equalToSuperview().inset(28)
-            make.height.equalTo(55)
+            make.height.equalTo(50)
         }
         
         alertTitle.snp.makeConstraints { make in
@@ -113,8 +134,22 @@ class SettingView: UIView {
             make.centerY.equalToSuperview()
         }
         
+        alertChangeView.snp.makeConstraints { make in
+            make.top.equalTo(alertView.snp.bottom).offset(14)
+            make.leading.trailing.equalToSuperview().inset(28)
+            make.height.equalTo(50)
+        }
+        
+        alertChangeTitle.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview()
+        }
+        
+        alertChangeDescriptionText.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+        }
+        
         deleteView.snp.makeConstraints{ make in
-            make.top.equalTo(alertView.snp.bottom).offset(53)
+            make.top.equalTo(alertChangeView.snp.bottom).offset(14)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(50)
         }
@@ -129,6 +164,11 @@ class SettingView: UIView {
         }
     }
     
+    private func setupAlertChangeViewTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(alertChangeTapped))
+        alertChangeView.addGestureRecognizer(tapGesture)
+    }
+    
     // MARK: - Public Method
     func setNavigationBarBackAction(_ action: @escaping () -> Void) {
         navigationBar.backButtonAction = action
@@ -137,5 +177,9 @@ class SettingView: UIView {
     // MARK: - Toggle Action
     @objc private func alertToggleChanged(_ sender: UISwitch) {
         alertTogglePublisher.send(sender.isOn)
+    }
+    
+    @objc private func alertChangeTapped() {
+        alertChangePublisher.send(())
     }
 }

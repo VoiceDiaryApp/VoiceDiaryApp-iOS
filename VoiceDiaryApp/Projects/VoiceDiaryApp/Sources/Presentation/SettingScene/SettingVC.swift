@@ -24,6 +24,7 @@ class SettingVC: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
         setupNavigationBar()
         bindAlertToggle()
+        bindAlertChangeAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -51,6 +52,15 @@ class SettingVC: UIViewController {
                     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
                 }
                 UserDefaults.standard.set(isOn, forKey: "isNotificationEnabled")
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func bindAlertChangeAction() {
+        settingView.alertChangePublisher
+            .sink { [weak self] in
+                let onboardingVC = OnboardingVC(buttonTitle: "변경하기")
+                self?.navigationController?.pushViewController(onboardingVC, animated: true)
             }
             .store(in: &cancellables)
     }
