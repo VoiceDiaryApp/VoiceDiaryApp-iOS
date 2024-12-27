@@ -128,6 +128,7 @@ private extension OnboardingVC {
         let timeString = formatter.string(from: selectedDate)
         
         UserDefaults.standard.set(timeString, forKey: "dailyNotificationTime")
+        UserDefaults.standard.set(true, forKey: "isNotificationSet")
         NotificationManager.shared.scheduleDailyNotification(time: timeString)
     }
 }
