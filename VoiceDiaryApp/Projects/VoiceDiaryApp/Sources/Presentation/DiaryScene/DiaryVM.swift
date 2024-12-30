@@ -13,8 +13,10 @@ final class DiaryVM: ViewModel {
     
     private var cancellables = Set<AnyCancellable>()
     private var recordingContent: String = ""
+    private var recordingEmotion: Emotion = .angry
     private let model = GenerativeModel(name: "gemini-1.5-flash-latest",
                                         apiKey: Config.apiKey)
+    private let realmManager = RealmDiaryManager()
     private var geminiLetterContent: String = "" {
         didSet {
             geminiLetterSubject.send(geminiLetterContent)
@@ -69,6 +71,7 @@ final class DiaryVM: ViewModel {
             .receive(on: RunLoop.main)
             .sink { content in
                 output.geminiLetter.send(content)
+                self.saveDiaryToRealm()
             }
             .store(in: &cancellables)
         
@@ -96,9 +99,21 @@ private extension DiaryVM {
         let generatedPrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"에 대한 답장을 써줘. 나는 일기를 쓰는 아이고 우리는 친구이지만 호칭은 너라고 해줘. 내가 쓴 일기를 너한테 보내면, 도깨비가 귀여운 말투로 나에게 답장을 써줘. 답장은 이모티콘 없이 편안하고 친근한 말투로, 내용은 조금 길고 따뜻한 감정이 담겨 있으면 좋겠어. 그리고 생략된 말이나 괄호는 없었으면 좋겠고 1문단으로 작성해줘."
         print("💭💭generatedPrompt💭💭")
         print(generatedPrompt)
+        recordingEmotion = emotion
         Task {
             await generateGeminiLetter(prompt: generatedPrompt,
                                        output: output)
         }
+    }
+    
+    func saveDiaryToRealm() {
+        self.realmManager.saveDiaryEntry(WriteDiaryEntry(
+            date: Date(timeIntervalSince1970: 100000).dateToString(),
+            emotion: self.recordingEmotion,
+            content: self.recordingContent,
+            shortContent: "요약이요요약이요",
+            title: "제목이요제목이요",
+            answer: self.geminiLetterContent,
+            drawImage: ""))
     }
 }
