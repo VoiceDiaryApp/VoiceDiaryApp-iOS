@@ -13,7 +13,7 @@ final class CalendarView: UIView {
     // MARK: - Combine
     var selectedDatePublisher = CurrentValueSubject<Date?, Never>(nil)
     
-    private var diaryEntriesSubject = CurrentValueSubject<[DiaryEntry], Never>([])
+    private var diaryEntriesSubject = CurrentValueSubject<[CalendarEntry], Never>([])
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: Properties
@@ -22,7 +22,7 @@ final class CalendarView: UIView {
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private let calendar = Calendar.current
     private var currentDate: Date = Date()
-    private var diaryEntries: [DiaryEntry] = []
+    private var diaryEntries: [CalendarEntry] = []
     private var selectedDate: Date?
     
     private lazy var collectionView: UICollectionView = {
@@ -132,7 +132,7 @@ final class CalendarView: UIView {
         selectedDatePublisher.send(date)
     }
     
-    func updateDiaryEntries(_ entries: [DiaryEntry]) {
+    func updateDiaryEntries(_ entries: [CalendarEntry]) {
         diaryEntriesSubject.send(entries)
     }
     
