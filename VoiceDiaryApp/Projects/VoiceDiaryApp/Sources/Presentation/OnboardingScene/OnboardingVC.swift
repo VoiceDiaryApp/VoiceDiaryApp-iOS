@@ -5,9 +5,7 @@
 //  Created by 고아라 on 12/17/24.
 //
 
-
 import UIKit
-
 import SnapKit
 import Combine
 
@@ -17,6 +15,9 @@ final class OnboardingVC: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
     private let buttonTitle: String
+    
+    @UserDefaultWrapper(key: "dailyNotificationTime", defaultValue: "") private(set) var dailyNotificationTime: String
+    @UserDefaultWrapper(key: "isNotificationSet", defaultValue: false) private(set) var isNotificationSet: Bool
     
     // MARK: - UI Components
     
@@ -57,7 +58,6 @@ final class OnboardingVC: UIViewController {
     
     // MARK: - Life Cycles
     
-    
     init(buttonTitle: String = "시작하기") {
         self.buttonTitle = buttonTitle
         super.init(nibName: nil, bundle: nil)
@@ -73,7 +73,6 @@ final class OnboardingVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
-        saveSelectedTime()
     }
 }
 
@@ -138,10 +137,8 @@ private extension OnboardingVC {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        let timeString = formatter.string(from: selectedDate)
-        
-        UserDefaults.standard.set(timeString, forKey: "dailyNotificationTime")
-        UserDefaults.standard.set(true, forKey: "isNotificationSet")
-        NotificationManager.shared.scheduleDailyNotification(time: timeString)
+        dailyNotificationTime = formatter.string(from: selectedDate)
+        isNotificationSet = true
+        NotificationManager.shared.scheduleDailyNotification(time: dailyNotificationTime)
     }
 }

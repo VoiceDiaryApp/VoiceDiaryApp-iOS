@@ -86,10 +86,6 @@ class SettingView: UIView {
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupUI()
-        setupHierarchy()
-        setupLayout()
-        setupInteractions()
     }
     
     // MARK: - Setup
