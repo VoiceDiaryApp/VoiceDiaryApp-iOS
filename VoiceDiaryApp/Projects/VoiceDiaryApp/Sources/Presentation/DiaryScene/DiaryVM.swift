@@ -14,6 +14,8 @@ final class DiaryVM: ViewModel {
     private var cancellables = Set<AnyCancellable>()
     private var recordingContent: String = ""
     private var recordingEmotion: Emotion = .angry
+    private var recordingTitle: String = ""
+    private var recordingSummary: String = ""
     private let model = GenerativeModel(name: "gemini-1.5-flash-latest",
                                         apiKey: Config.apiKey)
     private let realmManager = RealmDiaryManager()
@@ -104,15 +106,55 @@ private extension DiaryVM {
             await generateGeminiLetter(prompt: generatedPrompt,
                                        output: output)
         }
+        generateTitlePrompt(content: content,
+                            emotion: emotion,
+                            output: output)
+        generateSummaryPrompt(content: content,
+                              emotion: emotion,
+                              output: output)
+    }
+    
+    func generateTitlePrompt(content: String,
+                             emotion: Emotion,
+                             output: Output) {
+        let generatedTitlePrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"의 일기를 썼어. 이 일기의 제목을 한줄로 만들어줘."
+        print("💭💭generatedTitlePrompt💭💭")
+        print(generatedTitlePrompt)
+        Task {
+            do {
+                let response = try await model.generateContent(generatedTitlePrompt)
+                let titleContent = response.candidates.first?.content.parts.first?.text ?? "오늘의 하루!"
+                self.recordingTitle = titleContent
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
+    
+    func generateSummaryPrompt(content: String,
+                               emotion: Emotion,
+                               output: Output) {
+        let generatedSummaryPrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"의 일기 내용을 간단하게 요약해줘."
+        print("💭💭generatedSummaryPrompt💭💭")
+        print(generatedSummaryPrompt)
+        Task {
+            do {
+                let response = try await model.generateContent(generatedSummaryPrompt)
+                let summaryContent = response.candidates.first?.content.parts.first?.text ?? "오늘의 하루는 어땠냐면.."
+                self.recordingSummary = summaryContent
+            } catch {
+                print("Error: \(error)")
+            }
+        }
     }
     
     func saveDiaryToRealm() {
         self.realmManager.saveDiaryEntry(WriteDiaryEntry(
-            date: Date(timeIntervalSince1970: 100000).dateToString(), // 오늘날짜로 수정예정
+            date: Date(timeIntervalSince1970: 500000).dateToString(), // 오늘날짜로 수정예정
             emotion: self.recordingEmotion,
             content: self.recordingContent,
-            shortContent: "요약이요요약이요",
-            title: "제목이요제목이요",
+            shortContent: self.recordingSummary,
+            title: self.recordingTitle,
             answer: self.geminiLetterContent,
             drawImage: ""))
     }
