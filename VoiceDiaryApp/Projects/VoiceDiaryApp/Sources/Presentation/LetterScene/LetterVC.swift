@@ -11,6 +11,7 @@ import UIKit
 import SnapKit
 import Photos
 import Combine
+import RealmSwift
 
 final class LetterVC: UIViewController {
     
@@ -76,6 +77,7 @@ final class LetterVC: UIViewController {
         setHierarchy()
         setLayout()
         bindViewModel()
+        printAllEntries()
     }
 }
 
@@ -244,5 +246,18 @@ private extension LetterVC {
             return
         }
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
+    }
+    
+    func printAllEntries() {
+        do {
+            let realm = try Realm()
+            let allEntries = realm.objects(RealmDiaryEntry.self) // RealmDiaryEntry는 데이터 모델
+            print("😬😬😬😬😬")
+            for entry in allEntries {
+                print(entry)
+            }
+        } catch {
+            print("Error opening Realm: \(error)")
+        }
     }
 }
