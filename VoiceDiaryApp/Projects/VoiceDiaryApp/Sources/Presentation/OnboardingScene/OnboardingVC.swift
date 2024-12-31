@@ -21,6 +21,12 @@ final class OnboardingVC: UIViewController {
     
     // MARK: - UI Components
     
+    private let navigationBar: CustomNavigationBar = {
+        let navigationBar = CustomNavigationBar()
+        navigationBar.isBackButtonIncluded = true
+        return navigationBar
+    }()
+    
     private let onboardingTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "알람 시간 설정"
@@ -84,6 +90,10 @@ private extension OnboardingVC {
         view.backgroundColor = UIColor(resource: .mainBeige)
         
         startButton.setTitle(buttonTitle, for: .normal)
+        navigationBar.isHidden = (buttonTitle == "시작하기")
+        navigationBar.backButtonAction = {
+            self.navigationController?.popViewController(animated: true)
+        }
         
         startButton.tapPublisher
             .sink(receiveValue: {
@@ -94,15 +104,22 @@ private extension OnboardingVC {
     }
     
     func setHierarchy() {
-        view.addSubviews(onboardingTitleLabel,
+        view.addSubviews(navigationBar,
+                         onboardingTitleLabel,
                          onboardingSubTitleLabel,
                          timePicker,
                          startButton)
     }
     
     func setLayout() {
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(55)
+        }
+        
         onboardingTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(56)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(10)
             $0.leading.equalToSuperview().inset(43)
         }
         
