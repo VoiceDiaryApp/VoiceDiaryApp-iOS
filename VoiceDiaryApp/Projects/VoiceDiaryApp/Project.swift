@@ -33,7 +33,8 @@ let project = Project(
                         "Roboto-Black.ttf",
                         "Roboto-Bold.ttf",
                         "Roboto-Regular.ttf",
-                        "나눔손글씨 또박또박.ttf"
+                        "나눔손글씨 또박또박.ttf",
+                        "밑미.ttf"
                     ],
                     "UIUserInterfaceStyle": "Light",
                     "UISupportedInterfaceOrientations": [
