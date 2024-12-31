@@ -70,7 +70,9 @@ final class HomeVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        goToDiaryButton.isEnabled = !realmManager.hasTodayDiary()
+        let hasTodayDiary = realmManager.hasTodayDiary()
+        goToDiaryButton.isEnabled = !hasTodayDiary
+        todayMentLabel.text = hasTodayDiary ? "내일은 어떤 하루일까?" : "오늘은 어떤 하루였어?"
     }
     
     override func viewDidLoad() {
