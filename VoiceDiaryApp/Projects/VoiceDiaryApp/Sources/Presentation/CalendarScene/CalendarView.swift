@@ -12,6 +12,7 @@ import Combine
 final class CalendarView: UIView {
     // MARK: - Combine
     var selectedDatePublisher = CurrentValueSubject<Date?, Never>(nil)
+    var currentDatePublisher = CurrentValueSubject<Date, Never>(Date())
     
     private var diaryEntriesSubject = CurrentValueSubject<[CalendarEntry], Never>([])
     private var cancellables = Set<AnyCancellable>()
@@ -105,6 +106,7 @@ final class CalendarView: UIView {
     private func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
         if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
             currentDate = newDate
+            currentDatePublisher.send(currentDate)
             animateCalendarTransition(direction: direction)
             collectionView.reloadData()
             updateYearAndMonthLabels()
@@ -114,8 +116,8 @@ final class CalendarView: UIView {
     private func updateYearAndMonthLabels() {
         let year = calendar.component(.year, from: currentDate)
         let month = calendar.component(.month, from: currentDate)
-        (superview as? DiaryView)?.yearLabel.text = "\(year)년"
-        (superview as? DiaryView)?.monthLabel.text = "\(month)월"
+        (superview as? CalendarSummaryView)?.yearLabel.text = "\(year)년"
+        (superview as? CalendarSummaryView)?.monthLabel.text = "\(month)월"
     }
     
     private func animateCalendarTransition(direction: CATransitionSubtype) {
@@ -146,6 +148,7 @@ final class CalendarView: UIView {
     
     func updateMonth(date: Date) {
         currentDate = date
+        currentDatePublisher.send(currentDate)
         collectionView.reloadData()
     }
     

@@ -15,8 +15,8 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
     private let viewModel: CalendarVMProtocol
     private var cancellables = Set<AnyCancellable>()
 
-    private lazy var diaryView: DiaryView = {
-        let view = DiaryView(viewModel: viewModel)
+    private lazy var calendarSummaryView: CalendarSummaryView = {
+        let view = CalendarSummaryView(viewModel: viewModel)
         return view
     }()
 
@@ -46,12 +46,12 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
     private func setupUI() {
         view.backgroundColor = UIColor(resource: .mainBeige)
 
-        diaryView.navigationBar.backButtonAction = { [weak self] in
+        calendarSummaryView.navigationBar.backButtonAction = { [weak self] in
             self?.navigationController?.popViewController(animated: true)
         }
 
-        view.addSubview(diaryView)
-        diaryView.snp.makeConstraints { make in
+        view.addSubview(calendarSummaryView)
+        calendarSummaryView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
@@ -60,7 +60,7 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
         viewModel.diaryEntriesPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] entries in
-                self?.diaryView.calendarView.updateDiaryEntries(entries)
+                self?.calendarSummaryView.calendarView.updateDiaryEntries(entries)
             }
             .store(in: &cancellables)
     }
