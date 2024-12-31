@@ -107,16 +107,13 @@ private extension DiaryVM {
                                        output: output)
         }
         generateTitlePrompt(content: content,
-                            emotion: emotion,
-                            output: output)
+                            emotion: emotion)
         generateSummaryPrompt(content: content,
-                              emotion: emotion,
-                              output: output)
+                              emotion: emotion)
     }
     
     func generateTitlePrompt(content: String,
-                             emotion: Emotion,
-                             output: Output) {
+                             emotion: Emotion) {
         let generatedTitlePrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"의 일기를 썼어. 이 일기의 제목을 한줄로 만들어줘."
         print("💭💭generatedTitlePrompt💭💭")
         print(generatedTitlePrompt)
@@ -132,8 +129,7 @@ private extension DiaryVM {
     }
     
     func generateSummaryPrompt(content: String,
-                               emotion: Emotion,
-                               output: Output) {
+                               emotion: Emotion) {
         let generatedSummaryPrompt = "\"" + content + ". " + emotion.emotionToPrompt + "\"의 일기 내용을 간단하게 요약해줘."
         print("💭💭generatedSummaryPrompt💭💭")
         print(generatedSummaryPrompt)
@@ -150,7 +146,7 @@ private extension DiaryVM {
     
     func saveDiaryToRealm() {
         self.realmManager.saveDiaryEntry(WriteDiaryEntry(
-            date: Date(timeIntervalSince1970: 500000).dateToString(), // 오늘날짜로 수정예정
+            date: Date().dateToString(),
             emotion: self.recordingEmotion,
             content: self.recordingContent,
             shortContent: self.recordingSummary,
