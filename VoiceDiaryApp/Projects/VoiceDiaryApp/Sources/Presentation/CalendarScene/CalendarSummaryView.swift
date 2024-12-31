@@ -177,7 +177,6 @@ final class CalendarSummaryView: UIView {
         bindCalendarView()
 
         selectedDate = currentDate
-
         let hasDiary = checkIfDiaryExists(for: selectedDate!)
         updateDiaryContentView(for: selectedDate!, hasDiary: hasDiary)
     }
@@ -249,11 +248,32 @@ final class CalendarSummaryView: UIView {
     }
 
     @objc private func didTapLeftArrow() {
-        animateCalendarTransition(byAddingMonths: -1, direction: .fromLeft)
+        changeMonth(byAddingMonths: -1, direction: .fromLeft)
     }
 
     @objc private func didTapRightArrow() {
-        animateCalendarTransition(byAddingMonths: 1, direction: .fromRight)
+        changeMonth(byAddingMonths: 1, direction: .fromRight)
+    }
+
+    private func moveToMonth(byAddingMonths months: Int) {
+        guard let newDate = Calendar.current.date(byAdding: .month, value: months, to: currentDate) else { return }
+        calendarView.updateMonth(date: newDate)
+    }
+
+    private func changeMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
+        guard let newDate = Calendar.current.date(byAdding: .month, value: months, to: currentDate) else { return }
+        
+        currentDate = newDate
+
+        let transition = CATransition()
+        transition.type = .push
+        transition.subtype = direction
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        calendarView.layer.add(transition, forKey: kCATransition)
+
+        calendarView.updateMonth(date: currentDate)
+        configureDateLabels()
     }
 
     @objc private func didTapMoreLabel() {
@@ -577,14 +597,19 @@ final class CalendarSummaryView: UIView {
     }
     
     private func bindCalendarView() {
-        calendarView.selectedDatePublisher
-            .sink { [weak self] selectedDate in
-                guard let self = self, let selectedDate = selectedDate else { return }
-                // 선택된 날짜에 따라 UI를 업데이트
-                let hasDiary = self.checkIfDiaryExists(for: selectedDate)
-                self.updateDiaryContentView(for: selectedDate, hasDiary: hasDiary)
-                self.configureDateLabels()
-            }
-            .store(in: &cancellables)
-    }
+            calendarView.currentDatePublisher
+                .sink { [weak self] newDate in
+                    self?.currentDate = newDate
+                    self?.configureDateLabels()
+                }
+                .store(in: &cancellables)
+
+            calendarView.selectedDatePublisher
+                .sink { [weak self] selectedDate in
+                    guard let self = self, let selectedDate = selectedDate else { return }
+                    let hasDiary = self.checkIfDiaryExists(for: selectedDate)
+                    self.updateDiaryContentView(for: selectedDate, hasDiary: hasDiary)
+                }
+                .store(in: &cancellables)
+        }
 }
