@@ -16,6 +16,7 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     private lazy var calendarSummaryView: CalendarSummaryView = {
+        let diaryManager = RealmDiaryManager()
         let view = CalendarSummaryView(viewModel: viewModel)
         return view
     }()

@@ -14,6 +14,8 @@ final class CalendarView: UIView {
     var selectedDatePublisher = CurrentValueSubject<Date?, Never>(nil)
     var currentDatePublisher = CurrentValueSubject<Date, Never>(Date())
     
+    private let diaryManager: RealmDiaryManager
+    
     private var diaryEntriesSubject = CurrentValueSubject<[CalendarEntry], Never>([])
     private var cancellables = Set<AnyCancellable>()
     
@@ -46,7 +48,8 @@ final class CalendarView: UIView {
         return stackView
     }()
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, diaryManager: RealmDiaryManager) {
+        self.diaryManager = diaryManager
         super.init(frame: frame)
         setupUI()
         setupDaysOfWeek()
@@ -108,6 +111,21 @@ final class CalendarView: UIView {
             currentDate = newDate
             currentDatePublisher.send(currentDate)
             animateCalendarTransition(direction: direction)
+
+            let realmEntries = diaryManager.fetchDiaryEntries(for: currentDate)
+            let calendarEntries = realmEntries.compactMap { realmEntry -> CalendarEntry? in
+                guard let createDate = realmEntry.createDate.toDate() else {
+                    print("Invalid createDate for realmEntry: \(realmEntry)")
+                    return nil
+                }
+                return CalendarEntry(
+                    date: createDate,
+                    emotion: Emotion(rawValue: realmEntry.emotion) ?? .neutral,
+                    content: realmEntry.content
+                )
+            }
+            updateDiaryEntries(calendarEntries)
+
             collectionView.reloadData()
             updateYearAndMonthLabels()
         }
@@ -157,17 +175,16 @@ final class CalendarView: UIView {
 }
 
 extension CalendarView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let range = calendar.range(of: .day, in: .month, for: currentDate),
               let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else {
             return 0
         }
-        
+
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
         return range.count + weekdayOffset
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CalendarCell", for: indexPath) as? CalendarCell else {
             return UICollectionViewCell()
@@ -177,29 +194,25 @@ extension CalendarView: UICollectionViewDataSource, UICollectionViewDelegateFlow
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1
 
         if indexPath.item < weekdayOffset {
-            cell.configure(day: nil, emotion: nil, isToday: false)
-            cell.setSelected(false, isToday: false)
+            cell.configure(day: nil, date: firstDayOfMonth, diaryManager: diaryManager, isToday: false)
         } else {
             let day = indexPath.item - weekdayOffset + 1
             let cellDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)!
             let isToday = calendar.isDateInToday(cellDate)
-            let entry = diaryEntries.first { calendar.isDate($0.date, inSameDayAs: cellDate) }
-            let isSelected = selectedDate != nil && calendar.isDate(selectedDate!, inSameDayAs: cellDate)
 
-            cell.configure(day: day, emotion: entry?.emotion, isToday: isToday)
-            cell.setSelected(isSelected, isToday: isToday)
+            cell.configure(day: day, date: cellDate, diaryManager: diaryManager, isToday: isToday)
         }
 
         return cell
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let totalHorizontalPadding: CGFloat = 66
         let availableWidth = bounds.width - totalHorizontalPadding
         let cellWidth = floor(availableWidth / 7)
         return CGSize(width: cellWidth, height: cellWidth + 32)
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else { return }
         let weekdayOffset = calendar.component(.weekday, from: firstDayOfMonth) - 1

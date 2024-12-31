@@ -60,8 +60,8 @@ final class CalendarSummaryView: UIView {
         return button
     }()
 
-    let calendarView: CalendarView = CalendarView()
-
+    let calendarView: CalendarView = CalendarView(frame: .zero, diaryManager: RealmDiaryManager())
+    
     private let diaryContentView: UIView = {
         let view = UIView()
         view.backgroundColor = .white

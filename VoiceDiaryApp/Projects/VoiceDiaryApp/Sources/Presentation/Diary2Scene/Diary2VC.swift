@@ -96,7 +96,7 @@ private extension Diary2VC {
     }
     
     func captureCanvasView() -> UIImage? {
-        let targetView = diaryView.canvasView
+        let targetView = calendarSummaryView.canvasView
         return targetView.snapshot()
     }
     

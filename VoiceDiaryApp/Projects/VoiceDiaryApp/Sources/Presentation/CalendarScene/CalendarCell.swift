@@ -44,10 +44,16 @@ final class CalendarCell: UICollectionViewCell {
         }
     }
 
-    func configure(day: Int?, emotion: Emotion?, isToday: Bool) {
+    func configure(day: Int?, date: Date, diaryManager: RealmDiaryManager, isToday: Bool) {
         if let day = day {
             dayLabel.text = "\(day)"
-            emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
+            
+            if let diaryEntry = diaryManager.fetchDiaryEntry(for: date),
+               let emotion = Emotion(rawValue: diaryEntry.emotion) {
+                emojiImageView.image = UIImage(named: emotion.rawValue)
+            } else {
+                emojiImageView.image = UIImage(named: "defaultImage")
+            }
 
             if isToday {
                 dayLabel.font = .fontGuide(type: .RobotobBold, size: 13)
