@@ -19,7 +19,7 @@ final class Diary2VC: UIViewController {
     
     // MARK: - View
     
-    private let diaryView = Diary2View()
+    private let calendarSummaryView = Diary2View()
     
     // MARK: - Life Cycle
     
@@ -33,7 +33,7 @@ final class Diary2VC: UIViewController {
     }
     
     override func loadView() {
-        self.view = diaryView
+        self.view = calendarSummaryView
     }
     
     override func viewDidLoad() {
@@ -51,7 +51,7 @@ private extension Diary2VC {
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
         
-        diaryView.navigationBar.backButtonAction = {
+        calendarSummaryView.navigationBar.backButtonAction = {
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -67,14 +67,14 @@ private extension Diary2VC {
     }
     
     func bindView() {
-        diaryView.isSaveEnabledPublisher
+        calendarSummaryView.isSaveEnabledPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] isSaveEnabled in
-                self?.diaryView.updateSaveButtonState(isEnabled: isSaveEnabled)
+                self?.calendarSummaryView.updateSaveButtonState(isEnabled: isSaveEnabled)
             }
             .store(in: &cancellables)
         
-        diaryView.selectedEmotionSubject
+        calendarSummaryView.selectedEmotionSubject
             .sink { emotion in
                 self.selectedEmotion = emotion
             }
@@ -82,7 +82,7 @@ private extension Diary2VC {
     }
     
     func bindActions() {
-        diaryView.saveButton.tapPublisher
+        calendarSummaryView.saveButton.tapPublisher
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.tapDrawEnd.send(self.selectedEmotion ?? Emotion.happy)

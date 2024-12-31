@@ -1,5 +1,5 @@
 //
-//  DiaryView.swift
+//  CalendarSummaryView.swift
 //  VoiceDiaryApp
 //
 //  Created by 신호연 on 12/2/24.
@@ -14,7 +14,7 @@ private enum MoreLabelAction {
     case writeDiary
 }
 
-final class DiaryView: UIView {
+final class CalendarSummaryView: UIView {
     
     private var cancellables = Set<AnyCancellable>()
 
@@ -378,12 +378,12 @@ final class DiaryView: UIView {
             moreLabel.text = "더보기"
             moreLabelAction = .showDetails
         } else {
-            showEmptyDiaryView(isFutureDate: Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending)
+            showEmptyCalendarSummaryView(isFutureDate: Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending)
             moreLabelAction = .writeDiary
         }
     }
     
-    private func showEmptyDiaryView(isFutureDate: Bool) {
+    private func showEmptyCalendarSummaryView(isFutureDate: Bool) {
         diaryTitleLabel.isHidden = true
         diaryDateLabel.isHidden = true
         diaryContentLabel.isHidden = true
@@ -432,11 +432,11 @@ final class DiaryView: UIView {
                 .first { Calendar.current.isDate($0.date, inSameDayAs: date) }?
                 .content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
-            showEmptyDiaryView()
+            showEmptyCalendarSummaryView()
         }
     }
 
-    private func showEmptyDiaryView() {
+    private func showEmptyCalendarSummaryView() {
         diaryTitleLabel.isHidden = true
         diaryDateLabel.isHidden = true
         diaryContentLabel.isHidden = true

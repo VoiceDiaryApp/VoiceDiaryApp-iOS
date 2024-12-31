@@ -114,8 +114,8 @@ final class CalendarView: UIView {
     private func updateYearAndMonthLabels() {
         let year = calendar.component(.year, from: currentDate)
         let month = calendar.component(.month, from: currentDate)
-        (superview as? DiaryView)?.yearLabel.text = "\(year)년"
-        (superview as? DiaryView)?.monthLabel.text = "\(month)월"
+        (superview as? CalendarSummaryView)?.yearLabel.text = "\(year)년"
+        (superview as? CalendarSummaryView)?.monthLabel.text = "\(month)월"
     }
     
     private func animateCalendarTransition(direction: CATransitionSubtype) {
