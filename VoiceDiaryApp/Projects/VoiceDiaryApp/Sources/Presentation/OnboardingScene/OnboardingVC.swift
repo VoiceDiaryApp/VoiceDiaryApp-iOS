@@ -5,9 +5,7 @@
 //  Created by 고아라 on 12/17/24.
 //
 
-
 import UIKit
-
 import SnapKit
 import Combine
 
@@ -16,6 +14,10 @@ final class OnboardingVC: UIViewController {
     // MARK: - Properties
     
     private var cancellables = Set<AnyCancellable>()
+    private let buttonTitle: String
+    
+    @UserDefaultWrapper(key: "dailyNotificationTime", defaultValue: "") private(set) var dailyNotificationTime: String
+    @UserDefaultWrapper(key: "isNotificationSet", defaultValue: false) private(set) var isNotificationSet: Bool
     
     // MARK: - UI Components
     
@@ -56,6 +58,15 @@ final class OnboardingVC: UIViewController {
     
     // MARK: - Life Cycles
     
+    init(buttonTitle: String = "시작하기") {
+        self.buttonTitle = buttonTitle
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -72,9 +83,11 @@ private extension OnboardingVC {
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         view.backgroundColor = UIColor(resource: .mainBeige)
         
+        startButton.setTitle(buttonTitle, for: .normal)
+        
         startButton.tapPublisher
             .sink(receiveValue: {
-                self.printSelectedTime()
+                self.saveSelectedTime()
                 self.changeRootToHomeVC()
             })
             .store(in: &cancellables)
@@ -120,12 +133,12 @@ private extension OnboardingVC {
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
     }
     
-    func printSelectedTime() {
+    func saveSelectedTime() {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
-        formatter.dateFormat = "a hh:mm"
-        formatter.locale = Locale(identifier: "ko-KR")
-        let formattedTime = formatter.string(from: selectedDate)
-        print("Selected Time: \(formattedTime)")
+        formatter.dateFormat = "HH:mm"
+        dailyNotificationTime = formatter.string(from: selectedDate)
+        isNotificationSet = true
+        NotificationManager.shared.scheduleDailyNotification(time: dailyNotificationTime)
     }
 }

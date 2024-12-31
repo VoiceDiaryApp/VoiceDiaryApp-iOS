@@ -65,8 +65,15 @@ private extension SplashVC {
     }
     
     func showNextPage() {
-        let onboardingVC = OnboardingVC()
-        self.navigationController?.pushViewController(onboardingVC, animated: true)
+        let isNotificationSet = UserDefaults.standard.bool(forKey: "isNotificationSet")
+        
+        if isNotificationSet {
+            let homeVC = HomeVC()
+            self.navigationController?.pushViewController(homeVC, animated: true)
+        } else {
+            let onboardingVC = OnboardingVC()
+            self.navigationController?.pushViewController(onboardingVC, animated: true)
+        }
     }
     
     private func printRealmFilePath() {
