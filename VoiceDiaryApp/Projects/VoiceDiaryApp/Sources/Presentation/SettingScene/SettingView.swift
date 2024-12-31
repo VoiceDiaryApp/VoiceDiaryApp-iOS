@@ -127,7 +127,7 @@ class SettingView: UIView {
         }
         
         alertChangeView.snp.makeConstraints { make in
-            make.top.equalTo(alertView.snp.bottom).offset(14)
+            make.top.equalTo(alertView.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(50)
         }
@@ -141,7 +141,7 @@ class SettingView: UIView {
         }
         
         deleteView.snp.makeConstraints { make in
-            make.top.equalTo(alertChangeView.snp.bottom).offset(14)
+            make.top.equalTo(alertChangeView.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(50)
         }

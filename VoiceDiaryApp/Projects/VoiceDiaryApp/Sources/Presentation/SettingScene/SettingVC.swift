@@ -80,11 +80,11 @@ class SettingVC: UIViewController {
     private func showDeleteAlert() {
         let alertView = CustomAlertView(frame: self.view.bounds)
         
-        alertView.onCancel = { [weak self] in
+        alertView.onCancel = {
             alertView.removeFromSuperview()
         }
         
-        alertView.onDelete = { [weak self] in
+        alertView.onDelete = { 
             alertView.removeFromSuperview()
         }
         
