@@ -238,21 +238,20 @@ final class CalendarSummaryView: UIView {
     }
 
     private func setupActions() {
-        leftArrowButton.addTarget(
-            self, action: #selector(didTapLeftArrow), for: .touchUpInside)
-        rightArrowButton.addTarget(
-            self, action: #selector(didTapRightArrow), for: .touchUpInside)
+        leftArrowButton.tapPublisher
+            .sink { [weak self] in
+                self?.changeMonth(byAddingMonths: -1, direction: .fromLeft)
+            }
+            .store(in: &cancellables)
+
+        rightArrowButton.tapPublisher
+            .sink { [weak self] in
+                self?.changeMonth(byAddingMonths: 1, direction: .fromRight)
+            }
+            .store(in: &cancellables)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapMoreLabel))
         moreLabel.addGestureRecognizer(tapGesture)
-    }
-
-    @objc private func didTapLeftArrow() {
-        changeMonth(byAddingMonths: -1, direction: .fromLeft)
-    }
-
-    @objc private func didTapRightArrow() {
-        changeMonth(byAddingMonths: 1, direction: .fromRight)
     }
 
     private func moveToMonth(byAddingMonths months: Int) {
