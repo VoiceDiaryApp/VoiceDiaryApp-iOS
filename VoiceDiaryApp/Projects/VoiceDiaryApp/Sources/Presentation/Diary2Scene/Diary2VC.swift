@@ -19,7 +19,7 @@ final class Diary2VC: UIViewController {
     
     // MARK: - View
     
-    private let calendarSummaryView = Diary2View()
+    private let diary2View = Diary2View()
     
     // MARK: - Life Cycle
     
@@ -33,7 +33,7 @@ final class Diary2VC: UIViewController {
     }
     
     override func loadView() {
-        self.view = calendarSummaryView
+        self.view = diary2View
     }
     
     override func viewDidLoad() {
@@ -51,7 +51,7 @@ private extension Diary2VC {
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
         
-        calendarSummaryView.navigationBar.backButtonAction = {
+        diary2View.navigationBar.backButtonAction = {
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -67,14 +67,14 @@ private extension Diary2VC {
     }
     
     func bindView() {
-        calendarSummaryView.isSaveEnabledPublisher
+        diary2View.isSaveEnabledPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] isSaveEnabled in
-                self?.calendarSummaryView.updateSaveButtonState(isEnabled: isSaveEnabled)
+                self?.diary2View.updateSaveButtonState(isEnabled: isSaveEnabled)
             }
             .store(in: &cancellables)
         
-        calendarSummaryView.selectedEmotionSubject
+        diary2View.selectedEmotionSubject
             .sink { emotion in
                 self.selectedEmotion = emotion
             }
@@ -82,7 +82,7 @@ private extension Diary2VC {
     }
     
     func bindActions() {
-        calendarSummaryView.saveButton.tapPublisher
+        diary2View.saveButton.tapPublisher
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -96,7 +96,7 @@ private extension Diary2VC {
     }
     
     func captureCanvasView() -> UIImage? {
-        let targetView = diaryView.canvasView
+        let targetView = diary2View.canvasView
         return targetView.snapshot()
     }
     
