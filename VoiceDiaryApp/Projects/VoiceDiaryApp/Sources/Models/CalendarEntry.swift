@@ -33,8 +33,8 @@ enum Emotion: String, Codable {
     }
 }
 
-struct DiaryEntry: Codable {
+struct CalendarEntry: Codable {
     let date: Date
-    var emotion: Emotion
-    var content: String
+    let emotion: Emotion
+    let content: String
 }

@@ -7,13 +7,14 @@
 
 import Foundation
 
-extension DiaryEntry {
+extension CalendarEntry {
     // DiaryEntry -> RealmDiaryEntry
     func toRealmDiaryEntry() -> RealmDiaryEntry {
         let realmEntry = RealmDiaryEntry()
-        realmEntry.date = self.date.toUTC()
+//        realmEntry.date = self.date.toUTC()
         realmEntry.emotion = self.emotion.rawValue
         realmEntry.content = self.content
         return realmEntry
     }
 }
+

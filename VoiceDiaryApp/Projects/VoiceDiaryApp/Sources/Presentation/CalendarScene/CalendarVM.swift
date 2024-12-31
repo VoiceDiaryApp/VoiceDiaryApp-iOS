@@ -9,29 +9,29 @@ import Foundation
 import Combine
 
 protocol CalendarVMProtocol {
-    var diaryEntries: [DiaryEntry] { get }
-    var diaryEntriesPublisher: Published<[DiaryEntry]>.Publisher { get }
+    var diaryEntries: [CalendarEntry] { get }
+    var diaryEntriesPublisher: Published<[CalendarEntry]>.Publisher { get }
     func fetchDiary(for date: Date)
     func addDiaryEntry(for date: Date, emotion: Emotion, content: String)
 }
 
 final class CalendarVM: CalendarVMProtocol {
-    @Published private(set) var diaryEntries: [DiaryEntry] = []
+    @Published private(set) var diaryEntries: [CalendarEntry] = []
 
-    var diaryEntriesPublisher: Published<[DiaryEntry]>.Publisher { $diaryEntries }
+    var diaryEntriesPublisher: Published<[CalendarEntry]>.Publisher { $diaryEntries }
     private let diaryManager = RealmDiaryManager()
 
     func fetchDiary(for date: Date) {
-        if let diaryEntry = diaryManager.fetchDiaryEntry(for: date) {
-            diaryEntries = [diaryEntry]
-        } else {
-            diaryEntries = []
-        }
+//        if let diaryEntry = diaryManager.fetchDiaryEntry(for: date) {
+//            diaryEntries = [diaryEntry]
+//        } else {
+//            diaryEntries = []
+//        }
     }
 
     func addDiaryEntry(for date: Date, emotion: Emotion, content: String) {
-        let diaryEntry = DiaryEntry(date: date, emotion: emotion, content: content)
-        diaryManager.saveDiaryEntry(diaryEntry)
-        fetchDiary(for: date)
+        let diaryEntry = CalendarEntry(date: date, emotion: emotion, content: content)
+//        diaryManager.saveDiaryEntry(diaryEntry)
+//        fetchDiary(for: date)
     }
 }

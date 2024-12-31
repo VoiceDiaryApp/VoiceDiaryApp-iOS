@@ -9,6 +9,7 @@ import UIKit
 
 import SnapKit
 import Combine
+import RealmSwift
 
 final class HomeVC: UIViewController {
     
@@ -16,6 +17,7 @@ final class HomeVC: UIViewController {
     
     private let todayDate = Date()
     private var cancellables = Set<AnyCancellable>()
+    private let realmManager = RealmDiaryManager()
     
     // MARK: - UI Components
     
@@ -64,6 +66,12 @@ final class HomeVC: UIViewController {
     }()
     
     // MARK: - Life Cycles
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        goToDiaryButton.isEnabled = !realmManager.hasTodayDiary()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

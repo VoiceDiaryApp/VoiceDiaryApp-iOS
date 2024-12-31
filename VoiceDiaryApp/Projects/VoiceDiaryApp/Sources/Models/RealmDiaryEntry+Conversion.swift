@@ -9,11 +9,11 @@ import Foundation
 
 extension RealmDiaryEntry {
     // RealmDiaryEntry -> DiaryEntry 객체 변환
-    func toDiaryEntry() -> DiaryEntry {
-        return DiaryEntry(
-            date: self.date.toLocalTime(),
-            emotion: Emotion(rawValue: self.emotion) ?? .neutral,
-            content: self.content
-        )
-    }
+//    func toDiaryEntry() -> CalendarEntry {
+//        return CalendarEntry(
+//            date: self.createDate.toUTC(),
+//            emotion: Emotion(rawValue: self.emotion) ?? .neutral,
+//            content: self.content
+//        )
+//    }
 }

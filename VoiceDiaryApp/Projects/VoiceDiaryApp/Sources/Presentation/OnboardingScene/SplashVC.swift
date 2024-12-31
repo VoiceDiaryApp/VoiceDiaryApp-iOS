@@ -8,6 +8,7 @@
 import UIKit
 
 import SnapKit
+import RealmSwift
 
 final class SplashVC: UIViewController {
     
@@ -31,6 +32,7 @@ final class SplashVC: UIViewController {
         setUI()
         setHierarchy()
         setLayout()
+        printRealmFilePath()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.showNextPage()
         }
@@ -71,6 +73,14 @@ private extension SplashVC {
         } else {
             let onboardingVC = OnboardingVC()
             self.navigationController?.pushViewController(onboardingVC, animated: true)
+        }
+    }
+    
+    private func printRealmFilePath() {
+        if let fileURL = Realm.Configuration.defaultConfiguration.fileURL {
+            print("Realm 파일 경로: \(fileURL.path)")
+        } else {
+            print("Realm 파일 경로를 찾을 수 없습니다.")
         }
     }
 }
