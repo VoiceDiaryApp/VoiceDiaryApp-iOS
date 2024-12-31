@@ -80,27 +80,22 @@ final class RealmDiaryManager {
             dateFormatter.dateFormat = "yyyy-MM-dd"
             let targetDateString = dateFormatter.string(from: date)
 
-            return realm.objects(RealmDiaryEntry.self).filter("createDate CONTAINS %@", targetDateString).first
+            return realm.objects(RealmDiaryEntry.self).filter("createDate == %@", targetDateString).first
         } catch {
             print("Realm 오류: \(error)")
             return nil
         }
     }
     
-    func fetchDiaryEntries(for month: Date) -> [RealmDiaryEntry] {
-        do {
-            let realm = try Realm()
-            let calendar = Calendar.current
-            let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: month))!
-            let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
-            
-            return realm.objects(RealmDiaryEntry.self)
-                .filter("createDate >= %@ AND createDate < %@", startOfMonth, endOfMonth)
-                .map { $0 }
-        } catch {
-            print("Realm 오류: \(error)")
-            return []
-        }
+    
+    func fetchDiaryEntries(for date: Date) -> [RealmDiaryEntry] {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let dateString = dateFormatter.string(from: date)
+
+        let realm = try! Realm()
+        let entries = realm.objects(RealmDiaryEntry.self).filter("createDate == %@", dateString)
+        return Array(entries)
     }
 
 //    func fetchAllDiaryEntries() -> [CalendarEntry] {

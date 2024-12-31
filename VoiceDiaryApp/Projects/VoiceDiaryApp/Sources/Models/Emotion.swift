@@ -1,5 +1,5 @@
 //
-//  DiaryEntry.swift
+//  Emotion.swift
 //  VoiceDiaryApp
 //
 //  Created by 신호연 on 12/4/24.
@@ -31,10 +31,4 @@ enum Emotion: String, Codable {
             return "피곤한 하루였다."
         }
     }
-}
-
-struct CalendarEntry: Codable {
-    let date: Date
-    let emotion: Emotion
-    let content: String
 }

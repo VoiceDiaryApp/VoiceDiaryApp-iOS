@@ -16,7 +16,7 @@ final class CalendarView: UIView {
     
     private let diaryManager: RealmDiaryManager
     
-    private var diaryEntriesSubject = CurrentValueSubject<[CalendarEntry], Never>([])
+    private var diaryEntriesSubject = CurrentValueSubject<[WriteDiaryEntry], Never>([])
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: Properties
@@ -25,7 +25,7 @@ final class CalendarView: UIView {
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private let calendar = Calendar.current
     private var currentDate: Date = Date()
-    private var diaryEntries: [CalendarEntry] = []
+    private var diaryEntries: [WriteDiaryEntry] = []
     private var selectedDate: Date?
     
     private lazy var collectionView: UICollectionView = {
@@ -113,18 +113,8 @@ final class CalendarView: UIView {
             animateCalendarTransition(direction: direction)
 
             let realmEntries = diaryManager.fetchDiaryEntries(for: currentDate)
-            let calendarEntries = realmEntries.compactMap { realmEntry -> CalendarEntry? in
-                guard let createDate = realmEntry.createDate.toDate() else {
-                    print("Invalid createDate for realmEntry: \(realmEntry)")
-                    return nil
-                }
-                return CalendarEntry(
-                    date: createDate,
-                    emotion: Emotion(rawValue: realmEntry.emotion) ?? .neutral,
-                    content: realmEntry.content
-                )
-            }
-            updateDiaryEntries(calendarEntries)
+            let writeDiaryEntries = realmEntries.map { $0.toWriteDiaryEntry() }
+            updateDiaryEntries(writeDiaryEntries)
 
             collectionView.reloadData()
             updateYearAndMonthLabels()
@@ -152,8 +142,9 @@ final class CalendarView: UIView {
         selectedDatePublisher.send(date)
     }
     
-    func updateDiaryEntries(_ entries: [CalendarEntry]) {
+    func updateDiaryEntries(_ entries: [WriteDiaryEntry]) {
         diaryEntriesSubject.send(entries)
+        collectionView.reloadData()
     }
     
     func bindDataToCollectionView() {
@@ -220,10 +211,16 @@ extension CalendarView: UICollectionViewDataSource, UICollectionViewDelegateFlow
         if indexPath.item >= weekdayOffset {
             let day = indexPath.item - weekdayOffset + 1
             let newlySelectedDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
-            
+
             selectedDate = newlySelectedDate
             selectedDatePublisher.send(newlySelectedDate)
-            
+
+            if let selectedDate = newlySelectedDate,
+               let calendarSummaryView = superview as? CalendarSummaryView {
+                calendarSummaryView.viewModel.fetchDiary(for: selectedDate)
+                calendarSummaryView.updateDiaryContentView(for: selectedDate, hasDiary: true)
+            }
+
             collectionView.reloadData()
         }
     }

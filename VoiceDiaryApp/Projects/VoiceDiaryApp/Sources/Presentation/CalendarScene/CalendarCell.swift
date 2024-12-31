@@ -69,23 +69,25 @@ final class CalendarCell: UICollectionViewCell {
     }
 
     func setSelected(_ isSelected: Bool, isToday: Bool) {
+        contentView.subviews.filter { $0.tag == 999 }.forEach { $0.removeFromSuperview() } // 기존 선택 배경 제거
+
         if isSelected {
             dayLabel.textColor = .white
             let selectedBackground = UIView()
+            selectedBackground.tag = 999
             selectedBackground.backgroundColor = UIColor(resource: .calendarSelected)
             selectedBackground.layer.cornerRadius = 8
             contentView.insertSubview(selectedBackground, belowSubview: dayLabel)
             selectedBackground.snp.makeConstraints { make in
                 make.centerX.equalToSuperview()
-                make.width.equalTo(25)
-                make.height.equalTo(21)
-                make.bottom.equalTo(dayLabel.snp.bottom).offset(-5)
+                make.width.equalTo(30)
+                make.height.equalTo(30)
+                make.centerY.equalTo(dayLabel)
             }
         } else {
             dayLabel.textColor = isToday
-            ? UIColor(resource: .calendarSelected)
-            : UIColor(resource: .calendarTextBlack)
-            contentView.subviews.filter { $0 != dayLabel && $0 != emojiImageView }.forEach { $0.removeFromSuperview() }
+                ? UIColor(resource: .calendarSelected)
+                : UIColor(resource: .calendarTextBlack)
         }
     }
 }

@@ -58,9 +58,15 @@ final class DetailVC: UIViewController {
 
     private func bindViewModel() {
         guard let diaryEntry = viewModel.diaryEntries.first else { return }
+
+        guard let diaryDate = diaryEntry.date.toDate() else {
+            print("Invalid date format in diaryEntry.date: \(diaryEntry.date)")
+            return
+        }
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "M월 d일"
-        let dateString = dateFormatter.string(from: diaryEntry.date)
+        let dateString = dateFormatter.string(from: diaryDate)
 
         detailView.diaryHeaderView.configure(
             title: "일기 제목",

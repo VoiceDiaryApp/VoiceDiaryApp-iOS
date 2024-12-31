@@ -376,23 +376,27 @@ final class CalendarSummaryView: UIView {
         diaryDateLabel.text = formattedDate
     }
 
-    private func updateDiaryContentView(for date: Date, hasDiary: Bool) {
+    func updateDiaryContentView(for date: Date, hasDiary: Bool) {
         if hasDiary {
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
             diaryContentLabel.isHidden = false
             emptyDiaryCharacter.isHidden = true
             emptyDiaryLabel.isHidden = true
-            
-            diaryTitleLabel.text = "일기 제목"
+
             updateDiaryDateLabel(for: date)
-            
-            if let diaryEntry = viewModel.diaryEntries.first(where: { Calendar.current.isDate($0.date, inSameDayAs: date) }) {
-                diaryContentLabel.attributedText = processContentText(diaryEntry.content)
+
+            if let diaryEntry = viewModel.diaryEntries.first(where: {
+                guard let entryDate = $0.date.toDate() else { return false }
+                return Calendar.current.isDate(entryDate, inSameDayAs: date)
+            }) {
+                diaryTitleLabel.text = diaryEntry.title
+                diaryContentLabel.attributedText = processContentText(diaryEntry.shortContent)
             } else {
-                diaryContentLabel.attributedText = processContentText("일기 내용 일부를 여기에 표시합니다.")
+                diaryTitleLabel.text = "일기 제목 없음"
+                diaryContentLabel.attributedText = processContentText("요약 내용 없음")
             }
-            
+
             moreLabel.isHidden = false
             moreLabel.text = "더보기"
             moreLabelAction = .showDetails
@@ -448,7 +452,10 @@ final class CalendarSummaryView: UIView {
             updateDiaryDateLabel(for: date)
             diaryContentLabel.text =
                 viewModel.diaryEntries
-                .first { Calendar.current.isDate($0.date, inSameDayAs: date) }?
+                .first {
+                    guard let entryDate = $0.date.toDate() else { return false }
+                    return Calendar.current.isDate(entryDate, inSameDayAs: date)
+                }?
                 .content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
             showEmptyCalendarSummaryView()
@@ -488,7 +495,8 @@ final class CalendarSummaryView: UIView {
             return false
         }
         return diaryEntries.contains {
-            Calendar.current.isDate($0.date, inSameDayAs: date)
+            guard let entryDate = $0.date.toDate() else { return false }
+            return Calendar.current.isDate(entryDate, inSameDayAs: date)
         }
     }
     
