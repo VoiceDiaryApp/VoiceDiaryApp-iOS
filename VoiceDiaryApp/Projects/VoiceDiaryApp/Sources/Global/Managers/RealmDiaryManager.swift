@@ -52,6 +52,26 @@ final class RealmDiaryManager {
             print("데이터 삭제 실패: \(error)")
         }
     }
+    
+    func hasTodayDiary() -> Bool {
+        do {
+            let realm = try Realm()
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let todayString = dateFormatter.string(from: Date())
+            
+            if let entry = realm.objects(RealmDiaryEntry.self).filter("createDate == %@", todayString).first {
+                return true
+            } else {
+                print("오늘 날짜의 엔트리가 없습니다.")
+                return false
+            }
+        } catch {
+            print("Realm 오류: \(error)")
+            return false
+        }
+    }
 
 //    func fetchDiaryEntry(for date: Date) -> CalendarEntry? {
 //        let utcDate = date.toUTC()
