@@ -16,6 +16,7 @@ final class DiaryVM: ViewModel {
     private var recordingEmotion: Emotion = .angry
     private var recordingTitle: String = ""
     private var recordingSummary: String = ""
+    private var recordingDrawPath: String = ""
     private let model = GenerativeModel(name: "gemini-1.5-flash-latest",
                                         apiKey: Config.apiKey)
     private let realmManager = RealmDiaryManager()
@@ -29,7 +30,7 @@ final class DiaryVM: ViewModel {
     struct Input {
         let onRecording: PassthroughSubject<String, Never>
         let tapRecordEnd: PassthroughSubject<Void, Never>
-        let tapDrawEnd: PassthroughSubject<Emotion, Never>
+        let tapDrawEnd: PassthroughSubject<(Emotion, String), Never>
         let viewWillAppear: PassthroughSubject<Void, Never>
     }
     
@@ -58,8 +59,9 @@ final class DiaryVM: ViewModel {
         input.tapDrawEnd
             .sink { value in
                 self.generatePrompt(content: self.recordingContent,
-                                    emotion: value,
+                                    emotion: value.0,
                                     output: output)
+                self.recordingDrawPath = value.1
             }
             .store(in: &cancellables)
         
@@ -146,12 +148,12 @@ private extension DiaryVM {
     
     func saveDiaryToRealm() {
         self.realmManager.saveDiaryEntry(WriteDiaryEntry(
-            date: Date().dateToString(),
+            date: Date(timeIntervalSince1970: 19374000000).dateToString(),
             emotion: self.recordingEmotion,
             content: self.recordingContent,
             shortContent: self.recordingSummary,
             title: self.recordingTitle,
             answer: self.geminiLetterContent,
-            drawImage: ""))
+            drawImage: self.recordingDrawPath))
     }
 }

@@ -20,7 +20,7 @@ final class Diary2View: UIView {
     private var selectedEmotion: Emotion?
     private let emotions: [Emotion] = [.happy, .smiling, .neutral, .angry, .sad, .tired]
     private var emotionButtons: [UIButton] = []
-    private let canvasView = PKCanvasView()
+    let canvasView = PKCanvasView()
     
     private var currentColor: UIColor = .black
     private var colorSelectedSubject = PassthroughSubject<UIColor, Never>()
