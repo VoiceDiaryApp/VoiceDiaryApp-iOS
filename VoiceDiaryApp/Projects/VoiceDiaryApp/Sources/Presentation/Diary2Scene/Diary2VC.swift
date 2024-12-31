@@ -15,7 +15,7 @@ final class Diary2VC: UIViewController {
     private let diaryVM: DiaryVM
     private var cancellables = Set<AnyCancellable>()
     private var selectedEmotion: Emotion?
-    private var tapDrawEnd = PassthroughSubject<Emotion, Never>()
+    private var tapDrawEnd = PassthroughSubject<(Emotion, String), Never>()
     
     // MARK: - View
     
@@ -85,10 +85,43 @@ private extension Diary2VC {
         diaryView.saveButton.tapPublisher
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                self.tapDrawEnd.send(self.selectedEmotion ?? Emotion.happy)
+                
+                let filePath = self.saveImageToDocuments(image: self.captureCanvasView() ?? UIImage(), fileName: "\(getCurrentTimestamp()).jpeg")
+                self.tapDrawEnd.send((self.selectedEmotion ?? Emotion.happy, filePath))
+                
                 let loadingVC = LoadingVC(viewModel: self.diaryVM)
                 self.navigationController?.pushViewController(loadingVC, animated: true)
             }
             .store(in: &cancellables)
+    }
+    
+    func captureCanvasView() -> UIImage? {
+        let targetView = diaryView.canvasView
+        return targetView.snapshot()
+    }
+    
+    func saveImageToDocuments(image: UIImage,
+                              fileName: String) -> String {
+        if let data = image.jpegData(compressionQuality: 1.0) {
+            let filePath = getDocumentsDirectory().appendingPathComponent(fileName)
+            do {
+                try data.write(to: filePath)
+                return filePath.path
+            } catch {
+                print("Failed to save image to documents: \(error)")
+            }
+        }
+        return ""
+    }
+    
+    func getDocumentsDirectory() -> URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+    func getCurrentTimestamp() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
+        dateFormatter.timeZone = TimeZone.current
+        return dateFormatter.string(from: Date())
     }
 }
