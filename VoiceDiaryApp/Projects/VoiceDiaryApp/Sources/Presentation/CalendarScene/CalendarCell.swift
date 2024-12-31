@@ -69,7 +69,7 @@ final class CalendarCell: UICollectionViewCell {
     }
 
     func setSelected(_ isSelected: Bool, isToday: Bool) {
-        contentView.subviews.filter { $0.tag == 999 }.forEach { $0.removeFromSuperview() } // 기존 선택 배경 제거
+        contentView.subviews.filter { $0.tag == 999 }.forEach { $0.removeFromSuperview() }
 
         if isSelected {
             dayLabel.textColor = .white
@@ -80,8 +80,8 @@ final class CalendarCell: UICollectionViewCell {
             contentView.insertSubview(selectedBackground, belowSubview: dayLabel)
             selectedBackground.snp.makeConstraints { make in
                 make.centerX.equalToSuperview()
-                make.width.equalTo(30)
-                make.height.equalTo(30)
+                make.width.equalTo(25)
+                make.height.equalTo(21)
                 make.centerY.equalTo(dayLabel)
             }
         } else {

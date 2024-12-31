@@ -40,6 +40,10 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
         bindViewModel()
         self.navigationController?.interactivePopGestureRecognizer?.delegate = self
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        
+        let today = Date()
+        viewModel.fetchDiary(for: today)
+        calendarSummaryView.calendarView.currentDatePublisher.send(today)
     }
 
     // MARK: - Setup

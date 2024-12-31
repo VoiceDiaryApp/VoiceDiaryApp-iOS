@@ -153,6 +153,12 @@ final class CalendarView: UIView {
                 self?.collectionView.reloadData()
             }
             .store(in: &cancellables)
+        
+        currentDatePublisher
+            .sink { [weak self] currentDate in
+                self?.selectedDatePublisher.send(currentDate)
+            }
+            .store(in: &cancellables)
     }
     
     func updateMonth(date: Date) {
@@ -186,12 +192,15 @@ extension CalendarView: UICollectionViewDataSource, UICollectionViewDelegateFlow
 
         if indexPath.item < weekdayOffset {
             cell.configure(day: nil, date: firstDayOfMonth, diaryManager: diaryManager, isToday: false)
+            cell.setSelected(false, isToday: false)
         } else {
             let day = indexPath.item - weekdayOffset + 1
             let cellDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)!
             let isToday = calendar.isDateInToday(cellDate)
+            let isSelected = cellDate == selectedDate
 
             cell.configure(day: day, date: cellDate, diaryManager: diaryManager, isToday: isToday)
+            cell.setSelected(isSelected, isToday: isToday)
         }
 
         return cell
