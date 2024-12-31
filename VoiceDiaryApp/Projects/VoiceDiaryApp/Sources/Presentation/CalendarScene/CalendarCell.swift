@@ -13,6 +13,13 @@ final class CalendarCell: UICollectionViewCell {
     // MARK: Properties
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
+    private let selectedBackground: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(resource: .calendarSelected)
+        view.layer.cornerRadius = 8
+        view.isHidden = true
+        return view
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,7 +31,14 @@ final class CalendarCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        contentView.addSubviews(emojiImageView, dayLabel)
+        contentView.addSubviews(selectedBackground, emojiImageView, dayLabel)
+
+        selectedBackground.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.width.equalTo(25)
+            make.height.equalTo(21)
+            make.centerY.equalTo(dayLabel)
+        }
 
         emojiImageView.contentMode = .scaleAspectFit
         emojiImageView.snp.makeConstraints { make in
@@ -69,25 +83,9 @@ final class CalendarCell: UICollectionViewCell {
     }
 
     func setSelected(_ isSelected: Bool, isToday: Bool) {
-        contentView.subviews.filter { $0.tag == 999 }.forEach { $0.removeFromSuperview() }
-
-        if isSelected {
-            dayLabel.textColor = .white
-            let selectedBackground = UIView()
-            selectedBackground.tag = 999
-            selectedBackground.backgroundColor = UIColor(resource: .calendarSelected)
-            selectedBackground.layer.cornerRadius = 8
-            contentView.insertSubview(selectedBackground, belowSubview: dayLabel)
-            selectedBackground.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.width.equalTo(25)
-                make.height.equalTo(21)
-                make.centerY.equalTo(dayLabel)
-            }
-        } else {
-            dayLabel.textColor = isToday
-                ? UIColor(resource: .calendarSelected)
-                : UIColor(resource: .calendarTextBlack)
-        }
+        selectedBackground.isHidden = !isSelected
+        dayLabel.textColor = isSelected
+            ? .white
+            : (isToday ? UIColor(resource: .calendarSelected) : UIColor(resource: .calendarTextBlack))
     }
 }

@@ -10,13 +10,12 @@ import RealmSwift
 
 final class RealmDiaryManager {
     private let realm: Realm
+    private let dateFormatter: DateFormatter
 
     init() {
-        var config = Realm.Configuration(
+        let config = Realm.Configuration(
             schemaVersion: 3,
             migrationBlock: { migration, oldSchemaVersion in
-                print("😳😳oldSchemaVersion😳😳")
-                print(oldSchemaVersion)
                 if oldSchemaVersion < 3 {
                     migration.enumerateObjects(ofType: RealmDiaryEntry.className()) { oldObject, newObject in
                         newObject?["drawImage"] = ""
@@ -27,8 +26,18 @@ final class RealmDiaryManager {
                 }
             }
         )
+        
         Realm.Configuration.defaultConfiguration = config
-        self.realm = try! Realm()
+        
+        do {
+            self.realm = try Realm()
+        } catch let error as NSError {
+            print("❌ Realm 초기화 실패: \(error.localizedDescription)")
+            fatalError("Realm 초기화 실패")
+        }
+
+        self.dateFormatter = DateFormatter()
+        self.dateFormatter.dateFormat = "yyyy-MM-dd"
     }
 
     func saveDiaryEntry(_ diaryEntry: WriteDiaryEntry) {
@@ -53,52 +62,19 @@ final class RealmDiaryManager {
         }
     }
     
+    
     func hasTodayDiary() -> Bool {
-        do {
-            let realm = try Realm()
-            
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let todayString = dateFormatter.string(from: Date())
-            
-            if let entry = realm.objects(RealmDiaryEntry.self).filter("createDate == %@", todayString).first {
-                return true
-            } else {
-                print("오늘 날짜의 엔트리가 없습니다.")
-                return false
-            }
-        } catch {
-            print("Realm 오류: \(error)")
-            return false
-        }
+        let todayString = dateFormatter.string(from: Date())
+        return realm.objects(RealmDiaryEntry.self).filter("createDate == %@", todayString).first != nil
     }
-
+    
     func fetchDiaryEntry(for date: Date) -> RealmDiaryEntry? {
-        do {
-            let realm = try Realm()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let targetDateString = dateFormatter.string(from: date)
-
-            return realm.objects(RealmDiaryEntry.self).filter("createDate == %@", targetDateString).first
-        } catch {
-            print("Realm 오류: \(error)")
-            return nil
-        }
+        let targetDateString = dateFormatter.string(from: date)
+        return realm.objects(RealmDiaryEntry.self).filter("createDate == %@", targetDateString).first
     }
-    
-    
+
     func fetchDiaryEntries(for date: Date) -> [RealmDiaryEntry] {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateString = dateFormatter.string(from: date)
-
-        let realm = try! Realm()
-        let entries = realm.objects(RealmDiaryEntry.self).filter("createDate == %@", dateString)
-        return Array(entries)
+        return Array(realm.objects(RealmDiaryEntry.self).filter("createDate == %@", dateString))
     }
-
-//    func fetchAllDiaryEntries() -> [CalendarEntry] {
-//        return realm.objects(RealmDiaryEntry.self).map { $0.toDiaryEntry() }
-//    }
 }

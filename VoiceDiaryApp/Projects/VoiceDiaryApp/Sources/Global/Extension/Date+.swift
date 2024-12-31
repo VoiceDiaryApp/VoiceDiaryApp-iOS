@@ -9,6 +9,13 @@ import Foundation
 
 extension Date {
     
+    static let sharedFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return formatter
+    }()
+    
     func toLocalTime() -> Date {
         let timeZone = TimeZone.current
         let seconds = TimeInterval(timeZone.secondsFromGMT(for: self))
@@ -22,10 +29,11 @@ extension Date {
     }
     
     func dateToString() -> String {
-        let koreanTimeZone = TimeZone(identifier: "Asia/Seoul")!
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        formatter.timeZone = koreanTimeZone
-        return formatter.string(from: self)
+        return Date.sharedFormatter.string(from: self)
+    }
+
+    func convertedTime(to timeZone: TimeZone) -> Date {
+        let seconds = TimeInterval(timeZone.secondsFromGMT(for: self))
+        return Date(timeInterval: seconds, since: self)
     }
 }
