@@ -8,8 +8,10 @@ let project = Project(
             destinations: .iOS,
             product: .app,
             bundleId: "com.FairytaleHero.VoiceDiaryApp",
+            deploymentTargets: .iOS("15.0"),
             infoPlist: .extendingDefault(
                 with: [
+                    "CFBundleDisplayName": "똑깨비",
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",
