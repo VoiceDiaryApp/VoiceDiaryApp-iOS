@@ -20,13 +20,3 @@ final class RealmDiaryEntry: Object {
     @Persisted var hasImage: Bool = false
     @Persisted var answer: String
 }
-
-extension RealmDiaryEntry {
-    func toDiaryEntry() -> DiaryEntry {
-        return DiaryEntry(
-            date: self.date.toLocalTime(),
-            emotion: Emotion(rawValue: self.emotion) ?? .neutral,
-            content: self.content
-        )
-    }
-}

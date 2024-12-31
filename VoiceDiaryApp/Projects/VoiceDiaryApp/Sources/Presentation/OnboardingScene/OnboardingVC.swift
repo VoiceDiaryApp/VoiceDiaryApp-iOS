@@ -16,6 +16,7 @@ final class OnboardingVC: UIViewController {
     // MARK: - Properties
     
     private var cancellables = Set<AnyCancellable>()
+    private let buttonTitle: String
     
     // MARK: - UI Components
     
@@ -56,12 +57,23 @@ final class OnboardingVC: UIViewController {
     
     // MARK: - Life Cycles
     
+    
+    init(buttonTitle: String = "시작하기") {
+        self.buttonTitle = buttonTitle
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
         setHierarchy()
         setLayout()
+        saveSelectedTime()
     }
 }
 
@@ -72,9 +84,11 @@ private extension OnboardingVC {
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         view.backgroundColor = UIColor(resource: .mainBeige)
         
+        startButton.setTitle(buttonTitle, for: .normal)
+        
         startButton.tapPublisher
             .sink(receiveValue: {
-                self.printSelectedTime()
+                self.saveSelectedTime()
                 self.changeRootToHomeVC()
             })
             .store(in: &cancellables)
@@ -120,12 +134,14 @@ private extension OnboardingVC {
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
     }
     
-    func printSelectedTime() {
+    func saveSelectedTime() {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
-        formatter.dateFormat = "a hh:mm"
-        formatter.locale = Locale(identifier: "ko-KR")
-        let formattedTime = formatter.string(from: selectedDate)
-        print("Selected Time: \(formattedTime)")
+        formatter.dateFormat = "HH:mm"
+        let timeString = formatter.string(from: selectedDate)
+        
+        UserDefaults.standard.set(timeString, forKey: "dailyNotificationTime")
+        UserDefaults.standard.set(true, forKey: "isNotificationSet")
+        NotificationManager.shared.scheduleDailyNotification(time: timeString)
     }
 }
