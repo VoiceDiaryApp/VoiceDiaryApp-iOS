@@ -137,7 +137,8 @@ class SettingView: UIView {
         }
         
         alertChangeDescriptionText.snp.makeConstraints { make in
-            make.bottom.leading.equalToSuperview()
+            make.top.equalTo(alertChangeTitle.snp.bottom).offset(10)
+            make.leading.equalToSuperview()
         }
         
         deleteView.snp.makeConstraints { make in

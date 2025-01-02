@@ -30,7 +30,7 @@ class CustomAlertView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 모든 기록을 삭제하시겠습니까?"
-        label.font = .fontGuide(type: .PretandardBold, size: 16)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 16)
         label.textAlignment = .center
         return label
     }()
@@ -98,7 +98,7 @@ class CustomAlertView: UIView {
         alertView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalTo(SizeLiterals.Screen.screenWidth - 74)
-            make.height.equalTo(200)
+            make.height.equalTo(SizeLiterals.calSupporHeight(height: 200))
         }
         
         titleLabel.snp.makeConstraints { make in

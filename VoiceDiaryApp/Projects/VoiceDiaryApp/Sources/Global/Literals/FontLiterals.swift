@@ -19,8 +19,8 @@ enum FontType: String {
     var textStyle: UIFont.TextStyle {
         switch self {
         case .PretandardBold, .RobotobBold: return .title1
-        case .PretandardSemiBold: return .title2
-        case .PretandardMedium: return .title3
+        case .PretandardSemiBold: return .title3
+        case .PretandardMedium: return .body
         case .PretandardRegular, .RobotoRegular: return .caption1
         case .GangwonEduSaeeum: return .title1
         }
