@@ -20,7 +20,7 @@ final class SplashVC: UIViewController {
         let label = UILabel()
         label.text = "똑깨비"
         label.textColor = .black
-        label.font = .fontGuide(type: .MeetMe, size: DeviceUtils.isIPad() ? 50 : 25)
+        label.font = .fontGuide(type: .GangwonEduSaeeum, size: DeviceUtils.isIPad() ? 50 : 25)
         return label
     }()
     

@@ -14,14 +14,20 @@ enum FontType: String {
     case PretandardRegular = "Pretendard-Regular"
     case RobotobBold = "Roboto-Bold"
     case RobotoRegular = "Roboto-Regular"
-    case NanumHand = "나눔손글씨 또박또박"
-    case MeetMe = "Ownglyph_meetme-Rg"
+    case GangwonEduSaeeum = "GangwonEduSaeeum"
 }
 
 extension UIFont {
     
     static func fontGuide(type: FontType, size: CGFloat) -> UIFont {
         let font = UIFont(name: type.rawValue, size: size)!
+        for family in UIFont.familyNames {
+            print("Font family: \(family)")
+            let fontNames = UIFont.fontNames(forFamilyName: family)
+            for fontName in fontNames {
+                print("    \(fontName)")
+            }
+        }
         return font
     }
 }

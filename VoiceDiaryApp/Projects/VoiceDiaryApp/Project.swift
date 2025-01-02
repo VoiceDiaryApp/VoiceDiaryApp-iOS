@@ -22,21 +22,13 @@ let project = Project(
                     "NSSpeechRecognitionUsageDescription": "음성 명령 입력을 위해 음성 인식 권한이 필요합니다.",
                     "API_KEY": "$(API_KEY)",
                     "UIAppFonts": [
-                        "NotoSans-Bold.ttf",
-                        "Pretendard-Black.ttf",
                         "Pretendard-Bold.ttf",
-                        "Pretendard-ExtraBold.ttf",
-                        "Pretendard-ExtraLight.ttf",
-                        "Pretendard-Light.ttf",
                         "Pretendard-Medium.ttf",
                         "Pretendard-Regular.ttf",
                         "Pretendard-SemiBold.ttf",
-                        "Pretendard-Thin.ttf",
-                        "Roboto-Black.ttf",
                         "Roboto-Bold.ttf",
                         "Roboto-Regular.ttf",
-                        "나눔손글씨 또박또박.ttf",
-                        "밑미.ttf"
+                        "강원교육새음.ttf"
                     ],
                     "UIUserInterfaceStyle": "Light",
                     "UISupportedInterfaceOrientations": [
