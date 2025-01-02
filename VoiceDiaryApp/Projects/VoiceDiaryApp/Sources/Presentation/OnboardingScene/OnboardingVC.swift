@@ -115,7 +115,6 @@ private extension OnboardingVC {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(55)
         }
         
         onboardingTitleLabel.snp.makeConstraints {

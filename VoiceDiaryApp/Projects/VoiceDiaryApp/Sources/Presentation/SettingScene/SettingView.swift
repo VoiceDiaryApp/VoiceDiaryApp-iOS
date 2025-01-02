@@ -104,7 +104,6 @@ class SettingView: UIView {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(50)
         }
         
         alertView.snp.makeConstraints { make in
