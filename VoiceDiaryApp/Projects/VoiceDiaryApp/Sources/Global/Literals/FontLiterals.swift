@@ -21,13 +21,6 @@ extension UIFont {
     
     static func fontGuide(type: FontType, size: CGFloat) -> UIFont {
         let font = UIFont(name: type.rawValue, size: size)!
-        for family in UIFont.familyNames {
-            print("Font family: \(family)")
-            let fontNames = UIFont.fontNames(forFamilyName: family)
-            for fontName in fontNames {
-                print("    \(fontName)")
-            }
-        }
         return font
     }
 }

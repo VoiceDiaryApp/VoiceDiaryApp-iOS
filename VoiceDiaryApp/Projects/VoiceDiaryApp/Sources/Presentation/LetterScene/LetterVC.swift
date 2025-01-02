@@ -55,9 +55,11 @@ final class LetterVC: UIViewController {
     
     private let appNameLabel: UILabel = {
         let label = UILabel()
+        label.text = "똑깨비"
         label.textColor = UIColor(resource: .calendarSelected)
         label.font = .fontGuide(type: .GangwonEduSaeeum, size: 22)
         label.textAlignment = .center
+        label.setOutline(outlineColor: UIColor(resource: .calendarSelected), outlineWidth: 1.5)
         return label
     }()
     
@@ -161,8 +163,8 @@ private extension LetterVC {
         }
         
         letterLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(41)
-            $0.leading.trailing.equalToSuperview().inset(33)
+            $0.top.equalToSuperview().inset(36)
+            $0.leading.trailing.equalToSuperview().inset(30)
         }
         
         appNameLabel.snp.makeConstraints {

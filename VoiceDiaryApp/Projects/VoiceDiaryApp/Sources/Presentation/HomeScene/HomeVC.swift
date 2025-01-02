@@ -46,7 +46,7 @@ final class HomeVC: UIViewController {
     private let todayMentLabel: UILabel = {
         let label = UILabel()
         label.text = "오늘은 어떤 하루였어?"
-        label.font = .fontGuide(type: .PretandardMedium, size: 20)
+        label.font = .fontGuide(type: .GangwonEduSaeeum, size: 30)
         return label
     }()
     
@@ -164,7 +164,7 @@ private extension HomeVC {
         
         todayMentLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().inset(17)
+            $0.top.equalToSuperview().inset(10)
         }
         
         characterImageView.snp.makeConstraints {
