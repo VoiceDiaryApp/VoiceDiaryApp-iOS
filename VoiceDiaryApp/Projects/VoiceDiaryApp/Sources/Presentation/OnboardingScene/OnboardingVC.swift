@@ -16,9 +16,6 @@ final class OnboardingVC: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private let buttonTitle: String
     
-    @UserDefaultWrapper(key: "dailyNotificationTime", defaultValue: "") private(set) var dailyNotificationTime: String
-    @UserDefaultWrapper(key: "isNotificationSet", defaultValue: false) private(set) var isNotificationSet: Bool
-    
     // MARK: - UI Components
     
     private let navigationBar: CustomNavigationBar = {
@@ -153,8 +150,8 @@ private extension OnboardingVC {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        dailyNotificationTime = formatter.string(from: selectedDate)
-        isNotificationSet = true
+        let dailyNotificationTime = formatter.string(from: selectedDate)
         NotificationManager.shared.scheduleDailyNotification(time: dailyNotificationTime)
+        UserManager.shared.updateNotificationTime(time: dailyNotificationTime)
     }
 }

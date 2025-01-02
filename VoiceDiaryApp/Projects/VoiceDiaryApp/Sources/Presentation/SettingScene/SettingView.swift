@@ -40,6 +40,7 @@ class SettingView: UIView {
     
     private let alertToggle: UISwitch = {
         let toggle = UISwitch()
+        toggle.isOn = UserManager.shared.getSetNotification
         return toggle
     }()
     
