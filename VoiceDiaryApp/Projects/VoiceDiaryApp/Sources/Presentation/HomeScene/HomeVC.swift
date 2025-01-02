@@ -82,15 +82,6 @@ final class HomeVC: UIViewController {
         return label
     }()
     
-    private let goToDiaryEnabledView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white.withAlphaComponent(0.5)
-        view.clipsToBounds = true
-        view.layer.cornerRadius = 10
-        view.isHidden = true
-        return view
-    }()
-    
     private let goToCalendarView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(resource: .mainYellow)
@@ -124,7 +115,8 @@ final class HomeVC: UIViewController {
         super.viewWillAppear(animated)
         
         let hasTodayDiary = realmManager.hasTodayDiary()
-        goToDiaryEnabledView.isHidden = !hasTodayDiary
+        goToDiaryView.backgroundColor = hasTodayDiary ? UIColor(resource: .mainYellow).withAlphaComponent(0.5) : UIColor(resource: .mainYellow)
+        goToDiaryLabel.textColor = hasTodayDiary ? .black.withAlphaComponent(0.5) : .black
         todayMentLabel.text = hasTodayDiary ? "내일은 어떤 하루일까?" : "오늘은 어떤 하루였어?"
     }
     
@@ -145,7 +137,10 @@ private extension HomeVC {
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         characterImageView.contentMode = .scaleAspectFit
         
-        goToCalendarView.tapGesturePublisher()
+        let hasTodayDiary = realmManager.hasTodayDiary()
+        goToDiaryView.isUserInteractionEnabled = !hasTodayDiary
+        
+        goToDiaryView.tapGesturePublisher()
             .sink { _ in
                 let dirayVC = DiaryVC()
                 self.navigationController?.pushViewController(dirayVC, animated: true)
@@ -191,8 +186,7 @@ private extension HomeVC {
                          goToCalendarView)
         
         todayBubbleImage.addSubview(todayMentLabel)
-        goToDiaryView.addSubviews(goToDiaryStackView,
-                                  goToDiaryEnabledView)
+        goToDiaryView.addSubviews(goToDiaryStackView)
         goToDiaryStackView.addArrangedSubviews(goToDiaryImageView,
                                                goToDiaryLabel)
         goToCalendarView.addSubviews(goToCalendarStackView)
@@ -215,6 +209,7 @@ private extension HomeVC {
         settingButton.snp.makeConstraints {
             $0.top.equalTo(todayWeekLabel.snp.top)
             $0.trailing.equalToSuperview().inset(21)
+            $0.size.equalTo(30)
         }
         
         todayBubbleImage.snp.makeConstraints {
@@ -246,10 +241,6 @@ private extension HomeVC {
         goToDiaryStackView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.width.equalToSuperview()
-        }
-        
-        goToDiaryEnabledView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
         }
         
         goToDiaryImageView.snp.makeConstraints {
