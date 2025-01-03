@@ -26,6 +26,17 @@ class SettingVC: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
         setupNavigationBar()
         bindViewActions()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -138,5 +149,16 @@ class SettingVC: UIViewController {
     @objc private func dismissDeleteAlert() {
         deleteAlertView?.removeFromSuperview()
         deleteAlertView = nil
+    }
+    
+    @objc private func handleAppDidBecomeActive() {
+        checkNotificationAuthorization { [weak self] authorized in
+            guard let self = self else { return }
+
+            if authorized && !UserDefaults.standard.bool(forKey: "isNotificationSet") {
+                let onboardingVC = OnboardingVC(buttonTitle: "변경하기")
+                self.navigationController?.pushViewController(onboardingVC, animated: true)
+            }
+        }
     }
 }
