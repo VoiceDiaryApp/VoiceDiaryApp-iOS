@@ -40,7 +40,7 @@ class SettingVC: UIViewController {
         }
     }
     
-    private func bindViewActions() {
+    func bindViewActions() {
         let isNotificationEnabled = UserDefaults.standard.bool(forKey: "isNotificationEnabled")
         settingView.updateAlertToggleState(isNotificationEnabled)
         
@@ -63,61 +63,60 @@ class SettingVC: UIViewController {
             .store(in: &cancellables)
     }
     
-    // MARK: - Actions
-    private func handleAlertToggle(isOn: Bool) {
-        NotificationManager.shared.isNotificationAuthorized { [weak self] authorized in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                
-                if authorized {
-                    if isOn {
-                        self.navigationController?.pushViewController(self.onboardingVC, animated: true)
-                    } else {
-                        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-                    }
-                    UserDefaults.standard.set(isOn, forKey: "isNotificationEnabled")
+    func handleAlertToggle(isOn: Bool) {
+        checkNotificationAuthorization { [weak self] authorized in
+            guard let self = self else { return }
+            
+            if authorized {
+                if isOn {
+                    self.navigationController?.pushViewController(self.onboardingVC, animated: true)
                 } else {
-                    let alert = UIAlertController(
-                        title: "알림 권한 비활성화",
-                        message: "알림 권한이 비활성화되어 있습니다. 설정에서 권한을 활성화해주세요.",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
-                        if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
-                        }
-                    })
-                    alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                    self.settingView.updateAlertToggleState(false)
+                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
                 }
+                UserDefaults.standard.set(isOn, forKey: "isNotificationEnabled")
+            } else {
+                self.showPermissionAlert(
+                    title: "알림 권한 비활성화",
+                    message: "알림 권한이 비활성화되어 있습니다. 설정에서 권한을 활성화해주세요.",
+                    onCancel: { self.settingView.updateAlertToggleState(false) }
+                )
             }
         }
     }
     
-    private func navigateToAlertChange() {
-        NotificationManager.shared.isNotificationAuthorized { [weak self] authorized in
+    func navigateToAlertChange() {
+        checkNotificationAuthorization { [weak self] authorized in
+            guard let self = self else { return }
+            
+            if authorized {
+                self.navigationController?.pushViewController(self.onboardingVC, animated: true)
+            } else {
+                self.showPermissionAlert(
+                    title: "알림 권한 비활성화",
+                    message: "알림 권한이 비활성화되어 있습니다. 설정에서 권한을 활성화해주세요.",
+                    onCancel: {}
+                )
+            }
+        }
+    }
+    
+    private func showPermissionAlert(title: String, message: String, onCancel: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+            if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
+            }
+        })
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel) { _ in
+            onCancel()
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    private func checkNotificationAuthorization(completion: @escaping (Bool) -> Void) {
+        NotificationManager.shared.isNotificationAuthorized { authorized in
             DispatchQueue.main.async {
-                guard let self = self else { return }
-                
-                if authorized {
-                    self.navigationController?.pushViewController(self.onboardingVC, animated: true)
-                } else {
-                    let alert = UIAlertController(
-                        title: "알림 권한 비활성화",
-                        message: "알림 권한이 비활성화되어 있습니다. 설정에서 권한을 활성화해주세요.",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
-                        if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
-                            UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
-                        }
-                    })
-                    alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                    self.settingView.updateAlertToggleState(false)
-                    self.navigationController?.pushViewController(self.onboardingVC, animated: true)
-                }
+                completion(authorized)
             }
         }
     }
