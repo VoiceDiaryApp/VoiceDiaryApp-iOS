@@ -15,8 +15,8 @@ class SettingVC: UIViewController {
     private let settingView = SettingView()
     private var cancellables = Set<AnyCancellable>()
     private var deleteAlertView: UIView?
-    private let realmManager = RealmDiaryManager()
-
+    let onboardingVC = OnboardingVC(buttonTitle: "변경하기")
+    
     // MARK: - Life Cycle
     override func loadView() {
         self.view = settingView
@@ -27,13 +27,24 @@ class SettingVC: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
         setupNavigationBar()
         bindViewActions()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
-
+    
     // MARK: - Setup
     private func setupNavigationBar() {
         settingView.setNavigationBarBackAction { [weak self] in
@@ -41,7 +52,10 @@ class SettingVC: UIViewController {
         }
     }
     
-    private func bindViewActions() {
+    func bindViewActions() {
+        let isNotificationEnabled = UserManager.shared.getSetNotification
+        settingView.updateAlertToggleState(isNotificationEnabled)
+        
         settingView.alertTogglePublisher
             .sink { [weak self] isOn in
                 self?.handleAlertToggle(isOn: isOn)
@@ -60,24 +74,63 @@ class SettingVC: UIViewController {
             }
             .store(in: &cancellables)
     }
-
-    // MARK: - Actions
-    private func handleAlertToggle(isOn: Bool) {
-        if isOn {
-            if let savedTime = UserDefaults.standard.string(forKey: "dailyNotificationTime") {
-                NotificationManager.shared.scheduleDailyNotification(time: savedTime)
+    
+    func handleAlertToggle(isOn: Bool) {
+        checkNotificationAuthorization { [weak self] authorized in
+            guard let self = self else { return }
+            
+            if authorized {
+                if isOn {
+                    self.navigationController?.pushViewController(self.onboardingVC, animated: true)
+                } else {
+                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                }
+                UserManager.shared.updateSetNotification(set: isOn)
             } else {
-                print("알림 시간이 설정되지 않았습니다.")
+                self.showPermissionAlert(
+                    title: "알림 권한 비활성화",
+                    message: "알림 권한이 비활성화되어 있습니다. 설정에서 권한을 활성화해주세요.",
+                    onCancel: { self.settingView.updateAlertToggleState(false) }
+                )
             }
-        } else {
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         }
-        UserDefaults.standard.set(isOn, forKey: "isNotificationEnabled")
     }
     
-    private func navigateToAlertChange() {
-        let onboardingVC = OnboardingVC(buttonTitle: "변경하기")
-        navigationController?.pushViewController(onboardingVC, animated: true)
+    func navigateToAlertChange() {
+        checkNotificationAuthorization { [weak self] authorized in
+            guard let self = self else { return }
+            
+            if authorized {
+                self.navigationController?.pushViewController(self.onboardingVC, animated: true)
+            } else {
+                self.showPermissionAlert(
+                    title: "알림 권한 비활성화",
+                    message: "알림 권한이 비활성화되어 있습니다. 설정에서 권한을 활성화해주세요.",
+                    onCancel: {}
+                )
+            }
+        }
+    }
+    
+    private func showPermissionAlert(title: String, message: String, onCancel: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+            if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
+            }
+        })
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel) { _ in
+            onCancel()
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    private func checkNotificationAuthorization(completion: @escaping (Bool) -> Void) {
+        NotificationManager.shared.isNotificationAuthorized { authorized in
+            DispatchQueue.main.async {
+                completion(authorized)
+            }
+        }
     }
     
     private func showDeleteAlert() {
@@ -102,5 +155,16 @@ class SettingVC: UIViewController {
             return
         }
         keyWindow.rootViewController = UINavigationController(rootViewController: SplashVC())
+    }
+    
+    @objc private func handleAppDidBecomeActive() {
+        checkNotificationAuthorization { [weak self] authorized in
+            guard let self = self else { return }
+
+            if authorized && !UserManager.shared.getSetNotification {
+                let onboardingVC = OnboardingVC(buttonTitle: "변경하기")
+                self.navigationController?.pushViewController(onboardingVC, animated: true)
+            }
+        }
     }
 }

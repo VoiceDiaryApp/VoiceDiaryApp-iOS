@@ -93,9 +93,8 @@ private extension OnboardingVC {
         }
         
         startButton.tapPublisher
-            .sink(receiveValue: {
-                self.saveSelectedTime()
-                self.changeRootToHomeVC()
+            .sink(receiveValue: { [weak self] in
+                self?.saveSelectedTime()
             })
             .store(in: &cancellables)
     }
@@ -139,6 +138,7 @@ private extension OnboardingVC {
     }
     
     func changeRootToHomeVC() {
+        UserManager.shared.updateSetNotification(set: true)
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let keyWindow = windowScene.windows.first else {
             return
@@ -146,12 +146,47 @@ private extension OnboardingVC {
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
     }
     
-    func saveSelectedTime() {
+    private func saveSelectedTime() {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        let dailyNotificationTime = formatter.string(from: selectedDate)
-        NotificationManager.shared.scheduleDailyNotification(time: dailyNotificationTime)
-        UserManager.shared.updateNotificationTime(time: dailyNotificationTime)
+        let formattedTime = formatter.string(from: selectedDate)
+        
+        checkNotificationAuthorization { [weak self] granted in
+            guard let self = self else { return }
+            
+            if granted {
+                UserManager.shared.updateNotificationTime(time: formattedTime)
+                NotificationManager.shared.scheduleDailyNotification(time: formattedTime)
+                self.changeRootToHomeVC()
+            } else {
+                self.showPermissionAlert(
+                    title: "알림 권한 비활성화",
+                    message: "알림 권한을 허용하지 않으면 알림을 받을 수 없습니다. 앱 설정에서 권한을 활성화해주세요.",
+                    onCancel: { self.changeRootToHomeVC() }
+                )
+            }
+        }
+    }
+    
+    private func checkNotificationAuthorization(completion: @escaping (Bool) -> Void) {
+        NotificationManager.shared.requestAuthorization { granted in
+            DispatchQueue.main.async {
+                completion(granted)
+            }
+        }
+    }
+    
+    private func showPermissionAlert(title: String, message: String, onCancel: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+            if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
+            }
+        })
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel) { _ in
+            onCancel()
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 }

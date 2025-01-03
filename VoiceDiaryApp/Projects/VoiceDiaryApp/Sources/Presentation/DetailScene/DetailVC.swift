@@ -47,6 +47,9 @@ final class DetailVC: UIViewController {
 
     private func setupUI() {
         navigationController?.setNavigationBarHidden(true, animated: false)
+        detailView.navigationBar.backButtonAction = { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
     
     private func setupActions() {

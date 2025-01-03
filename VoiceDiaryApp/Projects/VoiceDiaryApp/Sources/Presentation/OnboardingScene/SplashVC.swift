@@ -66,7 +66,7 @@ private extension SplashVC {
     }
     
     func showNextPage() {
-        let isNotificationSet = UserDefaults.standard.bool(forKey: "isNotificationSet")
+        let isNotificationSet = UserManager.shared.getSetNotification
         
         if isNotificationSet {
             let homeVC = HomeVC()
