@@ -17,4 +17,17 @@ final class RealmDiaryEntry: Object {
     @Persisted var title: String
     @Persisted var answer: String
     @Persisted var drawImage: String
+    
+    // WriteDiaryEntry로 변환
+    func toWriteDiaryEntry() -> WriteDiaryEntry {
+        return WriteDiaryEntry(
+            date: self.createDate,
+            emotion: Emotion(rawValue: self.emotion) ?? .neutral,
+            content: self.content,
+            shortContent: self.shortContent,
+            title: self.title,
+            answer: self.answer,
+            drawImage: self.drawImage
+        )
+    }
 }

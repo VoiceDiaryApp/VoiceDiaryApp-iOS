@@ -7,6 +7,8 @@
 
 import UIKit
 
+import Combine
+
 extension UIView {
     
     func addSubviews(_ views: UIView...) {
@@ -18,5 +20,14 @@ extension UIView {
         return renderer.image { context in
             layer.render(in: context.cgContext)
         }
+    }
+    
+    func tapGesturePublisher() -> Publishers.Throttle<UITapGestureRecognizer.GesturePublisher<UITapGestureRecognizer>, RunLoop> {
+        return UITapGestureRecognizer.GesturePublisher(recognizer: .init(), view: self)
+            .throttle(
+                for: .seconds(1),
+                scheduler: RunLoop.main,
+                latest: false
+            )
     }
 }

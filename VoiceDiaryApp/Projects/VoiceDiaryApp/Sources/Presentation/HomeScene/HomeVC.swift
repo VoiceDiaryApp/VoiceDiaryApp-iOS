@@ -18,6 +18,7 @@ final class HomeVC: UIViewController {
     private let todayDate = Date()
     private var cancellables = Set<AnyCancellable>()
     private let realmManager = RealmDiaryManager()
+    private let isIpad = DeviceUtils.isIPad()
     
     // MARK: - UI Components
     
@@ -32,6 +33,8 @@ final class HomeVC: UIViewController {
     private lazy var todayDateLabel: UILabel = {
         let label = UILabel()
         label.text = getFormattedDate(from: todayDate).formattedDate
+        label.textColor = .black
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
         return label
     }()
     
@@ -46,23 +49,64 @@ final class HomeVC: UIViewController {
     private let todayMentLabel: UILabel = {
         let label = UILabel()
         label.text = "오늘은 어떤 하루였어?"
-        label.font = .fontGuide(type: .PretandardMedium, size: 20)
+        label.font = .fontGuide(type: .GangwonEduSaeeum, size: 30)
         return label
     }()
     
     private let characterImageView = UIImageView(image: UIImage(resource: .imgCharacter))
     
-    private let goToDiaryButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(resource: .btnGoDiary), for: .normal)
-        button.setImage(UIImage(resource: .btnGoDiaryDisabled), for: .disabled)
-        return button
+    private let goToDiaryView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(resource: .mainYellow)
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 10
+        return view
     }()
     
-    private let goToCalendarButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(resource: .btnGoCalendar), for: .normal)
-        return button
+    private let goToDiaryImageView = UIImageView(image: UIImage(resource: .icDiary))
+    
+    private let goToDiaryStackView: UIStackView = {
+        let stackview = UIStackView()
+        stackview.axis = .vertical
+        stackview.spacing = SizeLiterals.calSupporHeight(height: 5)
+        stackview.alignment = .center
+        return stackview
+    }()
+    
+    private lazy var goToDiaryLabel: UILabel = {
+        let label = UILabel()
+        label.text = "일기 쓰러 가기"
+        label.textColor = .black
+        label.textAlignment = .center
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
+        return label
+    }()
+    
+    private let goToCalendarView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(resource: .mainYellow)
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 10
+        return view
+    }()
+    
+    private let goToCalendarStackView: UIStackView = {
+        let stackview = UIStackView()
+        stackview.axis = .vertical
+        stackview.spacing = SizeLiterals.calSupporHeight(height: 5)
+        stackview.alignment = .center
+        return stackview
+    }()
+    
+    private let goToCalendarImageView = UIImageView(image: UIImage(resource: .icCalendar))
+    
+    private lazy var goToCalendarLabel: UILabel = {
+        let label = UILabel()
+        label.text = "캘린더"
+        label.textColor = .black
+        label.textAlignment = .center
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 17)
+        return label
     }()
     
     // MARK: - Life Cycles
@@ -70,7 +114,10 @@ final class HomeVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        goToDiaryButton.isEnabled = !realmManager.hasTodayDiary()
+        let hasTodayDiary = realmManager.hasTodayDiary()
+        goToDiaryView.backgroundColor = hasTodayDiary ? UIColor(resource: .mainYellow).withAlphaComponent(0.5) : UIColor(resource: .mainYellow)
+        goToDiaryLabel.textColor = hasTodayDiary ? .black.withAlphaComponent(0.5) : .black
+        todayMentLabel.text = hasTodayDiary ? "내일은 어떤 하루일까?" : "오늘은 어떤 하루였어?"
     }
     
     override func viewDidLoad() {
@@ -88,15 +135,19 @@ private extension HomeVC {
         view.backgroundColor = UIColor(resource: .mainBeige)
         self.navigationController?.navigationBar.isHidden = true
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        characterImageView.contentMode = .scaleAspectFit
         
-        goToDiaryButton.tapPublisher
+        let hasTodayDiary = realmManager.hasTodayDiary()
+        goToDiaryView.isUserInteractionEnabled = !hasTodayDiary
+        
+        goToDiaryView.tapGesturePublisher()
             .sink { _ in
                 let dirayVC = DiaryVC()
                 self.navigationController?.pushViewController(dirayVC, animated: true)
             }
             .store(in: &cancellables)
         
-        goToCalendarButton.tapPublisher
+        goToCalendarView.tapGesturePublisher()
             .sink { _ in
                 let calendarVC = CalendarVC()
                 self.navigationController?.pushViewController(calendarVC, animated: true)
@@ -111,7 +162,7 @@ private extension HomeVC {
             .store(in: &cancellables)
     }
     
-    func getFormattedDate(from date: Date) -> (formattedDate: String, 
+    func getFormattedDate(from date: Date) -> (formattedDate: String,
                                                weekday: String) {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_KR")
@@ -131,10 +182,17 @@ private extension HomeVC {
                          settingButton,
                          todayBubbleImage,
                          characterImageView,
-                         goToDiaryButton,
-                         goToCalendarButton)
+                         goToDiaryView,
+                         goToCalendarView)
         
         todayBubbleImage.addSubview(todayMentLabel)
+        goToDiaryView.addSubviews(goToDiaryStackView)
+        goToDiaryStackView.addArrangedSubviews(goToDiaryImageView,
+                                               goToDiaryLabel)
+        goToCalendarView.addSubviews(goToCalendarStackView)
+        goToCalendarStackView.addArrangedSubviews(goToCalendarImageView,
+                                                  goToCalendarLabel)
+        
     }
     
     func setLayout() {
@@ -149,8 +207,9 @@ private extension HomeVC {
         }
         
         settingButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            $0.top.equalTo(todayWeekLabel.snp.top)
             $0.trailing.equalToSuperview().inset(21)
+            $0.size.equalTo(30)
         }
         
         todayBubbleImage.snp.makeConstraints {
@@ -162,28 +221,46 @@ private extension HomeVC {
         
         todayMentLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().inset(17)
+            $0.top.equalToSuperview().inset(10)
         }
         
         characterImageView.snp.makeConstraints {
-            $0.top.equalTo(todayMentLabel.snp.bottom).offset(34)
+            $0.top.equalTo(todayMentLabel.snp.bottom).offset(SizeLiterals.calSupporHeight(height: 34))
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(195)
-            $0.height.equalTo(226)
+            $0.width.equalTo(isIpad ? 400 : 196)
+            $0.height.equalTo(isIpad ? 461 : 226)
         }
         
-        goToDiaryButton.snp.makeConstraints {
+        goToDiaryView.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-SizeLiterals.calSupporHeight(height: 110))
             $0.leading.equalToSuperview().inset(41)
             $0.width.equalTo((SizeLiterals.Screen.screenWidth - 101) / 2)
-            $0.height.equalTo(120)
+            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 120))
         }
         
-        goToCalendarButton.snp.makeConstraints {
+        goToDiaryStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.width.equalToSuperview()
+        }
+        
+        goToDiaryImageView.snp.makeConstraints {
+            $0.size.equalTo(isIpad ? 100 : 66)
+        }
+        
+        goToCalendarView.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-SizeLiterals.calSupporHeight(height: 110))
             $0.trailing.equalToSuperview().inset(41)
             $0.width.equalTo((SizeLiterals.Screen.screenWidth - 101) / 2)
-            $0.height.equalTo(120)
+            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 120))
+        }
+        
+        goToCalendarImageView.snp.makeConstraints {
+            $0.size.equalTo(isIpad ? 100 : 66)
+        }
+        
+        goToCalendarStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.width.equalToSuperview()
         }
     }
 }

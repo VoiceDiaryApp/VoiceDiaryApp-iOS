@@ -30,7 +30,7 @@ class CustomAlertView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 모든 기록을 삭제하시겠습니까?"
-        label.font = .fontGuide(type: .PretandardBold, size: 16)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 16)
         label.textAlignment = .center
         return label
     }()
@@ -38,7 +38,7 @@ class CustomAlertView: UIView {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "이 작업은 되돌릴 수 없습니다.\n삭제를 진행하시겠습니까?"
-        label.font = .fontGuide(type: .PretandardSemiBold, size: 12)
+        label.font = .fontGuide(type: .PretandardSemiBold, size: 14)
         label.textColor = .gray
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -82,12 +82,12 @@ class CustomAlertView: UIView {
     
     // MARK: - Setup
     private func setupUI() {
-        addSubview(dimView)
-        addSubview(alertView)
-        alertView.addSubview(titleLabel)
-        alertView.addSubview(descriptionLabel)
-        alertView.addSubview(cancelButton)
-        alertView.addSubview(deleteButton)
+        addSubviews(dimView,
+                   alertView)
+        alertView.addSubviews(titleLabel,
+                             descriptionLabel,
+                              cancelButton,
+                              deleteButton)
     }
     
     private func setupLayout() {
@@ -97,30 +97,32 @@ class CustomAlertView: UIView {
         
         alertView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(37)
-            make.height.equalTo(157)
+            make.width.equalTo(SizeLiterals.Screen.screenWidth - 74)
+            make.height.equalTo(SizeLiterals.calSupporHeight(height: 200))
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalToSuperview().inset(25)
+            make.centerX.equalToSuperview()
         }
         
         descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(9)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(titleLabel.snp.bottom).offset(SizeLiterals.calSupporHeight(height: 25))
+            make.centerX.equalToSuperview()
         }
         
         cancelButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-18)
-            make.trailing.equalTo(alertView.snp.centerX).offset(-11)
-            make.size.equalTo(CGSize(width: 90, height: 40))
+            make.bottom.equalToSuperview().inset(18)
+            make.leading.equalToSuperview().inset(30)
+            make.width.equalTo((SizeLiterals.Screen.screenWidth - 156) / 2)
+            make.height.equalTo(SizeLiterals.calSupporHeight(height: 40))
         }
         
         deleteButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-18)
-            make.leading.equalTo(alertView.snp.centerX).offset(11)
-            make.size.equalTo(CGSize(width: 90, height: 40))
+            make.bottom.equalToSuperview().inset(18)
+            make.trailing.equalToSuperview().inset(30)
+            make.width.equalTo((SizeLiterals.Screen.screenWidth - 156) / 2)
+            make.height.equalTo(SizeLiterals.calSupporHeight(height: 40))
         }
     }
     

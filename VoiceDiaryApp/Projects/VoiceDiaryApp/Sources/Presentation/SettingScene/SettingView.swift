@@ -40,6 +40,7 @@ class SettingView: UIView {
     
     private let alertToggle: UISwitch = {
         let toggle = UISwitch()
+        toggle.isOn = UserManager.shared.getSetNotification
         return toggle
     }()
     
@@ -104,7 +105,6 @@ class SettingView: UIView {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(50)
         }
         
         alertView.snp.makeConstraints { make in
@@ -127,7 +127,7 @@ class SettingView: UIView {
         }
         
         alertChangeView.snp.makeConstraints { make in
-            make.top.equalTo(alertView.snp.bottom).offset(14)
+            make.top.equalTo(alertView.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(50)
         }
@@ -137,11 +137,12 @@ class SettingView: UIView {
         }
         
         alertChangeDescriptionText.snp.makeConstraints { make in
-            make.bottom.leading.equalToSuperview()
+            make.top.equalTo(alertChangeTitle.snp.bottom).offset(10)
+            make.leading.equalToSuperview()
         }
         
         deleteView.snp.makeConstraints { make in
-            make.top.equalTo(alertChangeView.snp.bottom).offset(14)
+            make.top.equalTo(alertChangeView.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(28)
             make.height.equalTo(50)
         }

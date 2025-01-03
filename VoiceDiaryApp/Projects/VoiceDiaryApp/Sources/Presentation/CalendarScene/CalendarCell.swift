@@ -13,6 +13,13 @@ final class CalendarCell: UICollectionViewCell {
     // MARK: Properties
     private let dayLabel = UILabel()
     private let emojiImageView = UIImageView()
+    private let selectedBackground: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(resource: .calendarSelected)
+        view.layer.cornerRadius = 8
+        view.isHidden = true
+        return view
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,7 +31,14 @@ final class CalendarCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        contentView.addSubviews(emojiImageView, dayLabel)
+        contentView.addSubviews(selectedBackground, emojiImageView, dayLabel)
+
+        selectedBackground.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.width.equalTo(25)
+            make.height.equalTo(21)
+            make.centerY.equalTo(dayLabel)
+        }
 
         emojiImageView.contentMode = .scaleAspectFit
         emojiImageView.snp.makeConstraints { make in
@@ -44,10 +58,16 @@ final class CalendarCell: UICollectionViewCell {
         }
     }
 
-    func configure(day: Int?, emotion: Emotion?, isToday: Bool) {
+    func configure(day: Int?, date: Date, diaryManager: RealmDiaryManager, isToday: Bool) {
         if let day = day {
             dayLabel.text = "\(day)"
-            emojiImageView.image = UIImage(named: emotion?.rawValue ?? "defaultImage")
+            
+            if let diaryEntry = diaryManager.fetchDiaryEntry(for: date),
+               let emotion = Emotion(rawValue: diaryEntry.emotion) {
+                emojiImageView.image = UIImage(named: emotion.rawValue)
+            } else {
+                emojiImageView.image = UIImage(named: "defaultImage")
+            }
 
             if isToday {
                 dayLabel.font = .fontGuide(type: .RobotobBold, size: 13)
@@ -63,23 +83,9 @@ final class CalendarCell: UICollectionViewCell {
     }
 
     func setSelected(_ isSelected: Bool, isToday: Bool) {
-        if isSelected {
-            dayLabel.textColor = .white
-            let selectedBackground = UIView()
-            selectedBackground.backgroundColor = UIColor(resource: .calendarSelected)
-            selectedBackground.layer.cornerRadius = 8
-            contentView.insertSubview(selectedBackground, belowSubview: dayLabel)
-            selectedBackground.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.width.equalTo(25)
-                make.height.equalTo(21)
-                make.bottom.equalTo(dayLabel.snp.bottom).offset(-5)
-            }
-        } else {
-            dayLabel.textColor = isToday
-            ? UIColor(resource: .calendarSelected)
-            : UIColor(resource: .calendarTextBlack)
-            contentView.subviews.filter { $0 != dayLabel && $0 != emojiImageView }.forEach { $0.removeFromSuperview() }
-        }
+        selectedBackground.isHidden = !isSelected
+        dayLabel.textColor = isSelected
+            ? .white
+            : (isToday ? UIColor(resource: .calendarSelected) : UIColor(resource: .calendarTextBlack))
     }
 }

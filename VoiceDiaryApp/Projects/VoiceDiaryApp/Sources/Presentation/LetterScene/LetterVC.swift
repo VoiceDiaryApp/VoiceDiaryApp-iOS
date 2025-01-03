@@ -18,8 +18,10 @@ final class LetterVC: UIViewController {
     // MARK: - Properties
     
     private let diaryVM: DiaryVM
+    private let selectedDate: Date?
+    private let isFromCalendar: Bool
     private var cancellables = Set<AnyCancellable>()
-    private let viewWillAppear: PassthroughSubject<Void, Never> = PassthroughSubject()
+    private let viewWillAppear: PassthroughSubject<Date, Never> = PassthroughSubject()
     
     // MARK: - UI Components
     
@@ -39,7 +41,7 @@ final class LetterVC: UIViewController {
         view.backgroundColor = .white
         view.clipsToBounds = true
         view.layer.cornerRadius = 8
-        view.layer.borderColor = UIColor.red.cgColor
+        view.layer.borderColor = UIColor(resource: .calendarSelected).cgColor
         view.layer.borderWidth = 2
         return view
     }()
@@ -47,16 +49,28 @@ final class LetterVC: UIViewController {
     private let letterLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = .fontGuide(type: .NanumHand, size: 26)
+        label.font = .fontGuide(type: .GangwonEduSaeeum, size: 22)
         label.numberOfLines = 0
         label.textAlignment = .left
         return label
     }()
     
+    private let appNameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "똑깨비"
+        label.textColor = UIColor(resource: .calendarSelected)
+        label.font = .fontGuide(type: .GangwonEduSaeeum, size: 22)
+        label.textAlignment = .center
+        label.setOutline(outlineColor: UIColor(resource: .calendarSelected), outlineWidth: 1.5)
+        return label
+    }()
+    
     // MARK: - Life Cycles
     
-    init(viewModel: DiaryVM) {
+    init(viewModel: DiaryVM, selectedDate: Date? = nil, isFromCalendar: Bool = false) {
         self.diaryVM = viewModel
+        self.selectedDate = selectedDate
+        self.isFromCalendar = isFromCalendar
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,7 +81,11 @@ final class LetterVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewWillAppear.send()
+        if let selectedDate = selectedDate {
+            viewWillAppear.send(selectedDate)
+        } else {
+            viewWillAppear.send(Date())
+        }
     }
     
     override func viewDidLoad() {
@@ -117,16 +135,19 @@ private extension LetterVC {
         let output = diaryVM.transform(input: input)
         
         output.geminiLetter
-            .sink(receiveValue: { letter in
+            .sink(receiveValue: { [weak self] letter in
+                guard let self = self else { return }
+                print("Received letter: \(letter)")
                 self.letterLabel.text = letter
-        })
-        .store(in: &cancellables)
+            })
+            .store(in: &cancellables)
     }
     
     func setHierarchy() {
         view.addSubviews(navigationBar,
                          characterImageView,
-                         letterView)
+                         letterView,
+                         appNameLabel)
         letterView.addSubview(letterLabel)
     }
     
@@ -148,12 +169,17 @@ private extension LetterVC {
             $0.top.equalTo(characterImageView.snp.bottom)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(SizeLiterals.Screen.screenWidth - 71)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-19)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
         }
         
         letterLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(41)
-            $0.leading.trailing.equalToSuperview().inset(33)
+            $0.top.equalToSuperview().inset(36)
+            $0.leading.trailing.equalToSuperview().inset(30)
+        }
+        
+        appNameLabel.snp.makeConstraints {
+            $0.top.equalTo(letterView.snp.bottom).offset(5)
+            $0.centerX.equalToSuperview()
         }
     }
     

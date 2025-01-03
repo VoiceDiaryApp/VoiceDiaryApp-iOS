@@ -16,6 +16,7 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     private lazy var calendarSummaryView: CalendarSummaryView = {
+        let diaryManager = RealmDiaryManager()
         let view = CalendarSummaryView(viewModel: viewModel)
         return view
     }()
@@ -39,6 +40,10 @@ final class CalendarVC: UIViewController, UIGestureRecognizerDelegate {
         bindViewModel()
         self.navigationController?.interactivePopGestureRecognizer?.delegate = self
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        
+        let today = Date()
+        viewModel.fetchDiary(for: today)
+        calendarSummaryView.calendarView.currentDatePublisher.send(today)
     }
 
     // MARK: - Setup
