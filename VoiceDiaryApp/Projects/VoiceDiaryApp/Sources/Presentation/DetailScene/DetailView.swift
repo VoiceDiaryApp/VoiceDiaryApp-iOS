@@ -34,7 +34,7 @@ final class DetailView: UIView {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
 
-    private let replyView: UIView = {
+    private let diaryDrawingView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 8
@@ -43,13 +43,13 @@ final class DetailView: UIView {
         return view
     }()
 
-    private let replyLabel: UILabel = {
+    private let diaryTextLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
         label.font = .fontGuide(type: .PretandardRegular, size: 13)
         label.numberOfLines = 0
         label.textAlignment = .left
-        label.text = "답장 내용이 여기에 표시됩니다.\n답장 레이블 높이는 내용에 따라 조정됩니다."
+        label.text = "일기 내용이 여기에 표시됩니다.\n답장 레이블 높이는 내용에 따라 조정됩니다."
         return label
     }()
 
@@ -71,8 +71,8 @@ final class DetailView: UIView {
         addSubview(scrollView)
 
         scrollView.addSubview(contentView)
-        contentView.addSubviews(navigationBar, diaryHeaderView, diaryImageView, replyView)
-        replyView.addSubview(replyLabel)
+        contentView.addSubviews(navigationBar, diaryHeaderView, diaryImageView, diaryDrawingView)
+        diaryDrawingView.addSubview(diaryTextLabel)
 
         setupLayout()
     }
@@ -104,13 +104,13 @@ final class DetailView: UIView {
             make.height.equalTo(306)
         }
 
-        replyView.snp.makeConstraints { make in
+        diaryDrawingView.snp.makeConstraints { make in
             make.top.equalTo(diaryImageView.snp.bottom).offset(21)
             make.leading.trailing.equalToSuperview().inset(28)
             make.bottom.equalToSuperview().offset(-20)
         }
 
-        replyLabel.snp.makeConstraints { make in
+        diaryTextLabel.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview().inset(27)
         }
     }
@@ -122,7 +122,7 @@ final class DetailView: UIView {
     }
 
     func configureReplyText(with text: String) {
-        replyLabel.text = text
+        diaryTextLabel.text = text
     }
 }
 

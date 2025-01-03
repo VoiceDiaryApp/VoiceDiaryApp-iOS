@@ -15,11 +15,13 @@ final class DetailVC: UIViewController {
     private let detailView = DetailView()
     private var cancellables = Set<AnyCancellable>()
     private let viewModel: CalendarVMProtocol
+    private let selectedDate: Date
 
     // MARK: - Initializers
 
-    init(viewModel: CalendarVMProtocol) {
+    init(viewModel: CalendarVMProtocol, selectedDate: Date) {
         self.viewModel = viewModel
+        self.selectedDate = selectedDate
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -38,6 +40,7 @@ final class DetailVC: UIViewController {
         setupUI()
         setupActions()
         bindViewModel()
+        viewModel.fetchDiary(for: selectedDate)
     }
 
     // MARK: - Setup
@@ -45,34 +48,42 @@ final class DetailVC: UIViewController {
     private func setupUI() {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
     private func setupActions() {
-        detailView.navigationBar.backButtonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-
         detailView.navigationBar.letterButtonAction = { [weak self] in
-            self?.navigateToLetterVC()
+            guard let self = self else { return }
+            let diaryVM = DiaryVM()
+            let letterVC = LetterVC(viewModel: diaryVM, selectedDate: self.selectedDate, isFromCalendar: true)
+            self.navigationController?.pushViewController(letterVC, animated: true)
         }
     }
 
     private func bindViewModel() {
         guard let diaryEntry = viewModel.diaryEntries.first else { return }
+
+        guard let diaryDate = diaryEntry.date.toDate() else {
+            print("Invalid date format in diaryEntry.date: \(diaryEntry.date)")
+            return
+        }
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "M월 d일"
-        let dateString = dateFormatter.string(from: diaryEntry.date)
+        let dateString = dateFormatter.string(from: diaryDate)
 
         detailView.diaryHeaderView.configure(
-            title: "일기 제목",
+            title: diaryEntry.title,
             date: dateString,
             emotion: diaryEntry.emotion
         )
+
+        detailView.configureDiaryImage(with: UIImage(named: diaryEntry.drawImage))
+        detailView.configureReplyText(with: diaryEntry.content)
     }
 
     // MARK: - Navigation
-
     private func navigateToLetterVC() {
-//        let letterVC = LetterVC()
-//        navigationController?.pushViewController(letterVC, animated: true)
+        let diaryVM = DiaryVM()
+        let letterVC = LetterVC(viewModel: diaryVM)
+        navigationController?.pushViewController(letterVC, animated: true)
     }
 }

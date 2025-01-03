@@ -14,4 +14,17 @@ struct WriteDiaryEntry: Codable {
     let title: String
     let answer: String
     let drawImage: String
+    
+    // RealmDiaryEntry로 변환
+    func toRealmDiaryEntry() -> RealmDiaryEntry {
+        let realmEntry = RealmDiaryEntry()
+        realmEntry.createDate = self.date
+        realmEntry.emotion = self.emotion.rawValue
+        realmEntry.content = self.content
+        realmEntry.shortContent = self.shortContent
+        realmEntry.title = self.title
+        realmEntry.answer = self.answer
+        realmEntry.drawImage = self.drawImage
+        return realmEntry
+    }
 }
