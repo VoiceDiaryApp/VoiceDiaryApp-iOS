@@ -183,4 +183,8 @@ class SettingView: UIView {
     func setNavigationBarBackAction(_ action: @escaping () -> Void) {
         navigationBar.backButtonAction = action
     }
+    
+    func updateAlertToggleState(_ isOn: Bool) {
+        alertToggle.isOn = isOn
+    }
 }

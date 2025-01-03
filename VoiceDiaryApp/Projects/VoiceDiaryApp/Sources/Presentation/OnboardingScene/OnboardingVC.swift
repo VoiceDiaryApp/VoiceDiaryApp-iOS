@@ -88,7 +88,6 @@ private extension OnboardingVC {
         startButton.tapPublisher
             .sink(receiveValue: {
                 self.saveSelectedTime()
-                self.changeRootToHomeVC()
             })
             .store(in: &cancellables)
     }
@@ -133,12 +132,37 @@ private extension OnboardingVC {
         keyWindow.rootViewController = UINavigationController(rootViewController: HomeVC())
     }
     
-    func saveSelectedTime() {
+    private func saveSelectedTime() {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        dailyNotificationTime = formatter.string(from: selectedDate)
-        isNotificationSet = true
-        NotificationManager.shared.scheduleDailyNotification(time: dailyNotificationTime)
+        let formattedTime = formatter.string(from: selectedDate)
+        
+        NotificationManager.shared.requestAuthorization { [weak self] granted in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                if granted {
+                    self.dailyNotificationTime = formattedTime
+                    self.isNotificationSet = true
+                    NotificationManager.shared.scheduleDailyNotification(time: formattedTime)
+                    self.changeRootToHomeVC()
+                } else {
+                    let alert = UIAlertController(
+                        title: "알림 권한 비활성화",
+                        message: "알림 권한을 허용하지 않으면 알림을 받을 수 없습니다. 앱 설정에서 권한을 활성화해주세요.",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+                        if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
+                        }
+                    })
+                    alert.addAction(UIAlertAction(title: "취소", style: .cancel) { _ in
+                        self.changeRootToHomeVC()
+                    })
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
     }
 }

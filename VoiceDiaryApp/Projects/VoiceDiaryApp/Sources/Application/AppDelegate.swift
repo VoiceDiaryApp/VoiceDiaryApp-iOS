@@ -23,10 +23,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.makeKeyAndVisible()
         self.window = window
 
-        requestNotificationAuthorization()
-
-        if let savedTime = UserDefaults.standard.string(forKey: "dailyNotificationTime") {
-            NotificationManager.shared.scheduleDailyNotification(time: savedTime)
+        NotificationManager.shared.requestAuthorization { granted in
+            if granted {
+                if let savedTime = UserDefaults.standard.string(forKey: "dailyNotificationTime") {
+                    NotificationManager.shared.scheduleDailyNotification(time: savedTime)
+                }
+            } else {
+                print("알림 권한이 허용되지 않았습니다.")
+            }
         }
 
         return true
