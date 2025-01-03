@@ -138,6 +138,7 @@ private extension OnboardingVC {
     }
     
     func changeRootToHomeVC() {
+        UserManager.shared.updateSetNotification(set: true)
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let keyWindow = windowScene.windows.first else {
             return

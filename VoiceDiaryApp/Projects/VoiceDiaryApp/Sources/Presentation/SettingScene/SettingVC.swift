@@ -53,7 +53,7 @@ class SettingVC: UIViewController {
     }
     
     func bindViewActions() {
-        let isNotificationEnabled = UserDefaults.standard.bool(forKey: "isNotificationEnabled")
+        let isNotificationEnabled = UserManager.shared.getSetNotification
         settingView.updateAlertToggleState(isNotificationEnabled)
         
         settingView.alertTogglePublisher
@@ -85,7 +85,7 @@ class SettingVC: UIViewController {
                 } else {
                     UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
                 }
-                UserDefaults.standard.set(isOn, forKey: "isNotificationEnabled")
+                UserManager.shared.updateSetNotification(set: isOn)
             } else {
                 self.showPermissionAlert(
                     title: "알림 권한 비활성화",
@@ -161,7 +161,7 @@ class SettingVC: UIViewController {
         checkNotificationAuthorization { [weak self] authorized in
             guard let self = self else { return }
 
-            if authorized && !UserDefaults.standard.bool(forKey: "isNotificationSet") {
+            if authorized && !UserManager.shared.getSetNotification {
                 let onboardingVC = OnboardingVC(buttonTitle: "변경하기")
                 self.navigationController?.pushViewController(onboardingVC, animated: true)
             }

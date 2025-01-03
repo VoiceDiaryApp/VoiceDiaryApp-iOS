@@ -137,10 +137,11 @@ final class Diary2View: UIView {
         
         canvasView.snp.makeConstraints { make in
             make.top.equalTo(moodEmojiView.snp.bottom).offset(57)
-            make.leading.trailing.equalToSuperview().inset(28)
-            make.height.equalTo(306)
-        }
+            make.centerX.equalToSuperview()
+            make.size.equalTo(DeviceUtils.isIPad() ? 500 : SizeLiterals.Screen.screenWidth - 56)
         
+        }
+
         linkedView.snp.makeConstraints { make in
             make.leading.trailing.equalTo(canvasView)
             make.top.equalTo(canvasView.snp.bottom).offset(-8)

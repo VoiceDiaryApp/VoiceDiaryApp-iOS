@@ -19,7 +19,7 @@ final class NotificationManager {
                 if let error = error {
                     print("알림 권한 요청 실패: \(error.localizedDescription)")
                 }
-                UserDefaults.standard.set(granted, forKey: "isNotificationEnabled")
+                UserManager.shared.updateSetNotification(set: granted)
                 completion(granted)
             }
         }

@@ -25,7 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         NotificationManager.shared.requestAuthorization { granted in
             if granted {
-                if let savedTime = UserDefaults.standard.string(forKey: "dailyNotificationTime") {
+                let savedTime = UserManager.shared.getNotificationTime
+                if savedTime != "" {
                     NotificationManager.shared.scheduleDailyNotification(time: savedTime)
                 }
             } else {
