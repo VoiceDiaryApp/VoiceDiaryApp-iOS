@@ -200,7 +200,6 @@ final class CalendarSummaryView: UIView {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(55)
         }
         
         yearLabel.snp.makeConstraints { make in

@@ -175,8 +175,6 @@ private extension DiaryVC {
         navigationBar.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 55))
-            
         }
         
         microphoneLabel.snp.makeConstraints {

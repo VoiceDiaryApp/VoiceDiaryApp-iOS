@@ -120,6 +120,10 @@ private extension CustomNavigationBar {
     }
     
     func setLayout() {
+        self.snp.makeConstraints {
+            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 55))
+        }
+        
         backButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(19)
             make.centerY.equalToSuperview()

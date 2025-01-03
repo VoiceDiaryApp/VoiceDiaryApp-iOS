@@ -127,7 +127,6 @@ final class Diary2View: UIView {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(55)
         }
         
         moodEmojiView.snp.makeConstraints { make in

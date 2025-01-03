@@ -163,7 +163,7 @@ private extension DiaryVM {
     
     func saveDiaryToRealm() {
         self.realmManager.saveDiaryEntry(WriteDiaryEntry(
-            date: Date(timeIntervalSince1970: 19374000000).dateToString(),
+            date: Date().dateToString(),
             emotion: self.recordingEmotion,
             content: self.recordingContent,
             shortContent: self.recordingSummary,
