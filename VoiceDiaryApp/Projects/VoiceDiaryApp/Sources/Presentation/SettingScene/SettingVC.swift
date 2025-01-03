@@ -6,13 +6,16 @@
 //
 
 import UIKit
+
 import Combine
 
 class SettingVC: UIViewController {
+    
     // MARK: - Properties
     private let settingView = SettingView()
     private var cancellables = Set<AnyCancellable>()
     private var deleteAlertView: UIView?
+    private let realmManager = RealmDiaryManager()
 
     // MARK: - Life Cycle
     override func loadView() {
@@ -80,19 +83,24 @@ class SettingVC: UIViewController {
     private func showDeleteAlert() {
         let alertView = CustomAlertView(frame: self.view.bounds)
         
-        alertView.onCancel = { [weak self] in
+        alertView.onCancel = {
             alertView.removeFromSuperview()
         }
         
-        alertView.onDelete = { [weak self] in
+        alertView.onDelete = { 
             alertView.removeFromSuperview()
+            UserManager.shared.clearData()
+            self.changeRootToSpalshVC()
         }
         
         self.view.addSubview(alertView)
     }
     
-    @objc private func dismissDeleteAlert() {
-        deleteAlertView?.removeFromSuperview()
-        deleteAlertView = nil
+    func changeRootToSpalshVC() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let keyWindow = windowScene.windows.first else {
+            return
+        }
+        keyWindow.rootViewController = UINavigationController(rootViewController: SplashVC())
     }
 }

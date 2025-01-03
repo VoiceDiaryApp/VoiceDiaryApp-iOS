@@ -90,7 +90,6 @@ final class DetailView: UIView {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(contentView.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(44)
         }
 
         diaryHeaderView.snp.makeConstraints { make in

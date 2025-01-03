@@ -16,10 +16,13 @@ final class OnboardingVC: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     private let buttonTitle: String
     
-    @UserDefaultWrapper(key: "dailyNotificationTime", defaultValue: "") private(set) var dailyNotificationTime: String
-    @UserDefaultWrapper(key: "isNotificationSet", defaultValue: false) private(set) var isNotificationSet: Bool
-    
     // MARK: - UI Components
+    
+    private let navigationBar: CustomNavigationBar = {
+        let navigationBar = CustomNavigationBar()
+        navigationBar.isBackButtonIncluded = true
+        return navigationBar
+    }()
     
     private let onboardingTitleLabel: UILabel = {
         let label = UILabel()
@@ -84,6 +87,10 @@ private extension OnboardingVC {
         view.backgroundColor = UIColor(resource: .mainBeige)
         
         startButton.setTitle(buttonTitle, for: .normal)
+        navigationBar.isHidden = (buttonTitle == "시작하기")
+        navigationBar.backButtonAction = {
+            self.navigationController?.popViewController(animated: true)
+        }
         
         startButton.tapPublisher
             .sink(receiveValue: {
@@ -94,15 +101,21 @@ private extension OnboardingVC {
     }
     
     func setHierarchy() {
-        view.addSubviews(onboardingTitleLabel,
+        view.addSubviews(navigationBar,
+                         onboardingTitleLabel,
                          onboardingSubTitleLabel,
                          timePicker,
                          startButton)
     }
     
     func setLayout() {
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalToSuperview()
+        }
+        
         onboardingTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(56)
+            $0.top.equalTo(navigationBar.snp.bottom).offset(10)
             $0.leading.equalToSuperview().inset(43)
         }
         
@@ -137,8 +150,8 @@ private extension OnboardingVC {
         let selectedDate = timePicker.date
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        dailyNotificationTime = formatter.string(from: selectedDate)
-        isNotificationSet = true
+        let dailyNotificationTime = formatter.string(from: selectedDate)
         NotificationManager.shared.scheduleDailyNotification(time: dailyNotificationTime)
+        UserManager.shared.updateNotificationTime(time: dailyNotificationTime)
     }
 }

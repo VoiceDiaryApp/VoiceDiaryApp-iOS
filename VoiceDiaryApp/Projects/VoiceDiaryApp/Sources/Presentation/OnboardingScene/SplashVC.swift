@@ -18,9 +18,10 @@ final class SplashVC: UIViewController {
     
     private let logoTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "앱 이름"
+        label.text = "똑깨비"
         label.textColor = .black
-        label.font = .fontGuide(type: .PretandardMedium, size: 18)
+        label.font = .fontGuide(type: .GangwonEduSaeeum, size: DeviceUtils.isIPad() ? 50 : 30)
+        label.setOutline(outlineColor: .black, outlineWidth: 1.5)
         return label
     }()
     
