@@ -69,16 +69,19 @@ final class DetailVC: UIViewController {
         let dateString = dateFormatter.string(from: diaryDate)
 
         detailView.diaryHeaderView.configure(
-            title: "일기 제목",
+            title: diaryEntry.title,
             date: dateString,
             emotion: diaryEntry.emotion
         )
+
+        detailView.configureDiaryImage(with: UIImage(named: diaryEntry.drawImage))
+        detailView.configureReplyText(with: diaryEntry.content)
     }
 
     // MARK: - Navigation
-
     private func navigateToLetterVC() {
-//        let letterVC = LetterVC()
-//        navigationController?.pushViewController(letterVC, animated: true)
+        let diaryVM = DiaryVM()
+        let letterVC = LetterVC(viewModel: diaryVM)
+        navigationController?.pushViewController(letterVC, animated: true)
     }
 }

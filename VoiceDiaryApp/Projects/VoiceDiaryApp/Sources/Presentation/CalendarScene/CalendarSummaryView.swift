@@ -236,7 +236,9 @@ final class CalendarSummaryView: UIView {
         let targetDate = selectedDate ?? currentDate
         yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
         monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
-        updateDiaryDateLabel(for: targetDate)
+        if let targetDate = selectedDate {
+            updateDiaryDateLabel(for: targetDate)
+        }
     }
     
     private func setupActions() {
@@ -615,18 +617,19 @@ final class CalendarSummaryView: UIView {
     }
     
     private func bindCalendarView() {
-        calendarView.currentDatePublisher
-            .sink { [weak self] newDate in
-                self?.currentDate = newDate
-                self?.configureDateLabels()
-            }
-            .store(in: &cancellables)
-        
         calendarView.selectedDatePublisher
             .sink { [weak self] selectedDate in
                 guard let self = self, let selectedDate = selectedDate else { return }
+                self.selectedDate = selectedDate
                 let hasDiary = self.checkIfDiaryExists(for: selectedDate)
                 self.updateDiaryContentView(for: selectedDate, hasDiary: hasDiary)
+            }
+            .store(in: &cancellables)
+        
+        calendarView.currentDatePublisher
+            .sink { [weak self] currentDate in
+                guard let self = self else { return }
+                self.configureDateLabels()
             }
             .store(in: &cancellables)
     }
