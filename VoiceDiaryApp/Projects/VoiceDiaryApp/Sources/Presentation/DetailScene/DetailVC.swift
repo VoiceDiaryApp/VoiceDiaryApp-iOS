@@ -15,11 +15,13 @@ final class DetailVC: UIViewController {
     private let detailView = DetailView()
     private var cancellables = Set<AnyCancellable>()
     private let viewModel: CalendarVMProtocol
+    private let selectedDate: Date
 
     // MARK: - Initializers
 
-    init(viewModel: CalendarVMProtocol) {
+    init(viewModel: CalendarVMProtocol, selectedDate: Date) {
         self.viewModel = viewModel
+        self.selectedDate = selectedDate
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -38,6 +40,7 @@ final class DetailVC: UIViewController {
         setupUI()
         setupActions()
         bindViewModel()
+        viewModel.fetchDiary(for: selectedDate)
     }
 
     // MARK: - Setup
@@ -45,14 +48,13 @@ final class DetailVC: UIViewController {
     private func setupUI() {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
     private func setupActions() {
-        detailView.navigationBar.backButtonAction = { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-
         detailView.navigationBar.letterButtonAction = { [weak self] in
-            self?.navigateToLetterVC()
+            guard let self = self else { return }
+            let diaryVM = DiaryVM()
+            let letterVC = LetterVC(viewModel: diaryVM, selectedDate: self.selectedDate, isFromCalendar: true)
+            self.navigationController?.pushViewController(letterVC, animated: true)
         }
     }
 

@@ -282,12 +282,13 @@ final class CalendarSummaryView: UIView {
     @objc private func didTapMoreLabel() {
         guard let currentVC = findViewController() else { return }
         
-        switch moreLabel.text {
-        case "더보기":
-            let detailVC = DetailVC(viewModel: viewModel)
+        switch moreLabelAction {
+        case .showDetails:
+            guard let selectedDate = selectedDate else { return }
+            let detailVC = DetailVC(viewModel: viewModel, selectedDate: selectedDate)
             currentVC.navigationController?.pushViewController(detailVC, animated: true)
             
-        case "일기 쓰러 가기":
+        case .writeDiary:
             let diaryVC = DiaryVC()
             currentVC.navigationController?.pushViewController(diaryVC, animated: true)
             

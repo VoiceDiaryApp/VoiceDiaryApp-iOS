@@ -18,8 +18,10 @@ final class LetterVC: UIViewController {
     // MARK: - Properties
     
     private let diaryVM: DiaryVM
+    private let selectedDate: Date?
+    private let isFromCalendar: Bool
     private var cancellables = Set<AnyCancellable>()
-    private let viewWillAppear: PassthroughSubject<Void, Never> = PassthroughSubject()
+    private let viewWillAppear: PassthroughSubject<Date, Never> = PassthroughSubject()
     
     // MARK: - UI Components
     
@@ -55,8 +57,10 @@ final class LetterVC: UIViewController {
     
     // MARK: - Life Cycles
     
-    init(viewModel: DiaryVM) {
+    init(viewModel: DiaryVM, selectedDate: Date? = nil, isFromCalendar: Bool = false) {
         self.diaryVM = viewModel
+        self.selectedDate = selectedDate
+        self.isFromCalendar = isFromCalendar
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,7 +71,11 @@ final class LetterVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewWillAppear.send()
+        if let selectedDate = selectedDate {
+            viewWillAppear.send(selectedDate)
+        } else {
+            viewWillAppear.send(Date())
+        }
     }
     
     override func viewDidLoad() {
@@ -117,10 +125,12 @@ private extension LetterVC {
         let output = diaryVM.transform(input: input)
         
         output.geminiLetter
-            .sink(receiveValue: { letter in
+            .sink(receiveValue: { [weak self] letter in
+                guard let self = self else { return }
+                print("Received letter: \(letter)")
                 self.letterLabel.text = letter
-        })
-        .store(in: &cancellables)
+            })
+            .store(in: &cancellables)
     }
     
     func setHierarchy() {

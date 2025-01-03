@@ -8,6 +8,7 @@ import Foundation
 
 import Combine
 import GoogleGenerativeAI
+import RealmSwift
 
 final class DiaryVM: ViewModel {
     
@@ -27,11 +28,16 @@ final class DiaryVM: ViewModel {
     }
     private let geminiLetterSubject = PassthroughSubject<String, Never>()
     
+    private var diaryEntrySubject = PassthroughSubject<WriteDiaryEntry, Never>()
+    var diaryEntryPublisher: AnyPublisher<WriteDiaryEntry, Never> {
+        diaryEntrySubject.eraseToAnyPublisher()
+    }
+    
     struct Input {
         let onRecording: PassthroughSubject<String, Never>
         let tapRecordEnd: PassthroughSubject<Void, Never>
         let tapDrawEnd: PassthroughSubject<(Emotion, String), Never>
-        let viewWillAppear: PassthroughSubject<Void, Never>
+        let viewWillAppear: PassthroughSubject<Date, Never>
     }
     
     struct Output {
@@ -66,8 +72,17 @@ final class DiaryVM: ViewModel {
             .store(in: &cancellables)
         
         input.viewWillAppear
-            .sink {
-                output.geminiLetter.send(self.geminiLetterContent)
+            .sink { [weak self] selectedDate in
+                guard let self = self else { return }
+                
+                let dateString = selectedDate.dateToString()
+                let realmData = self.fetchAllDiaryEntries().filter { $0.createDate == dateString }
+                
+                if let selectedEntry = realmData.first {
+                    output.geminiLetter.send(selectedEntry.answer)
+                } else {
+                    output.geminiLetter.send("해당 날짜의 일기를 찾을 수 없습니다.")
+                }
             }
             .store(in: &cancellables)
         
@@ -155,5 +170,26 @@ private extension DiaryVM {
             title: self.recordingTitle,
             answer: self.geminiLetterContent,
             drawImage: self.recordingDrawPath))
+    }
+    
+    func fetchAllDiaryEntries() -> [RealmDiaryEntry] {
+        do {
+            let realm = try Realm()
+            return Array(realm.objects(RealmDiaryEntry.self))
+        } catch {
+            print("Error fetching all diary entries: \(error)")
+            return []
+        }
+    }
+    
+    func fetchDiary(for date: Date) {
+        let dateString = date.dateToString()
+        let diaryEntry = fetchAllDiaryEntries().first(where: { $0.createDate == dateString })
+        
+        if let entry = diaryEntry {
+            diaryEntrySubject.send(entry.toWriteDiaryEntry())
+        } else {
+            print("해당 날짜의 일기를 찾을 수 없습니다.")
+        }
     }
 }
