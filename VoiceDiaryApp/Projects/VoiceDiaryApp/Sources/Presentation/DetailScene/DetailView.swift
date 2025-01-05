@@ -95,7 +95,6 @@ final class DetailView: UIView {
         diaryHeaderView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(78)
         }
 
         diaryImageView.snp.makeConstraints { make in
@@ -170,17 +169,24 @@ final class DiaryHeaderView: UIView {
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(24)
             make.leading.equalToSuperview().offset(31)
+            make.trailing.equalTo(emojiView.snp.leading).offset(-8)
         }
+        titleLabel.numberOfLines = 0
 
         dateLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.leading.equalTo(titleLabel)
         }
 
         emojiView.snp.makeConstraints { make in
-            make.centerY.equalTo(dateLabel.snp.top)
+            make.top.equalTo(titleLabel.snp.top)
             make.trailing.equalToSuperview().inset(39)
             make.size.equalTo(46)
+        }
+        emojiView.contentMode = .scaleAspectFit
+        
+        self.snp.makeConstraints { make in
+            make.bottom.equalTo(dateLabel.snp.bottom).offset(8)
         }
     }
 
