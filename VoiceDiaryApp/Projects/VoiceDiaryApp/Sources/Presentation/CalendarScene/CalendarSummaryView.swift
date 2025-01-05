@@ -122,6 +122,7 @@ final class CalendarSummaryView: UIView {
         label.text = "더보기"
         label.textColor = UIColor(resource: .calendarSelected)
         label.font = UIFont(name: "Pretendard-Regular", size: 11)
+        label.textAlignment = .right
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.17
@@ -349,10 +350,13 @@ final class CalendarSummaryView: UIView {
             make.height.equalTo(174)
             make.bottom.equalToSuperview()
         }
+        diaryTitleLabel.lineBreakMode = .byTruncatingTail
+        diaryTitleLabel.numberOfLines = 1
         
         diaryTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryContentView.snp.top).offset(22)
-            make.leading.equalTo(diaryContentView.snp.leading).offset(37)
+            make.leading.equalToSuperview().inset(37)
+            make.trailing.equalTo(moreLabel.snp.leading).offset(-8)
         }
         
         diaryDateLabel.snp.makeConstraints { make in
@@ -368,7 +372,8 @@ final class CalendarSummaryView: UIView {
         
         moreLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryContentView.snp.top).offset(22)
-            make.trailing.equalTo(diaryContentView.snp.trailing).offset(-32)
+            make.trailing.equalToSuperview().offset(-32)
+            make.width.greaterThanOrEqualTo(30)
         }
     }
     
