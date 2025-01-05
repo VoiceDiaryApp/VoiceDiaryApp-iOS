@@ -32,6 +32,7 @@ final class DiaryVM: ViewModel {
     var diaryEntryPublisher: AnyPublisher<WriteDiaryEntry, Never> {
         diaryEntrySubject.eraseToAnyPublisher()
     }
+    var selectedDate: Date = Date()
     
     struct Input {
         let onRecording: PassthroughSubject<String, Never>
@@ -163,7 +164,7 @@ private extension DiaryVM {
     
     func saveDiaryToRealm() {
         self.realmManager.saveDiaryEntry(WriteDiaryEntry(
-            date: Date().dateToString(),
+            date: selectedDate.dateToString(),
             emotion: self.recordingEmotion,
             content: self.recordingContent,
             shortContent: self.recordingSummary,

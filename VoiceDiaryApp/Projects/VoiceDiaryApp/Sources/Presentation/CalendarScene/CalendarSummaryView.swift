@@ -288,7 +288,7 @@ final class CalendarSummaryView: UIView {
             currentVC.navigationController?.pushViewController(detailVC, animated: true)
             
         case .writeDiary:
-            let diaryVC = DiaryVC()
+            let diaryVC = DiaryVC(selectedDate: selectedDate ?? Date())
             currentVC.navigationController?.pushViewController(diaryVC, animated: true)
             
         default:
@@ -298,7 +298,7 @@ final class CalendarSummaryView: UIView {
     
     private func navigateToDiaryVC() {
         guard let currentVC = findViewController() else { return }
-        let diaryVC = DiaryVC()
+        let diaryVC = DiaryVC(selectedDate: selectedDate ?? Date())
         currentVC.navigationController?.pushViewController(diaryVC, animated: true)
     }
     

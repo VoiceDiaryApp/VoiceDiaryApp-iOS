@@ -142,7 +142,7 @@ private extension HomeVC {
         
         goToDiaryView.tapGesturePublisher()
             .sink { _ in
-                let dirayVC = DiaryVC()
+                let dirayVC = DiaryVC(selectedDate: Date())
                 self.navigationController?.pushViewController(dirayVC, animated: true)
             }
             .store(in: &cancellables)

@@ -29,6 +29,7 @@ final class DiaryVC: UIViewController {
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     
+    private var selectedDate: Date
     private let diaryVM = DiaryVM()
     private let onRecording = PassthroughSubject<String, Never>()
     private let tapRecordEnd = PassthroughSubject<Void, Never>()
@@ -98,9 +99,18 @@ final class DiaryVC: UIViewController {
     
     // MARK: - Life Cycles
     
+    init(selectedDate: Date) {
+        self.selectedDate = selectedDate
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        diaryVM.selectedDate = selectedDate
         setUI()
         setHierarchy()
         setLayout()
