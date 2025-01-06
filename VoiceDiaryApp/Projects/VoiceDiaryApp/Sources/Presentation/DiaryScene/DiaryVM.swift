@@ -185,7 +185,7 @@ private extension DiaryVM {
     
     func fetchDiary(for date: Date) {
         let dateString = date.dateToString()
-        let diaryEntry = fetchAllDiaryEntries().first(where: { $0.createDate == dateString })
+        let diaryEntry = fetchAllDiaryEntries().first { $0.createDate == dateString }
         
         if let entry = diaryEntry {
             diaryEntrySubject.send(entry.toWriteDiaryEntry())

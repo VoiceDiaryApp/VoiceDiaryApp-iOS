@@ -80,7 +80,7 @@ private extension LoadingVC {
     }
     
     func showNextPage() {
-        let letterVC = LetterVC(viewModel: diaryVM)
+        let letterVC = LetterVC(viewModel: diaryVM, selectedDate: diaryVM.selectedDate, isFromCalendar: false)
         letterVC.modalPresentationStyle = .overFullScreen
         self.present(letterVC, animated: true)
     }
