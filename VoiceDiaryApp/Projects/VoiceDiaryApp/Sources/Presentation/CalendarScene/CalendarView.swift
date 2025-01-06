@@ -24,7 +24,7 @@ final class CalendarView: UIView {
     
     private let daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"]
     private let calendar = Calendar.current
-    private var currentDate: Date = Date()
+    var currentDate: Date = Date()
     private var diaryEntries: [WriteDiaryEntry] = []
     private var selectedDate: Date? = Date()
     
@@ -111,9 +111,9 @@ final class CalendarView: UIView {
         }
     }
     
-    private func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
+    func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
         guard let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) else { return }
-
+        
         currentDate = newDate
         currentDatePublisher.send(currentDate)
 
@@ -121,15 +121,18 @@ final class CalendarView: UIView {
 
         let isCurrentMonth = calendar.isDate(newDate, equalTo: Date(), toGranularity: .month)
         selectedDate = isCurrentMonth ? Date() : calendar.date(from: Calendar.current.dateComponents([.year, .month], from: newDate))
-        
         selectedDatePublisher.send(selectedDate)
 
-        let realmEntries = diaryManager.fetchDiaryEntries(for: currentDate)
-        let writeDiaryEntries = realmEntries.map { $0.toWriteDiaryEntry() }
-        updateDiaryEntries(writeDiaryEntries)
-
         collectionView.reloadData()
-        updateYearAndMonthLabels()
+    }
+
+    private func animateCalendarTransition(direction: CATransitionSubtype) {
+        let transition = CATransition()
+        transition.type = .push
+        transition.subtype = direction
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        collectionView.layer.add(transition, forKey: kCATransition)
     }
     
     private func updateYearAndMonthLabels() {
@@ -137,16 +140,6 @@ final class CalendarView: UIView {
         let month = calendar.component(.month, from: currentDate)
         (superview as? CalendarSummaryView)?.yearLabel.text = "\(year)년"
         (superview as? CalendarSummaryView)?.monthLabel.text = "\(month)월"
-    }
-    
-    private func animateCalendarTransition(direction: CATransitionSubtype) {
-        let transition = CATransition()
-        transition.type = .push
-        transition.subtype = direction
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
-        collectionView.layer.add(transition, forKey: kCATransition)
     }
     
     func highlightSelectedDate(date: Date?) {

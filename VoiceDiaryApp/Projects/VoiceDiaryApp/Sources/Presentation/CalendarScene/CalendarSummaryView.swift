@@ -231,16 +231,6 @@ final class CalendarSummaryView: UIView {
         }
     }
     
-    private func configureDateLabels() {
-        let calendar = Calendar.current
-        let targetDate = selectedDate ?? currentDate
-        yearLabel.text = "\(calendar.component(.year, from: currentDate))년"
-        monthLabel.text = "\(calendar.component(.month, from: currentDate))월"
-        if let targetDate = selectedDate {
-            updateDiaryDateLabel(for: targetDate)
-        }
-    }
-    
     private func setupActions() {
         leftArrowButton.tapPublisher
             .sink { [weak self] in
@@ -264,19 +254,15 @@ final class CalendarSummaryView: UIView {
     }
     
     private func changeMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
-        guard let newDate = Calendar.current.date(byAdding: .month, value: months, to: currentDate) else { return }
-        
-        currentDate = newDate
-        
-        let transition = CATransition()
-        transition.type = .push
-        transition.subtype = direction
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        calendarView.layer.add(transition, forKey: kCATransition)
-        
-        calendarView.updateMonth(date: currentDate)
+        calendarView.moveToMonth(byAddingMonths: months, direction: direction)
         configureDateLabels()
+    }
+
+    private func configureDateLabels() {
+        let year = Calendar.current.component(.year, from: calendarView.currentDate)
+        let month = Calendar.current.component(.month, from: calendarView.currentDate)
+        yearLabel.text = "\(year)년"
+        monthLabel.text = "\(month)월"
     }
     
     @objc private func didTapMoreLabel() {
