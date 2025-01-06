@@ -48,9 +48,9 @@ final class CalendarVM: CalendarVMProtocol {
             date: dateString,
             emotion: emotion,
             content: content,
-            shortContent: existingEntry?.shortContent ?? "",
-            title: existingEntry?.title ?? "",
-            answer: existingEntry?.answer ?? "",
+            shortContent: existingEntry?.shortContent.replacingOccurrences(of: "\n", with: "") ?? "",
+            title: existingEntry?.title.replacingOccurrences(of: "\n", with: "") ?? "",
+            answer: existingEntry?.answer.replacingOccurrences(of: "\n", with: "") ?? "",
             drawImage: existingEntry?.drawImage ?? ""
         )
         
