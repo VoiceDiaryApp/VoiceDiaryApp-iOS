@@ -12,7 +12,7 @@ enum FontType: String {
     case PretandardSemiBold = "Pretendard-SemiBold"
     case PretandardMedium = "Pretendard-Medium"
     case PretandardRegular = "Pretendard-Regular"
-    case RobotobBold = "Roboto-Bold"
+    case RobotoBold = "Roboto-Bold"
     case RobotoRegular = "Roboto-Regular"
     case GangwonEduSaeeum = "GangwonEduSaeeum"
     
@@ -20,7 +20,7 @@ enum FontType: String {
         switch self {
         case .PretandardBold: return .title1
         case .PretandardSemiBold: return .title3
-        case .PretandardMedium, .RobotobBold: return .body
+        case .PretandardMedium, .RobotoBold: return .body
         case .PretandardRegular, .RobotoRegular: return .caption1
         case .GangwonEduSaeeum: return .title1
         }

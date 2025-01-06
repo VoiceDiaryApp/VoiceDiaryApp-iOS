@@ -70,7 +70,7 @@ final class CalendarCell: UICollectionViewCell {
             }
 
             if isToday {
-                dayLabel.font = .fontGuide(type: .RobotobBold, size: 13)
+                dayLabel.font = .fontGuide(type: .RobotoBold, size: 13)
                 dayLabel.textColor = UIColor(resource: .calendarSelected)
             } else {
                 dayLabel.font = .fontGuide(type: .RobotoRegular, size: 13)
