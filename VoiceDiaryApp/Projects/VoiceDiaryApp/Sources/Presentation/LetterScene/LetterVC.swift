@@ -101,12 +101,16 @@ final class LetterVC: UIViewController {
 
 private extension LetterVC {
     
-    func setUI() {
+    private func setUI() {
         self.navigationController?.navigationBar.isHidden = true
         view.backgroundColor = UIColor(resource: .mainBeige)
         
         navigationBar.exitButtonAction = {
-            self.changeRootToHomeVC()
+            if self.isFromCalendar {
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                self.changeRootToHomeVC()
+            }
         }
         
         navigationBar.saveButtonAction = {
