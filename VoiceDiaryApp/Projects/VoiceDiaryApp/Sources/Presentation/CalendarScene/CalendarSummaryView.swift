@@ -374,57 +374,47 @@ final class CalendarSummaryView: UIView {
     func updateDiaryContentView(for date: Date, hasDiary: Bool) {
         let isFutureDate = Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending
         
-        if hasDiary {
-            diaryTitleLabel.isHidden = false
-            diaryDateLabel.isHidden = false
-            diaryContentLabel.isHidden = false
-            emptyDiaryCharacter.isHidden = true
-            emptyDiaryLabel.isHidden = true
-            
-            updateDiaryDateLabel(for: date)
-            
-            if let diaryEntry = viewModel.diaryEntries.first(where: {
-                guard let entryDate = $0.date.toDate() else { return false }
-                return Calendar.current.isDate(entryDate, inSameDayAs: date)
-            }) {
-                if diaryEntry.title.isEmpty || diaryEntry.shortContent.isEmpty {
-                    showEmptyCalendarSummaryView(isFutureDate: isFutureDate)
-                    return
-                }
-                
-                diaryTitleLabel.text = diaryEntry.title
-                diaryContentLabel.attributedText = processContentText(diaryEntry.shortContent)
-            } else {
-                showEmptyCalendarSummaryView(isFutureDate: isFutureDate)
-                return
-            }
-            
-            moreLabel.isHidden = isFutureDate
-            if !isFutureDate {
-                moreLabel.text = "더보기"
-                moreLabelAction = .showDetails
-            }
-        } else {
+        guard hasDiary else {
             showEmptyCalendarSummaryView(isFutureDate: isFutureDate)
             moreLabelAction = isFutureDate ? nil : .writeDiary
+            return
+        }
+        
+        guard let diaryEntry = viewModel.diaryEntries.first(where: {
+            $0.date.toDate().map { Calendar.current.isDate($0, inSameDayAs: date) } ?? false
+        }), !diaryEntry.title.isEmpty, !diaryEntry.shortContent.isEmpty else {
+            showEmptyCalendarSummaryView(isFutureDate: isFutureDate)
+            return
+        }
+        
+        diaryTitleLabel.text = diaryEntry.title
+        diaryContentLabel.attributedText = processContentText(diaryEntry.shortContent)
+        updateDiaryDateLabel(for: date)
+        
+        diaryTitleLabel.isHidden = false
+        diaryDateLabel.isHidden = false
+        diaryContentLabel.isHidden = false
+        emptyDiaryCharacter.isHidden = true
+        emptyDiaryLabel.isHidden = true
+        
+        moreLabel.isHidden = isFutureDate
+        if !isFutureDate {
+            moreLabel.text = "더보기"
+            moreLabelAction = .showDetails
         }
     }
     
     private func showEmptyCalendarSummaryView(isFutureDate: Bool) {
+        let isHidden = !isFutureDate
+
         diaryTitleLabel.isHidden = true
         diaryDateLabel.isHidden = true
         diaryContentLabel.isHidden = true
-        
         emptyDiaryCharacter.isHidden = false
         emptyDiaryLabel.isHidden = false
-        
-        if isFutureDate {
-            moreLabel.isHidden = true
-        } else {
-            moreLabel.isHidden = false
-            moreLabel.text = "일기 쓰러 가기"
-        }
-        
+        moreLabel.text = isFutureDate ? nil : "일기 쓰러 가기"
+        moreLabel.isHidden = isFutureDate
+
         if emptyDiaryCharacter.superview == nil {
             diaryContentView.addSubview(emptyDiaryCharacter)
             emptyDiaryCharacter.snp.makeConstraints { make in
@@ -434,7 +424,7 @@ final class CalendarSummaryView: UIView {
                 make.height.equalTo(62.7)
             }
         }
-        
+
         if emptyDiaryLabel.superview == nil {
             diaryContentView.addSubview(emptyDiaryLabel)
             emptyDiaryLabel.snp.makeConstraints { make in
@@ -445,6 +435,8 @@ final class CalendarSummaryView: UIView {
     }
     
     private func updateDiaryUI(for date: Date, hasDiary: Bool) {
+        let isFutureDate = Calendar.current.compare(date, to: Date(), toGranularity: .day) == .orderedDescending
+
         if hasDiary {
             diaryTitleLabel.isHidden = false
             diaryDateLabel.isHidden = false
@@ -462,63 +454,25 @@ final class CalendarSummaryView: UIView {
                 }?
                 .content ?? "일기 내용 일부를 여기에 표시합니다."
         } else {
-            showEmptyCalendarSummaryView()
-        }
-    }
-    
-    private func showEmptyCalendarSummaryView() {
-        diaryTitleLabel.isHidden = true
-        diaryDateLabel.isHidden = true
-        diaryContentLabel.isHidden = true
-        
-        emptyDiaryCharacter.isHidden = false
-        emptyDiaryLabel.isHidden = false
-        moreLabel.text = "일기 쓰러 가기"
-        
-        if emptyDiaryCharacter.superview == nil {
-            diaryContentView.addSubview(emptyDiaryCharacter)
-            emptyDiaryCharacter.snp.makeConstraints { make in
-                make.centerX.equalTo(diaryContentView)
-                make.top.equalTo(diaryContentView.snp.top).offset(45)
-                make.width.equalTo(66.5)
-                make.height.equalTo(62.7)
-            }
-        }
-        
-        if emptyDiaryLabel.superview == nil {
-            diaryContentView.addSubview(emptyDiaryLabel)
-            emptyDiaryLabel.snp.makeConstraints { make in
-                make.centerX.equalTo(diaryContentView)
-                make.top.equalTo(emptyDiaryCharacter.snp.bottom).offset(15.25)
-            }
+            showEmptyCalendarSummaryView(isFutureDate: isFutureDate)
         }
     }
     
     private func checkIfDiaryExists(for date: Date) -> Bool {
-        guard let diaryEntries = viewModel?.diaryEntries else {
-            return false
-        }
-        return diaryEntries.contains {
-            guard let entryDate = $0.date.toDate() else { return false }
-            return Calendar.current.isDate(entryDate, inSameDayAs: date)
-        }
+        return viewModel?.diaryEntries.contains {
+            $0.date.toDate().map { Calendar.current.isDate($0, inSameDayAs: date) } ?? false
+        } ?? false
     }
     
-    private func processContentText(_ text: String) -> NSAttributedString {
+    private func processContentText(_ text: String, maxLines: Int = 3) -> NSAttributedString {
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let content = trimmedText.first == " " ? String(trimmedText.dropFirst()) : trimmedText
-        
         let font = UIFont.fontGuide(type: .PretandardRegular, size: 13)
-        let labelWidth = UIScreen.main.bounds.width - 72
-        let maxLines = 3
-        let lineSpacing: CGFloat = 2.0
-        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byTruncatingTail
-        paragraphStyle.lineSpacing = lineSpacing
-        
-        let fullAttributedText = NSMutableAttributedString(
-            string: content,
+        paragraphStyle.lineSpacing = 2.0
+
+        let attributedText = NSMutableAttributedString(
+            string: trimmedText,
             attributes: [
                 .font: font,
                 .paragraphStyle: paragraphStyle,
@@ -526,50 +480,37 @@ final class CalendarSummaryView: UIView {
             ]
         )
         
-        let lineHeight = font.lineHeight + lineSpacing
-        let maxHeight = lineHeight * CGFloat(maxLines)
+        let labelWidth = UIScreen.main.bounds.width - 72
+        let maxHeight = font.lineHeight * CGFloat(maxLines) + paragraphStyle.lineSpacing * CGFloat(maxLines - 1)
         
-        let boundingRect = fullAttributedText.boundingRect(
+        let boundingRect = attributedText.boundingRect(
             with: CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil
         )
         
         if boundingRect.height <= maxHeight {
-            return fullAttributedText
+            return attributedText
         }
         
-        var truncatedText = content
+        var truncatedText = trimmedText
         while truncatedText.count > 0 {
+            truncatedText.removeLast()
             let testText = truncatedText + "..."
-            let testAttributedText = NSMutableAttributedString(
-                string: testText,
-                attributes: [
-                    .font: font,
-                    .paragraphStyle: paragraphStyle
-                ]
-            )
+            attributedText.mutableString.setString(testText)
             
-            let testBoundingRect = testAttributedText.boundingRect(
+            let testBoundingRect = attributedText.boundingRect(
                 with: CGSize(width: labelWidth, height: maxHeight),
                 options: [.usesLineFragmentOrigin, .usesFontLeading],
                 context: nil
             )
             
             if testBoundingRect.height <= maxHeight {
-                return testAttributedText
+                break
             }
-            truncatedText.removeLast()
         }
         
-        return NSAttributedString(
-            string: "...",
-            attributes: [
-                .font: font,
-                .paragraphStyle: paragraphStyle,
-                .foregroundColor: UIColor.black
-            ]
-        )
+        return attributedText
     }
     
     private func truncateText(content: String, font: UIFont, maxSize: CGSize) -> NSAttributedString {
