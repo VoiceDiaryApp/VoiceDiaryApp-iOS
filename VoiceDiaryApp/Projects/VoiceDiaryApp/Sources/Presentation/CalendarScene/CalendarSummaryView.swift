@@ -96,7 +96,6 @@ final class CalendarSummaryView: UIView {
         label.textColor = UIColor(resource: .calendarTextBlack)
         label.font = .fontGuide(type: .PretandardSemiBold, size: 12)
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.4
         label.attributedText = NSMutableAttributedString(
             string: "11월 19일",
             attributes: [
