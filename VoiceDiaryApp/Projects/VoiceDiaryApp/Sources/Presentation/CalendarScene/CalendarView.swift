@@ -112,18 +112,24 @@ final class CalendarView: UIView {
     }
     
     private func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
-        if let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) {
-            currentDate = newDate
-            currentDatePublisher.send(currentDate)
-            animateCalendarTransition(direction: direction)
+        guard let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) else { return }
 
-            let realmEntries = diaryManager.fetchDiaryEntries(for: currentDate)
-            let writeDiaryEntries = realmEntries.map { $0.toWriteDiaryEntry() }
-            updateDiaryEntries(writeDiaryEntries)
+        currentDate = newDate
+        currentDatePublisher.send(currentDate)
 
-            collectionView.reloadData()
-            updateYearAndMonthLabels()
-        }
+        animateCalendarTransition(direction: direction)
+
+        let isCurrentMonth = calendar.isDate(newDate, equalTo: Date(), toGranularity: .month)
+        selectedDate = isCurrentMonth ? Date() : calendar.date(from: Calendar.current.dateComponents([.year, .month], from: newDate))
+        
+        selectedDatePublisher.send(selectedDate)
+
+        let realmEntries = diaryManager.fetchDiaryEntries(for: currentDate)
+        let writeDiaryEntries = realmEntries.map { $0.toWriteDiaryEntry() }
+        updateDiaryEntries(writeDiaryEntries)
+
+        collectionView.reloadData()
+        updateYearAndMonthLabels()
     }
     
     private func updateYearAndMonthLabels() {
@@ -158,10 +164,16 @@ final class CalendarView: UIView {
                 self?.collectionView.reloadData()
             }
             .store(in: &cancellables)
-        
+
         currentDatePublisher
             .sink { [weak self] currentDate in
-                self?.selectedDatePublisher.send(currentDate)
+                guard let self = self else { return }
+
+                let isCurrentMonth = calendar.isDate(currentDate, equalTo: Date(), toGranularity: .month)
+                self.selectedDate = isCurrentMonth ? Date() : calendar.date(from: Calendar.current.dateComponents([.year, .month], from: currentDate))
+                self.selectedDatePublisher.send(self.selectedDate)
+
+                self.updateYearAndMonthLabels()
             }
             .store(in: &cancellables)
     }
