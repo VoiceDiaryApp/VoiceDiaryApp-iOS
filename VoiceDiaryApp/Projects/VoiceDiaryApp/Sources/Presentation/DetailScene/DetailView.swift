@@ -31,10 +31,7 @@ final class DetailView: UIView {
         return imageView
     }()
 
-    private let scrollView = UIScrollView()
-    private let contentView = UIView()
-
-    private let diaryDrawingView: UIView = {
+    private let diaryContentView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 8
@@ -68,27 +65,16 @@ final class DetailView: UIView {
 
     private func setupView() {
         backgroundColor = UIColor(resource: .mainBeige)
-        addSubview(scrollView)
-
-        scrollView.addSubview(contentView)
-        contentView.addSubviews(navigationBar, diaryHeaderView, diaryImageView, diaryDrawingView)
-        diaryDrawingView.addSubview(diaryTextLabel)
+        addSubviews(navigationBar, diaryHeaderView, diaryImageView, diaryContentView)
+        diaryContentView.addSubview(diaryTextLabel)
 
         setupLayout()
     }
 
     private func setupLayout() {
-        scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-        }
 
         navigationBar.snp.makeConstraints { make in
-            make.top.equalTo(contentView.safeAreaLayoutGuide)
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
         }
 
@@ -103,7 +89,7 @@ final class DetailView: UIView {
             make.height.equalTo(306)
         }
 
-        diaryDrawingView.snp.makeConstraints { make in
+        diaryContentView.snp.makeConstraints { make in
             make.top.equalTo(diaryImageView.snp.bottom).offset(21)
             make.leading.trailing.equalToSuperview().inset(28)
             make.bottom.equalToSuperview().offset(-20)
@@ -159,6 +145,11 @@ final class DiaryHeaderView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        titleLabel.preferredMaxLayoutWidth = titleLabel.frame.width
+    }
 
     // MARK: - Setup
 
@@ -179,7 +170,7 @@ final class DiaryHeaderView: UIView {
         }
 
         emojiView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.top)
+            make.centerY.equalTo(titleLabel)
             make.trailing.equalToSuperview().inset(39)
             make.size.equalTo(46)
         }
