@@ -40,14 +40,16 @@ final class DetailView: UIView {
         return view
     }()
 
-    private let diaryTextLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = .fontGuide(type: .PretandardRegular, size: 13)
-        label.numberOfLines = 0
-        label.textAlignment = .left
-        label.text = "일기 내용이 여기에 표시됩니다.\n답장 레이블 높이는 내용에 따라 조정됩니다."
-        return label
+    private let diaryTextView: UITextView = {
+        let textView = UITextView()
+        textView.textColor = .black
+        textView.font = .fontGuide(type: .PretandardRegular, size: 13)
+        textView.isEditable = false
+        textView.isScrollEnabled = true
+        textView.textAlignment = .left
+        textView.text = "일기 내용이 여기에 표시됩니다.\n답장 레이블 높이는 내용에 따라 조정됩니다."
+        textView.backgroundColor = .clear
+        return textView
     }()
 
     // MARK: - Initializers
@@ -66,7 +68,7 @@ final class DetailView: UIView {
     private func setupView() {
         backgroundColor = UIColor(resource: .mainBeige)
         addSubviews(navigationBar, diaryHeaderView, diaryImageView, diaryContentView)
-        diaryContentView.addSubview(diaryTextLabel)
+        diaryContentView.addSubview(diaryTextView)
 
         setupLayout()
     }
@@ -92,10 +94,10 @@ final class DetailView: UIView {
         diaryContentView.snp.makeConstraints { make in
             make.top.equalTo(diaryImageView.snp.bottom).offset(21)
             make.leading.trailing.equalToSuperview().inset(28)
-            make.bottom.equalToSuperview().offset(-20)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(12)
         }
 
-        diaryTextLabel.snp.makeConstraints { make in
+        diaryTextView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview().inset(27)
         }
     }
@@ -107,7 +109,7 @@ final class DetailView: UIView {
     }
 
     func configureReplyText(with text: String) {
-        diaryTextLabel.text = text
+        diaryTextView.text = text
     }
 }
 
@@ -118,6 +120,7 @@ final class DiaryHeaderView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.fontGuide(type: .PretandardSemiBold, size: 20)
+        label.numberOfLines = 0
         label.textColor = .black
         return label
     }()
@@ -126,6 +129,7 @@ final class DiaryHeaderView: UIView {
         let label = UILabel()
         label.font = UIFont.fontGuide(type: .PretandardSemiBold, size: 17)
         label.textColor = UIColor(resource: .calendarTextBlack)
+        label.numberOfLines = 1
         return label
     }()
 
@@ -161,12 +165,13 @@ final class DiaryHeaderView: UIView {
             make.top.equalToSuperview().offset(24)
             make.leading.equalToSuperview().offset(31)
             make.trailing.equalTo(emojiView.snp.leading).offset(-8)
+            make.height.lessThanOrEqualTo(50)
         }
-        titleLabel.numberOfLines = 0
 
         dateLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.leading.equalTo(titleLabel)
+            make.height.lessThanOrEqualTo(25)
         }
 
         emojiView.snp.makeConstraints { make in
@@ -174,10 +179,9 @@ final class DiaryHeaderView: UIView {
             make.trailing.equalToSuperview().inset(39)
             make.size.equalTo(46)
         }
-        emojiView.contentMode = .scaleAspectFit
         
         self.snp.makeConstraints { make in
-            make.bottom.equalTo(dateLabel.snp.bottom).offset(8)
+            make.bottom.equalTo(dateLabel.snp.bottom)
         }
     }
 
