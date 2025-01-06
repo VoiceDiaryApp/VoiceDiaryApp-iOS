@@ -124,12 +124,13 @@ final class CalendarSummaryView: UIView {
         label.textAlignment = .right
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.17
+        paragraphStyle.lineHeightMultiple = 1.5
         label.attributedText = NSMutableAttributedString(
             string: "더보기",
             attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle]
         )
         label.isUserInteractionEnabled = true
+        label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
     
