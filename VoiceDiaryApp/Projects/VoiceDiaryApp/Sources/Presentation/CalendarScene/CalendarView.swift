@@ -26,7 +26,7 @@ final class CalendarView: UIView {
     private let calendar = Calendar.current
     private var currentDate: Date = Date()
     private var diaryEntries: [WriteDiaryEntry] = []
-    private var selectedDate: Date?
+    private var selectedDate: Date? = Date()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -55,6 +55,11 @@ final class CalendarView: UIView {
         setupDaysOfWeek()
         addSwipeGestures()
         bindDataToCollectionView()
+        
+        selectedDatePublisher.send(selectedDate)
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.reloadData()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -197,7 +202,7 @@ extension CalendarView: UICollectionViewDataSource, UICollectionViewDelegateFlow
             let day = indexPath.item - weekdayOffset + 1
             let cellDate = calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)!
             let isToday = calendar.isDateInToday(cellDate)
-            let isSelected = cellDate == selectedDate
+            let isSelected = calendar.isDate(cellDate, inSameDayAs: selectedDate ?? Date())
 
             cell.configure(day: day, date: cellDate, diaryManager: diaryManager, isToday: isToday)
             cell.setSelected(isSelected, isToday: isToday)

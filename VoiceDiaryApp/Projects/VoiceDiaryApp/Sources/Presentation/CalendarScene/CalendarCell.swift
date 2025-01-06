@@ -84,8 +84,6 @@ final class CalendarCell: UICollectionViewCell {
 
     func setSelected(_ isSelected: Bool, isToday: Bool) {
         selectedBackground.isHidden = !isSelected
-        dayLabel.textColor = isSelected
-            ? .white
-            : (isToday ? UIColor(resource: .calendarSelected) : UIColor(resource: .calendarTextBlack))
+        dayLabel.textColor = isSelected ? .white : (isToday ? UIColor(resource: .calendarSelected) : UIColor(resource: .calendarTextBlack))
     }
 }
