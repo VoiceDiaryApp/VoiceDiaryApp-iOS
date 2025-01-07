@@ -139,7 +139,6 @@ final class Diary2View: UIView {
             make.top.equalTo(moodEmojiView.snp.bottom).offset(57)
             make.centerX.equalToSuperview()
             make.size.equalTo(DeviceUtils.isIPad() ? 500 : SizeLiterals.Screen.screenWidth - 56)
-        
         }
 
         linkedView.snp.makeConstraints { make in

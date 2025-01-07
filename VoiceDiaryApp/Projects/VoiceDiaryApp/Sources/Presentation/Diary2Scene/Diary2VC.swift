@@ -86,7 +86,10 @@ private extension Diary2VC {
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 
-                let filePath = self.saveImageToDocuments(image: self.captureCanvasView() ?? UIImage(), fileName: "\(getCurrentTimestamp()).jpeg")
+                var filePath = ""
+                if !self.isCanvasEmpty() {
+                    filePath = self.saveImageToDocuments(image: self.captureCanvasView() ?? UIImage(), fileName: "\(getCurrentTimestamp()).jpeg")
+                }
                 self.tapDrawEnd.send((self.selectedEmotion ?? Emotion.happy, filePath))
                 
                 let loadingVC = LoadingVC(viewModel: self.diaryVM)
@@ -123,5 +126,9 @@ private extension Diary2VC {
         dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
         dateFormatter.timeZone = TimeZone.current
         return dateFormatter.string(from: Date())
+    }
+    
+    func isCanvasEmpty() -> Bool {
+        return diary2View.canvasView.drawing.bounds.isEmpty
     }
 }
