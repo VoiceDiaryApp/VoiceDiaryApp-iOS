@@ -79,7 +79,12 @@ final class DetailVC: UIViewController {
             emotion: diaryEntry.emotion
         )
 
-        detailView.configureDiaryImage(with: UIImage(named: diaryEntry.drawImage))
+        if diaryEntry.drawImage == "" {
+            detailView.emptyDiaryCharacter.isHidden = false
+        } else {
+            detailView.emptyDiaryCharacter.isHidden = true
+            detailView.configureDiaryImage(with: UIImage(named: diaryEntry.drawImage))
+        }
         detailView.configureReplyText(with: diaryEntry.content)
     }
 
