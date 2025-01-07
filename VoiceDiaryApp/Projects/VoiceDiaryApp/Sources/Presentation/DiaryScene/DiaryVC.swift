@@ -88,10 +88,14 @@ final class DiaryVC: UIViewController {
         return label
     }()
     
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
     private var microphoneLabel: UILabel = {
         let label = UILabel()
         label.text = ""
         label.textColor = .black
+        label.textAlignment = .center
         label.font = .fontGuide(type: .PretandardMedium, size: 15)
         label.numberOfLines = 0
         return label
@@ -173,12 +177,14 @@ private extension DiaryVC {
     
     func setHierarchy() {
         view.addSubviews(navigationBar,
-                         microphoneLabel,
+                         scrollView,
                          microphoneStartButton,
                          microphoneEndButton,
                          goToDrawButton,
                          microphoneStartLabel,
                          microphoneEndLabel)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(microphoneLabel)
     }
     
     func setLayout() {
@@ -187,10 +193,21 @@ private extension DiaryVC {
             $0.leading.trailing.equalToSuperview()
         }
         
-        microphoneLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(125)
-            $0.leading.trailing.equalToSuperview().inset(75)
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom).offset(70)
+            $0.leading.trailing.equalToSuperview().inset(60)
+            $0.bottom.equalTo(microphoneStartButton.snp.top).offset(-50)
             $0.centerX.equalToSuperview()
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        microphoneLabel.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.size.equalToSuperview()
         }
         
         goToDrawButton.snp.makeConstraints {
