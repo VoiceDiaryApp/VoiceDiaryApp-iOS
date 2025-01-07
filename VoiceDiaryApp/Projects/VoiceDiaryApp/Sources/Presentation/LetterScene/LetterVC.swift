@@ -165,8 +165,8 @@ private extension LetterVC {
         characterImageView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom).offset(3)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(209)
-            $0.height.equalTo(158)
+            $0.width.equalTo(DeviceUtils.isIPad() ? 355 : 209)
+            $0.height.equalTo(DeviceUtils.isIPad() ? 268 : 158)
         }
         
         letterView.snp.makeConstraints {
@@ -177,8 +177,8 @@ private extension LetterVC {
         }
         
         letterLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(36)
-            $0.leading.trailing.equalToSuperview().inset(30)
+            $0.top.equalToSuperview().inset(37)
+            $0.leading.trailing.equalToSuperview().inset(33)
         }
         
         appNameLabel.snp.makeConstraints {
