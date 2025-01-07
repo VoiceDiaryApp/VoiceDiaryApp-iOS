@@ -52,6 +52,7 @@ final class LetterVC: UIViewController {
         label.font = .fontGuide(type: .GangwonEduSaeeum, size: 22)
         label.numberOfLines = 0
         label.textAlignment = .left
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
     
@@ -142,7 +143,9 @@ private extension LetterVC {
             .sink(receiveValue: { [weak self] letter in
                 guard let self = self else { return }
                 print("Received letter: \(letter)")
-                self.letterLabel.text = letter
+                let adjustedLetter = self.getAdjustedText(for: letter)
+                print("Received adjustedletter: \(adjustedLetter)")
+                self.letterLabel.text = adjustedLetter
             })
             .store(in: &cancellables)
     }
@@ -285,13 +288,73 @@ private extension LetterVC {
     func printAllEntries() {
         do {
             let realm = try Realm()
-            let allEntries = realm.objects(RealmDiaryEntry.self) // RealmDiaryEntry는 데이터 모델
+            let allEntries = realm.objects(RealmDiaryEntry.self)
             print("😬😬😬😬😬")
             for entry in allEntries {
                 print(entry)
             }
         } catch {
             print("Error opening Realm: \(error)")
+        }
+    }
+}
+
+private extension LetterVC {
+    
+    func getAdjustedText(for text: String) -> String {
+        
+        var maxLabelWidth = 0.0
+        var maxLabelHeight = 0.0
+        if DeviceUtils.isIPad() {
+            maxLabelWidth = SizeLiterals.Screen.screenWidth - 300 - 66
+            maxLabelHeight = SizeLiterals.Screen.screenWidth - 300 - 74
+        } else {
+            maxLabelWidth = SizeLiterals.Screen.screenWidth - 71 - 66
+            maxLabelHeight = SizeLiterals.Screen.screenHeight - 321 - 74
+        }
+        
+        let font = UIFont.fontGuide(type: .GangwonEduSaeeum, size: 22)
+        let sentences = splitIntoSentences(from: text)
+        var adjustedText = ""
+        
+        for sentence in sentences {
+            let newText = adjustedText.isEmpty ? sentence : "\(adjustedText) \(sentence)"
+            let textBoundingRect = calculateTextBoundingRect(for: newText, maxWidth: maxLabelWidth, font: font)
+            
+            if textBoundingRect.height > maxLabelHeight {
+                break
+            }
+            adjustedText = newText
+        }
+        return adjustedText
+    }
+    
+    func calculateTextBoundingRect(for text: String,
+                                   maxWidth: CGFloat,
+                                   font: UIFont) -> CGRect {
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        let attributedText = NSAttributedString(string: text, attributes: attributes)
+        
+        return attributedText.boundingRect(
+            with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
+    }
+    
+    func splitIntoSentences(from text: String) -> [String] {
+        let pattern = "(.*?[\\.\\!\\?])"
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        
+        let matches = regex?.matches(
+            in: text,
+            options: [],
+            range: NSRange(location: 0, length: text.utf16.count)
+        ) ?? []
+        
+        return matches.map {
+            let range = Range($0.range, in: text)!
+            return String(text[range]).trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
 }
