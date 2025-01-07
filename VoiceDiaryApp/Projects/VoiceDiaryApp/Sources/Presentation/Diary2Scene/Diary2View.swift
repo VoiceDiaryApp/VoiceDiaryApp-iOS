@@ -157,7 +157,7 @@ final class Diary2View: UIView {
         saveButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(44)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-21)
-            make.height.equalTo(57)
+            make.height.equalTo(SizeLiterals.calSupporHeight(height: 57))
         }
     }
     

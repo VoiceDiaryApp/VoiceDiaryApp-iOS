@@ -146,7 +146,7 @@ private extension OnboardingVC {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(SizeLiterals.Screen.screenWidth - 86)
-            $0.height.equalTo(57)
+            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 57))
         }
     }
     
