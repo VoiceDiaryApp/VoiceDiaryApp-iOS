@@ -201,13 +201,15 @@ private extension DiaryVC {
         }
         
         contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalTo(scrollView)
+            $0.horizontalEdges.bottom.equalToSuperview()
+            $0.width.equalTo(scrollView.snp.width)
+            $0.height.equalTo(scrollView.snp.height).priority(.low)
         }
         
         microphoneLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.centerX.equalToSuperview()
-            $0.size.equalToSuperview()
+            $0.edges.equalToSuperview()
+            $0.width.equalTo(contentView.snp.width)
         }
         
         goToDrawButton.snp.makeConstraints {
