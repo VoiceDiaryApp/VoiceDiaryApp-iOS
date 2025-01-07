@@ -78,12 +78,28 @@ final class DetailVC: UIViewController {
             date: dateString,
             emotion: diaryEntry.emotion
         )
-
-        if diaryEntry.drawImage == "" {
+        
+        if diaryEntry.drawImage.isEmpty {
             detailView.emptyDiaryCharacter.isHidden = false
         } else {
             detailView.emptyDiaryCharacter.isHidden = true
-            detailView.configureDiaryImage(with: UIImage(named: diaryEntry.drawImage))
+
+            let fileManager = FileManager.default
+            let imagePath = diaryEntry.drawImage
+            let fileName = (imagePath as NSString).lastPathComponent
+            
+            if let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+                let imagePath = documentsDirectory.appendingPathComponent(fileName).path
+                if fileManager.fileExists(atPath: imagePath) {
+                    if let image = UIImage(contentsOfFile: imagePath) {
+                        detailView.configureDiaryImage(with: image)
+                    } else {
+                        print("이미지 로드 실패")
+                    }
+                } else {
+                    print("파일이 존재하지 않습니다.")
+                }
+            }
         }
         detailView.configureReplyText(with: diaryEntry.content)
     }
