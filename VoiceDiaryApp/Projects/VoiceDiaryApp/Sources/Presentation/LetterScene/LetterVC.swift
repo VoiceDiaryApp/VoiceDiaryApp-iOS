@@ -172,8 +172,12 @@ private extension LetterVC {
         letterView.snp.makeConstraints {
             $0.top.equalTo(characterImageView.snp.bottom)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(SizeLiterals.Screen.screenWidth - 71)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
+            if DeviceUtils.isIPad() {
+                $0.size.equalTo(SizeLiterals.Screen.screenWidth - 300)
+            } else {
+                $0.width.equalTo(SizeLiterals.Screen.screenWidth - 71)
+                $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
+            }
         }
         
         letterLabel.snp.makeConstraints {
