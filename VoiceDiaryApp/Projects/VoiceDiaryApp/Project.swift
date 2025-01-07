@@ -34,6 +34,9 @@ let project = Project(
                     "UISupportedInterfaceOrientations": [
                         "UIInterfaceOrientationPortrait"
                     ],
+                    "UISupportedInterfaceOrientations~ipad": [
+                        "UIInterfaceOrientationPortrait"
+                    ],
                     "GenerativeAIConfig": [
                         "ModelVersion": "1.5",
                         "EnableDebugMode": true,
