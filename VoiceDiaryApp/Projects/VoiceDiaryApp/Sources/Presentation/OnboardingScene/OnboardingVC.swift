@@ -92,6 +92,19 @@ private extension OnboardingVC {
             self.navigationController?.popViewController(animated: true)
         }
         
+        let timeComponents = UserManager.shared.getNotificationTime.split(separator: ":")
+        if let hourString = timeComponents.first,
+           let minuteString = timeComponents.last {
+            let hour = Int(hourString) ?? 0
+            let minute = Int(minuteString) ?? 0
+            
+            var date = Date()
+            let calendar = Calendar.current
+            date = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: date) ?? date
+            
+            timePicker.date = date
+        }
+        
         startButton.tapPublisher
             .sink(receiveValue: { [weak self] in
                 self?.saveSelectedTime()
@@ -133,7 +146,7 @@ private extension OnboardingVC {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(SizeLiterals.Screen.screenWidth - 86)
-            $0.height.equalTo(57)
+            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 57))
         }
     }
     
