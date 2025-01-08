@@ -167,9 +167,9 @@ private extension DiaryVM {
             date: selectedDate.dateToString(),
             emotion: self.recordingEmotion,
             content: self.recordingContent,
-            shortContent: self.recordingSummary,
-            title: self.recordingTitle,
-            answer: self.geminiLetterContent,
+            shortContent: self.recordingSummary.replacingOccurrences(of: "\n", with: ""),
+            title: self.recordingTitle.replacingOccurrences(of: "\n", with: ""),
+            answer: self.geminiLetterContent.replacingOccurrences(of: "\n", with: ""),
             drawImage: self.recordingDrawPath))
     }
     
