@@ -61,13 +61,12 @@ final class Diary2View: UIView {
         stackView.distribution = .fillEqually
         stackView.backgroundColor = .white
         stackView.layer.cornerRadius = 8
-        stackView.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
+        stackView.layer.shadowColor = UIColor(hex: "#E0DED4").cgColor
         stackView.layer.shadowOpacity = 1
         stackView.layer.shadowOffset = CGSize(width: 0, height: -3)
-        stackView.layer.shadowRadius = 4
+        stackView.layer.shadowRadius = 14
         stackView.layer.masksToBounds = false
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 26)
         
         return stackView
     }()
