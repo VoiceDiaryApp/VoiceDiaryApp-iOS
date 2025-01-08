@@ -130,14 +130,13 @@ final class Diary2View: UIView {
         
         moodEmojiView.snp.makeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom).offset(19)
-            make.leading.trailing.equalToSuperview().inset(28)
-            make.height.equalTo(46)
+            make.leading.trailing.equalTo(canvasView)
         }
         
         canvasView.snp.makeConstraints { make in
             make.top.equalTo(moodEmojiView.snp.bottom).offset(57)
             make.centerX.equalToSuperview()
-            make.size.equalTo(DeviceUtils.isIPad() ? 500 : SizeLiterals.Screen.screenWidth - 56)
+            make.size.equalTo(DeviceUtils.isIPad() ? SizeLiterals.Screen.screenWidth - 344 : SizeLiterals.Screen.screenWidth - 56)
         }
 
         linkedView.snp.makeConstraints { make in
@@ -148,8 +147,8 @@ final class Diary2View: UIView {
         
         toolView.snp.makeConstraints { make in
             make.top.equalTo(canvasView.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(28)
-            make.height.equalTo(72)
+            make.leading.trailing.equalTo(canvasView)
+            make.height.equalTo(SizeLiterals.calSupporHeight(height: 72))
         }
         
         saveButton.snp.makeConstraints { make in
@@ -170,14 +169,27 @@ final class Diary2View: UIView {
     // MARK: - Emotion Buttons Setup
     
     private func setupEmotionButtons() {
+        let isPad = DeviceUtils.isIPad()
+
         emotions.forEach { emotion in
             let button = UIButton()
             button.setImage(UIImage(named: emotion.rawValue), for: .normal)
             button.contentMode = .scaleAspectFit
+            
+            button.imageView?.contentMode = .scaleAspectFit
+            button.contentMode = .center
+
             button.tag = emotions.firstIndex(of: emotion) ?? 0
             button.addTarget(self, action: #selector(emotionButtonTapped(_:)), for: .touchUpInside)
+
             moodEmojiView.addArrangedSubview(button)
             emotionButtons.append(button)
+            
+            if isPad {
+                button.imageView?.snp.makeConstraints { make in
+                    make.width.height.equalTo(78)
+                }
+            }
         }
     }
     
@@ -197,43 +209,50 @@ final class Diary2View: UIView {
         toolView.addSubview(toolContainer)
         toolView.addSubview(toolColorPicker)
         
+        let isPad = DeviceUtils.isIPad()
+        
         tools.forEach { (button, imageName) in
             let image = UIImage(named: imageName)
             button.setImage(image, for: .normal)
             button.addTarget(self, action: #selector(toolButtonTapped(_:)), for: .touchUpInside)
             toolContainer.addArrangedSubview(button)
+            
+            if isPad {
+                let currentTransform = button.transform
+                button.transform = currentTransform.scaledBy(x: 1.5, y: 1.5)
+            }
         }
         
         toolContainer.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(toolColorPicker.snp.leading).offset(-30)
-            make.bottom.equalToSuperview().inset(5)
+            make.leading.equalToSuperview().offset(DeviceUtils.isIPad() ? 48 : 16)
+            make.trailing.equalTo(toolColorPicker.snp.leading).offset(DeviceUtils.isIPad() ? -92 : -30)
+            make.bottom.equalToSuperview().inset(DeviceUtils.isIPad() ? 20 : 5)
         }
         
-        toolColorPicker.layer.cornerRadius = 22
-        toolColorPicker.layer.borderWidth = 8.5
+        toolColorPicker.layer.cornerRadius = DeviceUtils.isIPad() ?  37.5 : 22
+        toolColorPicker.layer.borderWidth = DeviceUtils.isIPad() ? 14 : 8.5
         toolColorPicker.layer.borderColor = currentColor.cgColor
         toolColorPicker.layer.masksToBounds = true
         toolColorPicker.isUserInteractionEnabled = true
         
         let innerCircle = UIView()
         innerCircle.backgroundColor = .white
-        innerCircle.layer.cornerRadius = 13.5
+        innerCircle.layer.cornerRadius = DeviceUtils.isIPad() ? 23 : 13.5
         innerCircle.layer.masksToBounds = true
         innerCircle.isUserInteractionEnabled = false
         toolColorPicker.addSubview(innerCircle)
         
         innerCircle.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(27)
+            make.size.equalTo(DeviceUtils.isIPad() ? 46 : 27)
         }
         
         toolColorPicker.addTarget(self, action: #selector(colorPickerTapped), for: .touchUpInside)
         
         toolColorPicker.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-26)
+            make.trailing.equalToSuperview().offset(DeviceUtils.isIPad() ? -29 : -26)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(44)
+            make.size.equalTo(DeviceUtils.isIPad() ? 75 : 44)
         }
     }
     
@@ -285,11 +304,15 @@ final class Diary2View: UIView {
         resetToolButtonSizes()
         
         let originalCenter = sender.center
-        sender.layer.anchorPoint = CGPoint(x: 0.5, y: 0.68)
+        sender.layer.anchorPoint = CGPoint(x: 0.5, y: 1.0)
         sender.center = originalCenter
         
         UIView.animate(withDuration: 0.2) {
-            sender.transform = CGAffineTransform(scaleX: 1.6, y: 1.6)
+            if DeviceUtils.isIPad() {
+                sender.transform = CGAffineTransform(scaleX: 1.5 * 1.6, y: 1.5 * 1.6)
+            } else {
+                sender.transform = CGAffineTransform(scaleX: 1.6, y: 1.6)
+            }
         }
         
         if sender == toolEraser {
@@ -311,12 +334,19 @@ final class Diary2View: UIView {
 
     private func resetToolButtonSizes() {
         let allToolButtons = [toolEraser, toolPencil, toolFinePen, toolBoldPen, toolCalligraphyPen]
+        let isPad = DeviceUtils.isIPad()
+        
         UIView.animate(withDuration: 0.2) {
             allToolButtons.forEach { button in
                 let originalCenter = button.center
                 button.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 button.center = originalCenter
-                button.transform = CGAffineTransform.identity
+                
+                if isPad {
+                    button.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+                } else {
+                    button.transform = CGAffineTransform.identity
+                }
             }
         }
     }
