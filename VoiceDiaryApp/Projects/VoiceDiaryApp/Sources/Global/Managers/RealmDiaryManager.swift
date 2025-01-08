@@ -54,6 +54,9 @@ final class RealmDiaryManager {
             let realm = try Realm()
             try realm.write {
                 let allDiaryEntries = realm.objects(RealmDiaryEntry.self)
+                for entry in allDiaryEntries {
+                    delAllImage(at: entry.drawImage)
+                }
                 realm.delete(allDiaryEntries)
             }
             print("모든 데이터가 성공적으로 삭제되었습니다.")
@@ -62,6 +65,23 @@ final class RealmDiaryManager {
         }
     }
     
+    func delAllImage(at imagePath: String) {
+        let fileManager = FileManager.default
+        let fileName = (imagePath as NSString).lastPathComponent
+        
+        if let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let fullImagePath = documentsDirectory.appendingPathComponent(fileName).path
+            
+            if fileManager.fileExists(atPath: fullImagePath) {
+                do {
+                    try fileManager.removeItem(atPath: fullImagePath)
+                    print("이미지 파일 삭제 성공: \(fullImagePath)")
+                } catch {
+                    print("이미지 파일 삭제 실패: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
     
     func hasTodayDiary() -> Bool {
         let todayString = dateFormatter.string(from: Date())
