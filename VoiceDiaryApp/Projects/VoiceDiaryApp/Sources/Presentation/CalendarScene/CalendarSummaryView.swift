@@ -31,15 +31,15 @@ final class CalendarSummaryView: UIView {
     let yearLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
-        label.font = .fontGuide(type: .PretandardSemiBold, size: 15)
+        label.font = UIFont(name: FontType.PretandardSemiBold.rawValue, size: 15)
         label.textAlignment = .center
         return label
     }()
-    
+
     let monthLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarTextBlack)
-        label.font = .fontGuide(type: .PretandardBold, size: 20)
+        label.font = UIFont(name: FontType.PretandardBold.rawValue, size: 20)
         return label
     }()
     
@@ -78,7 +78,7 @@ final class CalendarSummaryView: UIView {
         let label = UILabel()
         label.text = "Diary Title"
         label.textColor = .black
-        label.font = .fontGuide(type: .PretandardSemiBold, size: 15)
+        label.font = UIFont(name: FontType.PretandardSemiBold.rawValue, size: 15)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.12
         label.attributedText = NSMutableAttributedString(
@@ -94,7 +94,7 @@ final class CalendarSummaryView: UIView {
         let label = UILabel()
         label.text = ""
         label.textColor = UIColor(resource: .calendarTextBlack)
-        label.font = .fontGuide(type: .PretandardSemiBold, size: 12)
+        label.font = UIFont(name: FontType.PretandardSemiBold.rawValue, size: 12)
         let paragraphStyle = NSMutableParagraphStyle()
         label.attributedText = NSMutableAttributedString(
             string: "11월 19일",
@@ -109,7 +109,7 @@ final class CalendarSummaryView: UIView {
         let label = UILabel()
         label.text = "Diary Content"
         label.textColor = .black
-        label.font = .fontGuide(type: .PretandardRegular, size: 13)
+        label.font = UIFont(name: FontType.PretandardRegular.rawValue, size: 14)
         label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .justified
@@ -120,7 +120,7 @@ final class CalendarSummaryView: UIView {
         let label = UILabel()
         label.text = "더보기"
         label.textColor = UIColor(resource: .calendarSelected)
-        label.font = UIFont(name: "Pretendard-Regular", size: 11)
+        label.font = UIFont(name: FontType.PretandardRegular.rawValue, size: 11)
         label.textAlignment = .right
         
         let paragraphStyle = NSMutableParagraphStyle()
@@ -144,7 +144,7 @@ final class CalendarSummaryView: UIView {
     private let emptyDiaryLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(resource: .calendarSelected)
-        label.font = UIFont(name: "Pretendard-SemiBold", size: 17)
+        label.font = UIFont(name: FontType.PretandardSemiBold.rawValue, size: 17)
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 0.99

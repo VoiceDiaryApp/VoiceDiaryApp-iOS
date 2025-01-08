@@ -47,7 +47,7 @@ final class CalendarCell: UICollectionViewCell {
             make.width.height.equalTo(41)
         }
 
-        dayLabel.font = .fontGuide(type: .PretandardRegular, size: 13)
+        dayLabel.font = UIFont(name: FontType.PretandardRegular.rawValue, size: 13)
         dayLabel.textColor = UIColor(resource: .calendarTextBlack)
         dayLabel.textAlignment = .center
         dayLabel.snp.makeConstraints { make in
@@ -70,10 +70,10 @@ final class CalendarCell: UICollectionViewCell {
             }
 
             if isToday {
-                dayLabel.font = .fontGuide(type: .RobotoBold, size: 13)
+                dayLabel.font = UIFont(name: FontType.RobotoBold.rawValue, size: 13)
                 dayLabel.textColor = UIColor(resource: .calendarSelected)
             } else {
-                dayLabel.font = .fontGuide(type: .RobotoRegular, size: 13)
+                dayLabel.font = UIFont(name: FontType.RobotoRegular.rawValue, size: 13)
                 dayLabel.textColor = UIColor(resource: .calendarTextBlack)
             }
         } else {

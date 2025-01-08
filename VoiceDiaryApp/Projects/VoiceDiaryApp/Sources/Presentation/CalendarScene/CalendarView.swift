@@ -87,7 +87,7 @@ final class CalendarView: UIView {
             let label = UILabel()
             label.text = day
             label.textColor = UIColor(resource: .calendarTextBlack)
-            label.font = .fontGuide(type: .RobotoRegular, size: 13)
+            label.font = UIFont(name: FontType.RobotoRegular.rawValue, size: 13)
             label.textAlignment = .center
             daysStackView.addArrangedSubview(label)
         }
