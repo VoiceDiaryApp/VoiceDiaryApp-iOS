@@ -282,18 +282,42 @@ final class Diary2View: UIView {
     }
     
     @objc private func toolButtonTapped(_ sender: UIButton) {
+        resetToolButtonSizes()
+        
+        let originalCenter = sender.center
+        sender.layer.anchorPoint = CGPoint(x: 0.5, y: 0.68)
+        sender.center = originalCenter
+        
+        UIView.animate(withDuration: 0.2) {
+            sender.transform = CGAffineTransform(scaleX: 1.6, y: 1.6)
+        }
+        
         if sender == toolEraser {
             canvasView.tool = PKEraserTool(.vector)
         } else if sender == toolPencil {
-            canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
+            canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 2)
         } else if sender == toolFinePen {
             canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 2)
         } else if sender == toolBoldPen {
-            canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 8)
+            canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 5)
         } else if sender == toolCalligraphyPen {
-            canvasView.tool = PKInkingTool(.marker, color: currentColor, width: 5)
+            canvasView.tool = PKInkingTool(.marker, color: currentColor, width: 2)
         } else if sender == toolColorPicker {
             presentColorPicker()
+        }
+        
+        toolView.layoutIfNeeded()
+    }
+
+    private func resetToolButtonSizes() {
+        let allToolButtons = [toolEraser, toolPencil, toolFinePen, toolBoldPen, toolCalligraphyPen]
+        UIView.animate(withDuration: 0.2) {
+            allToolButtons.forEach { button in
+                let originalCenter = button.center
+                button.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+                button.center = originalCenter
+                button.transform = CGAffineTransform.identity
+            }
         }
     }
     
