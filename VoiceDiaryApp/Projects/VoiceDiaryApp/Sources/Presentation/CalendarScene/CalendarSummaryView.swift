@@ -555,9 +555,11 @@ final class CalendarSummaryView: UIView {
                 self.selectedDate = selectedDate
                 let hasDiary = self.checkIfDiaryExists(for: selectedDate)
                 self.updateDiaryContentView(for: selectedDate, hasDiary: hasDiary)
+
+                self.viewModel.fetchDiary(for: selectedDate)
             }
             .store(in: &cancellables)
-        
+
         calendarView.currentDatePublisher
             .sink { [weak self] currentDate in
                 guard let self = self else { return }
