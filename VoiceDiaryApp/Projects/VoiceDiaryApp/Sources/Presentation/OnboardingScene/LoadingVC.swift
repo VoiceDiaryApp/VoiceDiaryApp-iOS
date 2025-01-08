@@ -21,8 +21,8 @@ final class LoadingVC: UIViewController {
     
     private let loadingLabel: UILabel = {
         let label = UILabel()
-        label.text = "요정이가 답장을 쓰고 있어요\n잠시 기다려주세요"
-        label.textColor = .black
+        label.text = "똑깨비가 답장을 쓰고 있어요\n잠시 기다려주세요"
+        label.textColor = UIColor(resource: .calendarSelected)
         label.font = .fontGuide(type: .PretandardSemiBold, size: 18)
         label.numberOfLines = 0
         label.asLineHeight(25)
@@ -58,6 +58,7 @@ private extension LoadingVC {
     func setUI() {
         self.navigationController?.navigationBar.isHidden = true
         view.backgroundColor = UIColor(resource: .mainBeige)
+        loadingImageView.contentMode = .scaleAspectFit
     }
     
     func setHierarchy() {
@@ -69,8 +70,8 @@ private extension LoadingVC {
         loadingImageView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(SizeLiterals.calSupporHeight(height: 250))
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(SizeLiterals.calSupporWidth(width: 219))
-            $0.height.equalTo(SizeLiterals.calSupporHeight(height: 128))
+            $0.width.equalTo(DeviceUtils.isIPad() ? 562 : 219)
+            $0.height.equalTo(DeviceUtils.isIPad() ? 328 : 128)
         }
         
         loadingLabel.snp.makeConstraints {

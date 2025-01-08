@@ -51,6 +51,14 @@ final class DetailView: UIView {
         textView.backgroundColor = .clear
         return textView
     }()
+    
+    let emptyDiaryCharacter: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(resource: .emptyDiaryCharacter)
+        imageView.contentMode = .scaleAspectFit
+        imageView.isHidden = true
+        return imageView
+    }()
 
     // MARK: - Initializers
 
@@ -69,7 +77,7 @@ final class DetailView: UIView {
         backgroundColor = UIColor(resource: .mainBeige)
         addSubviews(navigationBar, diaryHeaderView, diaryImageView, diaryContentView)
         diaryContentView.addSubview(diaryTextView)
-
+        diaryImageView.addSubview(emptyDiaryCharacter)
         setupLayout()
     }
 
@@ -99,6 +107,12 @@ final class DetailView: UIView {
 
         diaryTextView.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview().inset(27)
+        }
+        
+        emptyDiaryCharacter.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalTo(66)
+            make.height.equalTo(63)
         }
     }
 
