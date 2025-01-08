@@ -189,13 +189,13 @@ final class Diary2View: UIView {
         let tools = [(toolEraser, "tool_Eraser"),
                      (toolPencil, "tool_Pencil"),
                      (toolFinePen, "tool_FinePen"),
-                     (toolBoldPen, "tool_BoldPen"),
-                     (toolCalligraphyPen, "tool_CalligraphyPen")]
+                     (toolCalligraphyPen, "tool_CalligraphyPen"),
+                     (toolBoldPen, "tool_BoldPen")]
         
         let toolContainer = UIStackView()
         toolContainer.axis = .horizontal
         toolContainer.distribution = .equalSpacing
-        toolContainer.alignment = .center
+        toolContainer.alignment = .bottom
         toolView.addSubview(toolContainer)
         toolView.addSubview(toolColorPicker)
         
@@ -208,8 +208,8 @@ final class Diary2View: UIView {
         
         toolContainer.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(toolColorPicker.snp.leading).offset(-43)
-            make.top.bottom.equalToSuperview()
+            make.trailing.equalTo(toolColorPicker.snp.leading).offset(-30)
+            make.bottom.equalToSuperview().inset(5)
         }
         
         toolColorPicker.layer.cornerRadius = 22
