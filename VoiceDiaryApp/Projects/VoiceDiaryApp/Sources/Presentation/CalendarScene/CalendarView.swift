@@ -87,7 +87,7 @@ final class CalendarView: UIView {
             let label = UILabel()
             label.text = day
             label.textColor = UIColor(resource: .calendarTextBlack)
-            label.font = .fontGuide(type: .RobotoRegular, size: 13)
+            label.font = UIFont(name: FontType.RobotoRegular.rawValue, size: 13)
             label.textAlignment = .center
             daysStackView.addArrangedSubview(label)
         }
@@ -113,13 +113,14 @@ final class CalendarView: UIView {
     
     func moveToMonth(byAddingMonths months: Int, direction: CATransitionSubtype) {
         guard let newDate = calendar.date(byAdding: .month, value: months, to: currentDate) else { return }
-        
+
         currentDate = newDate
         currentDatePublisher.send(currentDate)
 
         animateCalendarTransition(direction: direction)
 
         let isCurrentMonth = calendar.isDate(newDate, equalTo: Date(), toGranularity: .month)
+
         selectedDate = isCurrentMonth ? Date() : calendar.date(from: Calendar.current.dateComponents([.year, .month], from: newDate))
         selectedDatePublisher.send(selectedDate)
 

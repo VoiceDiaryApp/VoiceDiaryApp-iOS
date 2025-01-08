@@ -61,13 +61,12 @@ final class Diary2View: UIView {
         stackView.distribution = .fillEqually
         stackView.backgroundColor = .white
         stackView.layer.cornerRadius = 8
-        stackView.layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
+        stackView.layer.shadowColor = UIColor(hex: "#E0DED4").cgColor
         stackView.layer.shadowOpacity = 1
         stackView.layer.shadowOffset = CGSize(width: 0, height: -3)
-        stackView.layer.shadowRadius = 4
+        stackView.layer.shadowRadius = 14
         stackView.layer.masksToBounds = false
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 26)
         
         return stackView
     }()
@@ -188,13 +187,13 @@ final class Diary2View: UIView {
         let tools = [(toolEraser, "tool_Eraser"),
                      (toolPencil, "tool_Pencil"),
                      (toolFinePen, "tool_FinePen"),
-                     (toolBoldPen, "tool_BoldPen"),
-                     (toolCalligraphyPen, "tool_CalligraphyPen")]
+                     (toolCalligraphyPen, "tool_CalligraphyPen"),
+                     (toolBoldPen, "tool_BoldPen")]
         
         let toolContainer = UIStackView()
         toolContainer.axis = .horizontal
         toolContainer.distribution = .equalSpacing
-        toolContainer.alignment = .center
+        toolContainer.alignment = .bottom
         toolView.addSubview(toolContainer)
         toolView.addSubview(toolColorPicker)
         
@@ -207,8 +206,8 @@ final class Diary2View: UIView {
         
         toolContainer.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(toolColorPicker.snp.leading).offset(-43)
-            make.top.bottom.equalToSuperview()
+            make.trailing.equalTo(toolColorPicker.snp.leading).offset(-30)
+            make.bottom.equalToSuperview().inset(5)
         }
         
         toolColorPicker.layer.cornerRadius = 22
@@ -283,18 +282,42 @@ final class Diary2View: UIView {
     }
     
     @objc private func toolButtonTapped(_ sender: UIButton) {
+        resetToolButtonSizes()
+        
+        let originalCenter = sender.center
+        sender.layer.anchorPoint = CGPoint(x: 0.5, y: 0.68)
+        sender.center = originalCenter
+        
+        UIView.animate(withDuration: 0.2) {
+            sender.transform = CGAffineTransform(scaleX: 1.6, y: 1.6)
+        }
+        
         if sender == toolEraser {
             canvasView.tool = PKEraserTool(.vector)
         } else if sender == toolPencil {
-            canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 5)
+            canvasView.tool = PKInkingTool(.pencil, color: currentColor, width: 2)
         } else if sender == toolFinePen {
             canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 2)
         } else if sender == toolBoldPen {
-            canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 8)
+            canvasView.tool = PKInkingTool(.pen, color: currentColor, width: 5)
         } else if sender == toolCalligraphyPen {
-            canvasView.tool = PKInkingTool(.marker, color: currentColor, width: 5)
+            canvasView.tool = PKInkingTool(.marker, color: currentColor, width: 2)
         } else if sender == toolColorPicker {
             presentColorPicker()
+        }
+        
+        toolView.layoutIfNeeded()
+    }
+
+    private func resetToolButtonSizes() {
+        let allToolButtons = [toolEraser, toolPencil, toolFinePen, toolBoldPen, toolCalligraphyPen]
+        UIView.animate(withDuration: 0.2) {
+            allToolButtons.forEach { button in
+                let originalCenter = button.center
+                button.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+                button.center = originalCenter
+                button.transform = CGAffineTransform.identity
+            }
         }
     }
     
