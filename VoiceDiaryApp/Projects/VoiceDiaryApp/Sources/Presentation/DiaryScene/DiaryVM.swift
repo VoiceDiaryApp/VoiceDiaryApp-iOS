@@ -167,10 +167,11 @@ private extension DiaryVM {
             date: selectedDate.dateToString(),
             emotion: self.recordingEmotion,
             content: self.recordingContent,
-            shortContent: self.recordingSummary.replacingOccurrences(of: "\n", with: ""),
-            title: self.recordingTitle.replacingOccurrences(of: "\n", with: ""),
-            answer: self.geminiLetterContent.replacingOccurrences(of: "\n", with: ""),
-            drawImage: self.recordingDrawPath))
+            shortContent: self.recordingSummary.components(separatedBy: .newlines).joined(),
+            title: self.recordingTitle.components(separatedBy: .newlines).joined(),
+            answer: self.geminiLetterContent.components(separatedBy: .newlines).joined(),
+            drawImage: self.recordingDrawPath
+        ))
     }
     
     func fetchAllDiaryEntries() -> [RealmDiaryEntry] {
