@@ -339,6 +339,12 @@ final class CalendarSummaryView: UIView {
         diaryTitleLabel.lineBreakMode = .byTruncatingTail
         diaryTitleLabel.numberOfLines = 1
         
+        diaryTitleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        diaryTitleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        moreLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        moreLabel.setContentHuggingPriority(.required, for: .horizontal)
+        
         diaryTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryContentView.snp.top).offset(22)
             make.leading.equalToSuperview().inset(37)
