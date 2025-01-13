@@ -385,21 +385,28 @@ final class CalendarSummaryView: UIView {
 
     private var bottomSheetState: BottomSheetState = .collapsed
 
-    
-    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: self)
-        let velocity = gesture.velocity(in: self)
+    private var initialPanOffset: CGFloat = 0
 
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self).y
+        let velocity = gesture.velocity(in: self).y
+        
         switch gesture.state {
+        case .began:
+            initialPanOffset = diaryContentView.frame.origin.y
+            
         case .changed:
+            let newOffset = max(0, initialPanOffset + translation)
+            let clampedOffset = min(newOffset, 97)
             diaryContentView.snp.updateConstraints { make in
-                let offset = max(-97, min(97, 97 - translation.y))
-                make.bottom.equalToSuperview().offset(offset)
+                make.bottom.equalToSuperview().offset(clampedOffset)
             }
-            layoutIfNeeded()
+            self.layoutIfNeeded()
+            
         case .ended:
-            let shouldExpand = velocity.y < 0 || translation.y < -50
-            toggleBottomSheet(to: shouldExpand ? .expanded : .collapsed)
+            let isExpanding = velocity < 0 || (velocity == 0 && translation < -48)
+            toggleBottomSheet(to: isExpanding ? .expanded : .collapsed)
+            
         default:
             break
         }
@@ -409,12 +416,17 @@ final class CalendarSummaryView: UIView {
         bottomSheetState = state
         let targetOffset: CGFloat = (state == .expanded) ? 0 : 97
 
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut], animations: {
-            self.diaryContentView.snp.updateConstraints { make in
-                make.bottom.equalToSuperview().offset(targetOffset)
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0,
+            options: [.curveEaseInOut],
+            animations: {
+                self.diaryContentView.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview().offset(targetOffset)
+                }
+                self.layoutIfNeeded()
             }
-            self.layoutIfNeeded()
-        })
+        )
     }
 
     override func didMoveToSuperview() {
