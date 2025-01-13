@@ -74,6 +74,14 @@ final class CalendarSummaryView: UIView {
         return view
     }()
     
+    private let grabberView: UIView = {
+        let grabber = UIView()
+        grabber.backgroundColor = UIColor(hex: "#D7D7D7")
+        grabber.layer.cornerRadius = 2.5 / 2
+        grabber.layer.masksToBounds = true
+        return grabber
+    }()
+    
     private let diaryTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Diary Title"
@@ -329,15 +337,20 @@ final class CalendarSummaryView: UIView {
     
     private func setupDiaryContentView() {
         addSubview(diaryContentView)
-        diaryContentView.addSubviews(diaryTitleLabel, diaryDateLabel, diaryContentLabel, moreLabel)
+        diaryContentView.addSubviews(grabberView, diaryTitleLabel, diaryDateLabel, diaryContentLabel, moreLabel)
         
         diaryContentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(174)
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().offset(97)
         }
-        diaryTitleLabel.lineBreakMode = .byTruncatingTail
-        diaryTitleLabel.numberOfLines = 1
+
+        grabberView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(diaryContentView.snp.top).offset(10)
+            make.width.equalTo(32)
+            make.height.equalTo(2.5)
+        }
         
         diaryTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryContentView.snp.top).offset(22)
@@ -349,18 +362,76 @@ final class CalendarSummaryView: UIView {
             make.top.equalTo(diaryTitleLabel.snp.bottom).offset(8)
             make.leading.equalTo(diaryTitleLabel.snp.leading)
         }
-        
+
         diaryContentLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryDateLabel.snp.bottom).offset(13)
             make.leading.equalTo(diaryContentView.snp.leading).offset(36)
             make.trailing.equalTo(diaryContentView.snp.trailing).offset(-36)
         }
-        
+
         moreLabel.snp.makeConstraints { make in
             make.top.equalTo(diaryContentView.snp.top).offset(22)
             make.trailing.equalToSuperview().offset(-32)
-            make.width.greaterThanOrEqualTo(30)
         }
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        diaryContentView.addGestureRecognizer(panGesture)
+    }
+
+    private enum BottomSheetState {
+        case expanded
+        case collapsed
+    }
+
+    private var bottomSheetState: BottomSheetState = .collapsed
+
+    private var initialPanOffset: CGFloat = 0
+
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self).y
+        let velocity = gesture.velocity(in: self).y
+        
+        switch gesture.state {
+        case .began:
+            initialPanOffset = diaryContentView.frame.origin.y
+            
+        case .changed:
+            let newOffset = max(0, initialPanOffset + translation)
+            let clampedOffset = min(newOffset, 97)
+            diaryContentView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().offset(clampedOffset)
+            }
+            self.layoutIfNeeded()
+            
+        case .ended:
+            let isExpanding = velocity < 0 || (velocity == 0 && translation < -48)
+            toggleBottomSheet(to: isExpanding ? .expanded : .collapsed)
+            
+        default:
+            break
+        }
+    }
+
+    private func toggleBottomSheet(to state: BottomSheetState) {
+        bottomSheetState = state
+        let targetOffset: CGFloat = (state == .expanded) ? 0 : 97
+
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0,
+            options: [.curveEaseInOut],
+            animations: {
+                self.diaryContentView.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview().offset(targetOffset)
+                }
+                self.layoutIfNeeded()
+            }
+        )
+    }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        toggleBottomSheet(to: .collapsed)
     }
     
     private func updateDiaryDateLabel(for date: Date) {

@@ -320,7 +320,7 @@ private extension LetterVC {
             maxLabelHeight = SizeLiterals.Screen.screenWidth - 300 - 74
         } else {
             maxLabelWidth = SizeLiterals.Screen.screenWidth - 71 - 66
-            maxLabelHeight = SizeLiterals.Screen.screenHeight - 321 - 74
+            maxLabelHeight = SizeLiterals.Screen.screenHeight - 321 - 90
         }
         
         let font = UIFont.fontGuide(type: .GangwonEduSaeeum, size: 22)
