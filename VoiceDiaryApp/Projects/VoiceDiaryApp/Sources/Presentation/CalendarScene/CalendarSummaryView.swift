@@ -95,6 +95,7 @@ final class CalendarSummaryView: UIView {
                 .kern: -0.5,
                 .paragraphStyle: paragraphStyle,
             ])
+        label.lineBreakMode = .byTruncatingTail
         return label
     }()
     
@@ -130,7 +131,6 @@ final class CalendarSummaryView: UIView {
         label.textColor = UIColor(resource: .calendarSelected)
         label.font = UIFont(name: FontType.PretandardRegular.rawValue, size: 11)
         label.textAlignment = .right
-        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.5
         label.attributedText = NSMutableAttributedString(
