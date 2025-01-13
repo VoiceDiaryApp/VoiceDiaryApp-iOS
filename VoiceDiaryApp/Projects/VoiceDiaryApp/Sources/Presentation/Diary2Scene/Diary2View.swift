@@ -254,6 +254,10 @@ final class Diary2View: UIView {
             make.centerY.equalToSuperview()
             make.size.equalTo(DeviceUtils.isIPad() ? 75 : 44)
         }
+        
+        DispatchQueue.main.async {
+            self.toolButtonTapped(self.toolPencil)
+        }
     }
     
     @objc private func colorPickerTapped() {
