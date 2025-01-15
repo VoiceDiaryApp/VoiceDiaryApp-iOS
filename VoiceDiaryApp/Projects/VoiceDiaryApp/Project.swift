@@ -58,7 +58,8 @@ let project = Project(
             ],
             settings: .settings(
                 base: [
-                    "API_KEY": "$(API_KEY)"
+                    "API_KEY": "$(API_KEY)",
+                    "MARKETING_VERSION": "1.0.0"
                 ],
                 configurations: [
                     .debug(name: "Debug", xcconfig: "Configs/GenerativeAI.xcconfig"),
