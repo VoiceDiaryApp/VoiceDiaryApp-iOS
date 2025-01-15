@@ -2,6 +2,10 @@ import ProjectDescription
 
 let project = Project(
     name: "VoiceDiaryApp",
+    options: .options(
+        defaultKnownRegions: ["ko"],
+        developmentRegion: "ko"
+    ),
     targets: [
         .target(
             name: "VoiceDiaryApp",
