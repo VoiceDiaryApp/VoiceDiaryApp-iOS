@@ -476,8 +476,6 @@ final class CalendarSummaryView: UIView {
     }
     
     private func showEmptyCalendarSummaryView(isFutureDate: Bool) {
-        let isHidden = !isFutureDate
-
         diaryTitleLabel.isHidden = true
         diaryDateLabel.isHidden = true
         diaryContentLabel.isHidden = true
